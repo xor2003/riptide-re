@@ -127,7 +127,7 @@ seg2608		ends
 ; ---- segment seg1c75 ----
 seg1c75		segment	byte public 'CODE' use16
 		assume cs:seg1c75
-		;org 7
+		org 7
 		assume es:nothing, ss:nothing, ds:seg2608, fs:nothing, gs:nothing
 		db 3 dup(0)
 off_1E93A	dw 0; DATA XREF: _core_startworx+5Cw
