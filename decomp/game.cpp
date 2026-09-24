@@ -2573,22 +2573,24 @@ void start_title_loop(void)
         the_game->play_sound_file((uchar far *)"title");
     else
         the_game->play_sound_file((uchar far *)"pup2");
-    if (saw_title_screen != 0)
-        return;
-    saw_title_screen++;
-    while (the_game->field_2B != 0)
-        the_game->doit();
-    var_2 = 0x12C;
-    while (the_game->field_2B == 0 && var_2-- != 0)
+    if (saw_title_screen == 0)
     {
-        if (!god_mode && gr_keys[0x22] && gr_keys[0x38])
+        saw_title_screen++;
+        while (the_game->field_2B != 0)
+            the_game->doit();
+        var_2 = 0x12C;
+        while (the_game->field_2B == 0 && var_2-- != 0)
         {
-            the_game->play_sound_file((uchar far *)"sum");
-            god_mode = 1;
+            if (!god_mode && gr_keys[0x22] && gr_keys[0x38])
+            {
+                the_game->play_sound_file((uchar far *)"sum");
+                god_mode = 1;
+            }
+            display->pause(1);
+            the_game->doit();
         }
-        display->pause(1);
-        the_game->doit();
     }
+    activate_menu_bar();
 }
 
 /* --------------------------------------------------------------------------

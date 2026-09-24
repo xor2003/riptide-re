@@ -35,8 +35,8 @@ FILE		ends
 		extrn	@menu_bar@poll$qv:near
 		extrn	@pull_down@draw$qv:near
 		extrn	@pull_down@poll$qv:near
-		extrn	nullsub_1:far
-		extrn	start:far
+		extrn	nullsub_1:far16
+		extrn	start:far16
 		extrn	sub_26F1:near
 		extrn	sub_3C32:near
 		extrn	loc_3C37:near

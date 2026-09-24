@@ -22,9 +22,9 @@ istemp		dw ?
 token		dw ?
 FILE		ends
 
-		extrn	_main:near
-		extrn	e087_trap:far
-		extrn	e087_entry:far
+		extrn	_main:far16
+		extrn	e087_trap:far16
+		extrn	e087_entry:far16
 		extrn	e087_shortcut:near
 		extrn	e086_entry:near
 		extrn	e086_shortcut:near

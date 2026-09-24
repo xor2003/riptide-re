@@ -1,7 +1,7 @@
 ; decomp/seg2333.asm — seg2333 (extracted from RIPTIDE_.asm)
 		.386p
 
-		extrn	__fpuint:far
+		extrn	__fpuint:far16
 		public	e086_entry
 		public	e086_shortcut
 		public	sub_25522

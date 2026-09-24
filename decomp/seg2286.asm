@@ -1,11 +1,11 @@
 ; decomp/seg2286.asm — seg2286 (extracted from RIPTIDE_.asm)
 		.386p
 
-		extrn	_int86:far
-		extrn	_core_closeworx:far
-		extrn	_farmalloc:far
-		extrn	_farfree:far
-		extrn	_core_startworx:far
+		extrn	_int86:far16
+		extrn	_core_closeworx:far16
+		extrn	_farmalloc:far16
+		extrn	_farfree:far16
+		extrn	_core_startworx:far16
 		public	_adlibdetect
 		public	_closepoly
 		public	_closeworx
