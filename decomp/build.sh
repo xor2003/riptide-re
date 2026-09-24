@@ -10,7 +10,7 @@ cp "$(dirname "$1")/riptide.h" "$work/" 2>/dev/null || true
 names=""
 for src in "$@"; do names="$names $(basename "$src" .cpp).cpp"; done
 # run via .BAT so DOS `>' captures BCC's diagnostics into cc.log
-printf 'D:\\BIN\\BCC.EXE -ml -3 -f287 -O -r- -vi- -S -ID:\\INCLUDE -LD:\\LIB %s > cc.log\r\n' "$names" > "$work/go.bat"
+printf 'D:\\BIN\\BCC.EXE -ml -3 -f -O -r- -vi- -S -ID:\\INCLUDE -LD:\\LIB %s > cc.log\r\n' "$names" > "$work/go.bat"
 SDL_VIDEODRIVER=dummy SDL_AUDIODRIVER=dummy timeout 600 dosbox \
   -c "mount c $work" \
   -c "mount d \"/home/xor/inertia_player/dos_compilers/Borland C++ v3.1\"" \
