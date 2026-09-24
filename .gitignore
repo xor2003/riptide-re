@@ -1,0 +1,39 @@
+# --- build output / objects ---
+*.obj
+*.OBJ
+*.o
+decomp/obj/
+decomp/link/
+*.exe
+*.EXE
+*.com
+*.COM
+
+# --- original game binaries & data (copyrighted, not redistributable) ---
+RIPTIDE.EXE
+CATALOG.*
+*.DAT
+*.SCR
+CONFIG.RIP
+HIGH.SCR
+
+# --- analysis noise / logs ---
+LOGCPU*.TXT
+*.log
+*.LOG
+*.dis
+*.err
+ML.ERR
+
+# --- nested/external project dirs ---
+dissected/
+reko/
+.inertia_pat_cache/
+
+# --- misc ---
+*.bak
+*~
+
+# --- python cache ---
+__pycache__/
+*.pyc
