@@ -84,8 +84,6 @@
 seg0000		segment	byte public 'CODE' use16
 seg0000		ends
 
-seg1c75		segment	byte public 'CODE' use16
-seg1c75		ends
 
 seg2608		segment	para public 'DATA' use16
 		extrn	_worx_ax:word

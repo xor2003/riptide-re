@@ -2,6 +2,7 @@
 *.obj
 *.OBJ
 *.o
+decomp/*.lst
 decomp/obj/
 decomp/link/
 *.exe
