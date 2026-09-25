@@ -23,7 +23,7 @@ ACTOR CREATURE GAME GAMEMGR GUI KBD MENU SCORES TILEMAP UTIL VGADISP fpconst seg
 W=/tmp/rplink_$$
 rm -rf "$W"; mkdir -p "$W"
 for o in $OBJS; do
-  f=$(ls obj/$o.obj obj/$o.OBJ 2>/dev/null | head -1)
+  f=$(ls -t obj/$o.obj obj/$o.OBJ 2>/dev/null | head -1)
   [ -n "$f" ] && cp "$f" "$W/" || echo "MISSING OBJ: $o"
 done
 # TLINK response file (avoids the ~127-char DOS command-line limit).  No
@@ -37,6 +37,7 @@ printf 'D:\\BIN\\TLINK.EXE /3 /c /m @resp.txt > link.log\r\n' > "$W/go.bat"
 SDL_VIDEODRIVER=dummy SDL_AUDIODRIVER=dummy timeout 600 dosbox \
   -c "mount c $W" \
   -c "mount d \"/home/xor/inertia_player/dos_compilers/Borland C++ v3.1\"" \
+  -c "cycles max" \
   -c "c:" -c "go.bat" -c "exit" --noconsole >/dev/null 2>&1
 cp "$W"/RIPTIDE.EXE "$W"/RIPTIDE.MAP "$W"/link.log link/ 2>/dev/null || true
 echo "=== link.log ==="; cat "$W"/link.log 2>/dev/null | head -80

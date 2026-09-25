@@ -13,6 +13,7 @@ printf 'D:\\BIN\\BCC.EXE -c -ml -3 -f -O -r- -vi- -ID:\\INCLUDE -LD:\\LIB %s > c
 SDL_VIDEODRIVER=dummy SDL_AUDIODRIVER=dummy timeout 900 dosbox \
   -c "mount c $work" \
   -c "mount d \"/home/xor/inertia_player/dos_compilers/Borland C++ v3.1\"" \
+  -c "cycles max" \
   -c "c:" \
   -c "go.bat" \
   -c "exit" --noconsole >/dev/null 2>&1
