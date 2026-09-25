@@ -30,13 +30,13 @@ tbyte_27C90	REAL10 0.78539816339744830963 ; DATA XREF: seg25ab:0084r
  					; seg25ab:0157r
 tbyte_27C9A	REAL10 1.5707963267948966193 ; DATA	XREF: seg25ab:014Cr
  					; seg25ab:017Dr
-flt_27CA4	REAL8 -5.1110893e38	; DATA XREF: seg25ab:0067r
+flt_27CA4	dd 0FF1BFE2Ch		; DATA XREF: seg25ab:0067r
  					; seg25ab:0075r
-flt_27CA8	REAL8 -5.1117124e38	; DATA XREF: seg25ab:01D7r
+flt_27CA8	dd 0C7F808FFh		; DATA XREF: seg25ab:01D7r
  		db 0, 4Ah, 0C0h, 0FFh
  flt_27CB0	dd 0.5			; DATA XREF: seg25ab:026Cr
 tbyte_27CB4	REAL10 1.4142135623730950489 ; DATA	XREF: seg25ab:02CCr
-flt_27CBE	REAL8 3.4028237e38		; DATA XREF: seg25ab:011Dr
+flt_27CBE	dd 026DCFC0h		; DATA XREF: seg25ab:011Dr
 					; seg25ab:0255r
 ; ---------------------------------------------------------------------------
 		mov	cl, 0

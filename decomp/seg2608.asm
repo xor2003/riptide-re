@@ -5360,7 +5360,7 @@ tbyte_2AFC4	dt 1.0e512		; DATA XREF: __pow10+8Dr
 tbyte_2AFCE	dt 9.9999999999999999997e1023 ;	DATA XREF: __pow10+99r
 tbyte_2AFD8	dt 1.0e2048		; DATA XREF: __pow10+A5r
 tbyte_2AFE2	dt 1.0e4096		; DATA XREF: __pow10+B1r
-flt_2AFEC	REAL8 3.4028237e38		; DATA XREF: __pow10+17r
+flt_2AFEC	dd 026DCFC0h			; DATA XREF: __pow10+17r
 __atexitcnt	dw 0			; DATA XREF: _atexit+3r
 					; _atexit:loc_2C57r ...
 		public __ctype
