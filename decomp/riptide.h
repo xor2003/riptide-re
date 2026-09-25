@@ -97,7 +97,7 @@ public:
     loop_res far *loop_data; /* 46 — active .l loop resource */
     uchar far  *sprite_data; /* 4A — loop name string */
     void far *field_4E;   /* 4E (far ptr) */
-    unsigned flag_0     :1; /* 52.0 — non-solid / skip collision (set for jason etc.) */
+    unsigned flag_0     :1; /* 52.0 — dead/marked for removal: skips update() and draw() */
     unsigned in_window  :1; /* 52.1 — inside map window; feeds ed_list & shootable_list */
     unsigned no_erase   :1; /* 52.2 — suppress erase once (just drawn) */
     unsigned flag_3     :1; /* 52.3 */

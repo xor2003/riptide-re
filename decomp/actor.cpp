@@ -408,7 +408,7 @@ void m_actor::draw()
         new_sprite = 0;
     if (!in_window)
         return;
-    if (flag_0 != 1)
+    if (flag_0 == 1)
         return;
     the_map->put_bits_masked(x, y, width, height,
         loop_data->frames[current_loop]->bitmap, 0, field_36);
