@@ -346,7 +346,7 @@ void far do_ego(m_actor far *a)
     if (a->state == 2 || a->state == 6)
         return;
     if (a->flag_3) {                        /* bit3 — took a hit */
-        update_shld_guage(-a->field_28, 0x68, 0);
+        update_shld_guage(-a->field_28, 0x68, 0xB3);
         a->field_36 = 0x20;
         a->flag_3 = 0;
         a->field_28 = 0;
@@ -628,9 +628,9 @@ void far do_pup(m_actor far *a)
     if (!touching(a, ego))
         return;
     switch (a->counter_24 - 1) {                    /* pup kind 1..9 */
-        case 0: update_air_guage(0x50, 0x68, 0); break;
+        case 0: update_air_guage(0x50, 0x68, 0xA7); break;
         case 1: if (shot_size < 3) shot_size++; post_message(3); break;
-        case 2: update_shld_guage(0x28, 0x68, 0);
+        case 2: update_shld_guage(0x28, 0x68, 0xB3);
                 if (shot_size != 0 && heavy_timer == 0) shot_size--; break;
         case 3: top_fire = 1; break;
         case 4: men++; auto_fire = 0; jason_fire = 0;
@@ -1757,10 +1757,10 @@ die:
     if (a->in_window != 1)
         return;
     if (var_2)
-        add_explosion(a->center_x, a->center_y, a->counter_22,
+        add_explosion(a->center_x, a->center_y, a->counter_24,
                       (uchar far *)a->field_4E);
     else
-        add_explosion(a->center_x, a->center_y, a->counter_22,
+        add_explosion(a->center_x, a->center_y, a->counter_24,
                       (uchar far *)NULL);
 }
 

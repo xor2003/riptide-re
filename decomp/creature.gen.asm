@@ -15,8 +15,8 @@ $comm	macro	name,dist,size,count
 	endif
 	?debug	V 300h
 	?debug	S "creature.cpp"
-	?debug	C E9F535395D0C63726561747572652E637070
-	?debug	C E9F535395D09726970746964652E68
+	?debug	C E95939395D0C63726561747572652E637070
+	?debug	C E95939395D09726970746964652E68
 	?debug	C E9253FD45C12443A5C494E434C5544455C737464696F2E68
 	?debug	C E9263FD45C12443A5C494E434C5544455C5F646566732E68
 	?debug	C E9263FD45C13443A5C494E434C5544455C5F6E66696C652E68
@@ -1478,9 +1478,9 @@ CREATURE_TEXT	segment byte public use16 'CODE'
 	or	ax,ax
 	je	short @17@254
    ;	
-   ;	        update_shld_guage(-a->field_28, 0x68, 0);
+   ;	        update_shld_guage(-a->field_28, 0x68, 0xB3);
    ;	
-	push	0
+	push	179
 	push	104
 	les	bx,dword ptr [bp+6]
 	mov	ax,word ptr es:[bx+40]
@@ -2929,9 +2929,9 @@ CREATURE_TEXT	segment byte public use16 'CODE'
 	jmp	word ptr cs:@28@C786[bx]
 @28@394:
    ;	
-   ;	        case 0: update_air_guage(0x50, 0x68, 0); break;
+   ;	        case 0: update_air_guage(0x50, 0x68, 0xA7); break;
    ;	
-	push	0
+	push	167
 	push	104
 	push	80
 	call	far ptr @update_air_guage$qiii
@@ -2951,9 +2951,9 @@ CREATURE_TEXT	segment byte public use16 'CODE'
 	jmp	short @28@786
 @28@506:
    ;	
-   ;	        case 2: update_shld_guage(0x28, 0x68, 0);
+   ;	        case 2: update_shld_guage(0x28, 0x68, 0xB3);
    ;	
-	push	0
+	push	179
 	push	104
 	push	40
 	call	far ptr @update_shld_guage$qiii
@@ -9004,7 +9004,7 @@ CREATURE_TEXT	segment byte public use16 'CODE'
 	cmp	byte ptr [bp-2],0
 	je	short @54@1682
    ;	
-   ;	        add_explosion(a->center_x, a->center_y, a->counter_22,
+   ;	        add_explosion(a->center_x, a->center_y, a->counter_24,
    ;	
    ;	
    ;	                      (uchar far *)a->field_4E);
@@ -9016,7 +9016,7 @@ CREATURE_TEXT	segment byte public use16 'CODE'
 @54@1682:
    ;	
    ;	    else
-   ;	        add_explosion(a->center_x, a->center_y, a->counter_22,
+   ;	        add_explosion(a->center_x, a->center_y, a->counter_24,
    ;	
    ;	
    ;	                      (uchar far *)NULL);
@@ -9025,7 +9025,7 @@ CREATURE_TEXT	segment byte public use16 'CODE'
 	push	0
 @54@1710:
 	les	bx,dword ptr [bp+6]
-	mov	al,byte ptr es:[bx+32]
+	mov	al,byte ptr es:[bx+34]
 	push	ax
 	les	bx,dword ptr [bp+6]
 	push	word ptr es:[bx+10]
