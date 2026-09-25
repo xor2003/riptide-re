@@ -703,7 +703,7 @@ void far do_probe(m_actor far *a)
     if (a->y_speed < 0 && a->on_tile(0x100))
         a->y_speed = 0;
 
-    if (jason_on == 1) {
+    if (jason_on != 1) {
         if (a->state == 4) {
             /* spinning drill attack — jitter about until the timer dies */
             if (--a->counter_24 == 0)
@@ -752,7 +752,7 @@ void far do_probe(m_actor far *a)
         return;
     }
 
-    /* jason_on != 1 — passive drift */
+    /* jason_on == 1 — player-controlled: passive drift, input drives speed */
     if (a->state != 0)
         goto turn;
     if (a->flag_3) {

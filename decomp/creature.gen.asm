@@ -15,8 +15,8 @@ $comm	macro	name,dist,size,count
 	endif
 	?debug	V 300h
 	?debug	S "creature.cpp"
-	?debug	C E92F3C395D0C63726561747572652E637070
-	?debug	C E92F3C395D09726970746964652E68
+	?debug	C E90140395D0C63726561747572652E637070
+	?debug	C E90140395D09726970746964652E68
 	?debug	C E9253FD45C12443A5C494E434C5544455C737464696F2E68
 	?debug	C E9263FD45C12443A5C494E434C5544455C5F646566732E68
 	?debug	C E9263FD45C13443A5C494E434C5544455C5F6E66696C652E68
@@ -3285,10 +3285,10 @@ CREATURE_TEXT	segment byte public use16 'CODE'
 @31@114:
    ;	
    ;	
-   ;	    if (jason_on == 1) {
+   ;	    if (jason_on != 1) {
    ;	
 	cmp	byte ptr DGROUP:_jason_on,1
-	je short	@@19
+	jne short	@@19
 	jmp	@31@1178
 @@19:
    ;	
@@ -3620,7 +3620,7 @@ CREATURE_TEXT	segment byte public use16 'CODE'
    ;	
    ;	    }
    ;	
-   ;	    /* jason_on != 1 — passive drift */
+   ;	    /* jason_on == 1 — player-controlled: passive drift, input drives speed */
    ;	    if (a->state != 0)
    ;	
 	les	bx,dword ptr [bp+6]
