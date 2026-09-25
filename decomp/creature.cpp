@@ -355,7 +355,7 @@ void far do_ego(m_actor far *a)
             a->field_1E = 0;
         }
     }
-    if (jason_on != 1)
+    if (jason_on == 1)
         return;
     if (a->state == 1 && --a->counter_24 == 0) {
         a->new_loop(a->direction == 1 ? (uchar *)"subl.l" : (uchar *)"subr.l");
@@ -370,7 +370,7 @@ void far do_ego(m_actor far *a)
             add_bubble(var_2 + a->width, var_4, 6);
     }
     if (a->on_tile(0x100) == 3) {
-        update_air_guage(5, 0x68, 0);
+        update_air_guage(5, 0x68, 0xA7);
         if (a->y_speed < 0)
             a->y_speed = 0;
     }
