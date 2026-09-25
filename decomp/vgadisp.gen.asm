@@ -15,8 +15,8 @@ $comm	macro	name,dist,size,count
 	endif
 	?debug	V 300h
 	?debug	S "vgadisp.cpp"
-	?debug	C E9DC08385D0B766761646973702E637070
-	?debug	C E9DC08385D09726970746964652E68
+	?debug	C E9324D395D0B766761646973702E637070
+	?debug	C E9324D395D09726970746964652E68
 	?debug	C E9253FD45C12443A5C494E434C5544455C737464696F2E68
 	?debug	C E9263FD45C12443A5C494E434C5544455C5F646566732E68
 	?debug	C E9263FD45C13443A5C494E434C5544455C5F6E66696C652E68
@@ -1714,9 +1714,11 @@ VGADISP_TEXT	segment byte public use16 'CODE'
 	push	word ptr [bp+12]
 	push	word ptr [bp+10]
 	call	far ptr @g_open_element$qnuc
+	push	dx
+	push	ax
+	pop	eax
 	add	sp,4
-	mov	word ptr [bp-2],dx
-	mov	word ptr [bp-4],ax
+	mov	dword ptr [bp-4],eax
    ;	
    ;	    if (var_1A == -1L)
    ;	

@@ -484,6 +484,10 @@ pull_down::pull_down(uchar far *title)
     field_6A = -1;
 }
 
+pull_down::~pull_down()
+{
+}
+
 void pull_down::add_item(uchar far *s, void far *cb)
 {
     pull_down_item far *it = (pull_down_item far *)new char[0xA];

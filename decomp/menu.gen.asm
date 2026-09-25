@@ -15,17 +15,20 @@ $comm	macro	name,dist,size,count
 	endif
 	?debug	V 300h
 	?debug	S "menu.cpp"
-	?debug	C E938A2375D086D656E752E637070
-	?debug	C E938A2375D09726970746964652E68
+	?debug	C E95A4B395D086D656E752E637070
+	?debug	C E95A4B395D09726970746964652E68
 	?debug	C E9253FD45C12443A5C494E434C5544455C737464696F2E68
 	?debug	C E9263FD45C12443A5C494E434C5544455C5F646566732E68
 	?debug	C E9263FD45C13443A5C494E434C5544455C5F6E66696C652E68
 	?debug	C E9263FD45C12443A5C494E434C5544455C5F6E756C6C2E68
 	?debug	C E9263FD45C13443A5C494E434C5544455C737472696E672E68
+	?debug	C E9253FD45C0F443A5C494E434C5544455C696F2E68
+	?debug	C E9253FD45C12443A5C494E434C5544455C66636E746C2E68
 	?debug	C E9253FD45C10443A5C494E434C5544455C646F732E68
 	?debug	C E9253FD45C12443A5C494E434C5544455C636F6E696F2E68
 	?debug	C E9253FD45C12443A5C494E434C5544455C616C6C6F632E68
 	?debug	C E9263FD45C11443A5C494E434C5544455C74696D652E68
+	?debug	C E9253FD45C10443A5C494E434C5544455C6469722E68
 MENU_TEXT	segment byte public use16 'CODE'
 MENU_TEXT	ends
 DGROUP	group	_DATA,_BSS
@@ -990,14 +993,14 @@ MENU_TEXT	segment byte public use16 'CODE'
 	call	far ptr @game_manager@play_sound$qnucuc
 	add	sp,10
    ;	
-   ;	        i_inform((uchar *)"Cheat mode ON!\nLet's Rip!", 0, 0, 0);
+   ;	        i_inform((uchar *)"Cheat mode ON!\nLet's Rip!", 0, 0);
    ;	
 	push	0
 	push	0
 	push	0
 	push	ds
 	push	offset DGROUP:s@+198
-	call	far ptr @i_inform$qnucuce
+	call	far ptr @i_inform$qnucuct1
 	add	sp,10
    ;	
    ;	        cheat_mode = 1;
@@ -1013,14 +1016,14 @@ MENU_TEXT	segment byte public use16 'CODE'
 	cmp	byte ptr [bp-5],24
 	jne	short @15@282
    ;	
-   ;	        i_inform((uchar *)"That is not a valid\npassword.", 0, 0, 0);
+   ;	        i_inform((uchar *)"That is not a valid\npassword.", 0, 0);
    ;	
 	push	0
 	push	0
 	push	0
 	push	ds
 	push	offset DGROUP:s@+224
-	call	far ptr @i_inform$qnucuce
+	call	far ptr @i_inform$qnucuct1
 	add	sp,10
 @15@282:
    ;	
@@ -1070,9 +1073,9 @@ MENU_TEXT	segment byte public use16 'CODE'
 	call	far ptr @i_yes_cancel$qnucuc
 	add	sp,6
 	or	al,al
-	je short	@@0
+	je short	@@263
 	jmp	@16@282
-@@0:
+@@263:
 @16@86:
    ;	
    ;	            return;
@@ -1100,9 +1103,9 @@ MENU_TEXT	segment byte public use16 'CODE'
 	call	far ptr @vga_display@$bdtr$qv
 	add	sp,6
    ;	
-   ;	    _gr_end_kbd_grab();
+   ;	    gr_end_kbd_grab();
    ;	
-	call	far ptr __gr_end_kbd_grab
+	call	far ptr _gr_end_kbd_grab
    ;	
    ;	    f = fopen("config.rip", "wb+");
    ;	
@@ -1233,10 +1236,10 @@ MENU_TEXT	segment byte public use16 'CODE'
 	push	word ptr [bp+8]
 	push	word ptr [bp+6]
 	call	far ptr @g_open_element$qnuc
-	add	sp,4
 	push	dx
 	push	ax
 	pop	eax
+	add	sp,4
 	cmp	eax,large -1
 	jne	short @17@86
    ;	
@@ -1303,9 +1306,9 @@ MENU_TEXT	segment byte public use16 'CODE'
 	call	far ptr @i_yes_cancel$qnucuc
 	add	sp,6
 	or	al,al
-	je short	@@1
+	je short	@@264
 	jmp	@17@674
-@@1:
+@@264:
 @17@198:
    ;	
    ;	                goto end;
@@ -1345,9 +1348,9 @@ MENU_TEXT	segment byte public use16 'CODE'
 	pop	eax
 	add	sp,6
 	cmp	eax,large 1
-	je short	@@2
+	je short	@@265
 	jmp	@17@618
-@@2:
+@@265:
    ;	
    ;	                goto eof;
    ;	            if (buf == 9) {
@@ -1444,9 +1447,9 @@ MENU_TEXT	segment byte public use16 'CODE'
 	add	sp,12
 @17@590:
 	cmp	byte ptr [bp-1],0
-	je short	@@3
+	je short	@@266
 	jmp	@17@226
-@@3:
+@@266:
 @17@618:
    ;	
    ;	        }
@@ -1600,7 +1603,7 @@ MENU_TEXT	segment byte public use16 'CODE'
 	mov	bx,word ptr es:[bx]
 	call	dword ptr [bx+8]
 	add	sp,4
-	or	ax,ax
+	or	al,al
 	je	short @18@170
    ;	
    ;	        ;
@@ -1616,7 +1619,7 @@ MENU_TEXT	segment byte public use16 'CODE'
 	push	0
 	push	word ptr DGROUP:_the_game+2
 	push	word ptr DGROUP:_the_game
-	call	far ptr @game_manager@turn_sound$qi
+	call	far ptr @game_manager@turn_sound$quc
 	add	sp,6
 @18@254:
    ;	
@@ -1632,7 +1635,7 @@ MENU_TEXT	segment byte public use16 'CODE'
 	push	1
 	push	word ptr DGROUP:_the_game+2
 	push	word ptr DGROUP:_the_game
-	call	far ptr @game_manager@turn_sound$qi
+	call	far ptr @game_manager@turn_sound$quc
 	add	sp,6
 @18@310:
    ;	
@@ -1760,7 +1763,7 @@ MENU_TEXT	segment byte public use16 'CODE'
 	mov	bx,word ptr es:[bx]
 	call	dword ptr [bx+8]
 	add	sp,4
-	or	ax,ax
+	or	al,al
 	je	short @19@282
    ;	
    ;	        ;
@@ -1777,9 +1780,9 @@ MENU_TEXT	segment byte public use16 'CODE'
 	les	bx,dword ptr [bp-4]
 	les	bx,dword ptr es:[bx+122]
 	cmp	word ptr es:[bx+32],0
-	jne short	@@4
+	jne short	@@267
 	jmp	@19@534
-@@4:
+@@267:
    ;	
    ;	        the_game->joy_update();
    ;	
@@ -1844,7 +1847,7 @@ MENU_TEXT	segment byte public use16 'CODE'
 	push	0
 	push	ds
 	push	offset DGROUP:s@+526
-	call	far ptr @i_inform$qnucuce
+	call	far ptr @i_inform$qnucuct1
 	add	sp,10
 	jmp	short @19@534
 @19@506:
@@ -1986,7 +1989,7 @@ MENU_TEXT	segment byte public use16 'CODE'
 	mov	bx,word ptr es:[bx]
 	call	dword ptr [bx+8]
 	add	sp,4
-	or	ax,ax
+	or	al,al
 	je	short @20@282
    ;	
    ;	        ;
@@ -2735,7 +2738,7 @@ MENU_TEXT	segment byte public use16 'CODE'
 	push	1
 	push	ds
 	push	offset DGROUP:__tmp
-	call	far ptr @i_inform$qnucuce
+	call	far ptr @i_inform$qnucuct1
 	add	sp,10
    ;	
    ;	}
@@ -2883,7 +2886,7 @@ MENU_TEXT	segment byte public use16 'CODE'
 	push	0
 	push	ds
 	push	offset DGROUP:__tmp
-	call	far ptr @i_inform$qnucuce
+	call	far ptr @i_inform$qnucuct1
 	add	sp,10
    ;	
    ;	}
@@ -2906,14 +2909,14 @@ MENU_TEXT	segment byte public use16 'CODE'
 	cmp	byte ptr es:[bx+7],0
 	jne	short @24@86
    ;	
-   ;	        i_inform((uchar far *)"Adlib card not present.", 0, 0, 0);
+   ;	        i_inform((uchar far *)"Adlib card not present.", 0, 0);
    ;	
 	push	0
 	push	0
 	push	0
 	push	ds
 	push	offset DGROUP:s@+1024
-	call	far ptr @i_inform$qnucuce
+	call	far ptr @i_inform$qnucuct1
 	add	sp,10
    ;	
    ;	    } else {
@@ -2968,14 +2971,14 @@ MENU_TEXT	segment byte public use16 'CODE'
 	cmp	byte ptr es:[bx+7],0
 	jne	short @25@86
    ;	
-   ;	        i_inform((uchar far *)"Adlib card not present.", 0, 0, 0);
+   ;	        i_inform((uchar far *)"Adlib card not present.", 0, 0);
    ;	
 	push	0
 	push	0
 	push	0
 	push	ds
 	push	offset DGROUP:s@+1054
-	call	far ptr @i_inform$qnucuce
+	call	far ptr @i_inform$qnucuct1
 	add	sp,10
    ;	
    ;	    } else {
@@ -3006,14 +3009,14 @@ MENU_TEXT	segment byte public use16 'CODE'
 	mov	bp,sp
    ;	
    ;	{
-   ;	    i_inform((uchar far *)"God mode now on!", 0, 0, 0);
+   ;	    i_inform((uchar far *)"God mode now on!", 0, 0);
    ;	
 	push	0
 	push	0
 	push	0
 	push	ds
 	push	offset DGROUP:s@+1078
-	call	far ptr @i_inform$qnucuce
+	call	far ptr @i_inform$qnucuct1
 	add	sp,10
    ;	
    ;	    god_mode = 1;
@@ -3035,10 +3038,10 @@ MENU_TEXT	segment byte public use16 'CODE'
    ;	{
    ;	    pull_down far *pd;
    ;	
-   ;	    the_menu_bar->field_19 = 1;
+   ;	    the_menu_bar->field_13 = 1;
    ;	
 	les	bx,dword ptr DGROUP:_the_menu_bar
-	mov	byte ptr es:[bx+25],1
+	mov	byte ptr es:[bx+19],1
    ;	
    ;	    pd = new pull_down((uchar far *)"?");
    ;	
@@ -3260,9 +3263,9 @@ MENU_TEXT	segment byte public use16 'CODE'
    ;	    if (debug_mode == 1) {
    ;	
 	cmp	byte ptr DGROUP:_debug_mode,1
-	je short	@@5
+	je short	@@268
 	jmp	@27@86
-@@5:
+@@268:
    ;	
    ;	        pd = new pull_down((uchar far *)"Debug");
    ;	
@@ -3439,7 +3442,7 @@ MENU_TEXT	segment byte public use16 'CODE'
 	mov	bx,word ptr es:[bx]
 	call	dword ptr [bx+8]
 	add	sp,4
-	or	ax,ax
+	or	al,al
 	je	short @28@58
    ;	
    ;	        ;
@@ -3786,7 +3789,7 @@ MENU_TEXT	ends
 	extrn	_joystickbutton:far
 	extrn	@i_hide_box$quc:far
 	extrn	@i_show_box$qnuciit1t1:far
-	extrn	@i_inform$qnucuce:far
+	extrn	@i_inform$qnucuct1:far
 	extrn	@i_set_text$qucucucuc:far
 	extrn	_ultoa:far
 	extrn	_itoa:far
@@ -3798,7 +3801,7 @@ MENU_TEXT	ends
 	extrn	@read_error$qnuc:far
 	extrn	@i_yes_cancel$qnucuc:far
 	public	@setup_options$qv
-	extrn	__gr_end_kbd_grab:far
+	extrn	_gr_end_kbd_grab:far
 	extrn	@random$qi:far
 	extrn	@show_loop$qnuciiucui:far
 	extrn	@de_doit$qv:far
@@ -3847,7 +3850,7 @@ MENU_TEXT	ends
 	extrn	@game_manager@reset_sound$qv:far
 	extrn	@game_manager@play_sound$qnucuc:far
 	extrn	@game_manager@play_sound_file$qnuc:far
-	extrn	@game_manager@turn_sound$qi:far
+	extrn	@game_manager@turn_sound$quc:far
 	extrn	@game_manager@joy_update$qv:far
 	extrn	@game_manager@doit$qv:far
 	extrn	@game_manager@$bdtr$qv:far

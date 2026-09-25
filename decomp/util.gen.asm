@@ -15,8 +15,8 @@ $comm	macro	name,dist,size,count
 	endif
 	?debug	V 300h
 	?debug	S "util.cpp"
-	?debug	C E92050385D087574696C2E637070
-	?debug	C E92050385D09726970746964652E68
+	?debug	C E94B47395D087574696C2E637070
+	?debug	C E94B47395D09726970746964652E68
 	?debug	C E9253FD45C12443A5C494E434C5544455C737464696F2E68
 	?debug	C E9263FD45C12443A5C494E434C5544455C5F646566732E68
 	?debug	C E9263FD45C13443A5C494E434C5544455C5F6E66696C652E68
@@ -41,21 +41,6 @@ _BSS	segment word public use16 'BSS'
 b@	label	byte
 b@w	label	word
 _BSS	ends
-_DATA	segment word public use16 'DATA'
-_g_handle	label	word
-	db	255
-	db	255
-_external_open	label	dword
-	db	0
-	db	0
-	db	0
-	db	0
-_external_read	label	dword
-	db	0
-	db	0
-	db	0
-	db	0
-_DATA	ends
 UTIL_TEXT	segment byte public use16 'CODE'
    ;	
    ;	void beep(void)
@@ -522,9 +507,9 @@ s@	label	byte
 _DATA	ends
 UTIL_TEXT	segment byte public use16 'CODE'
 UTIL_TEXT	ends
-	public	_external_read
-	public	_external_open
-	public	_g_handle
+	extrn	_external_read:dword
+	extrn	_external_open:dword
+	extrn	_g_handle:word
 	public	@set_external_read$qnv
 	public	@set_external_open$qnv
 	public	@write_error$qnuc

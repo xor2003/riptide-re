@@ -80,7 +80,7 @@ byte far check_vertical_ray(m_actor far *a, uint arg4)
     int var_2, var_4, var_6;
     var_2 = a->map_pos;
     if (a->center_y < cur_sub->center_y) {
-        var_2 += tbl_mul_tw[a->field_1C];       /* row just below the actor */
+        var_2 += tbl_mul_tw[a->field_1C - 1];   /* row just below the actor (orig: word_2BA84[field_1C]) */
         var_4  = the_map->map_width;            /* scan downward */
     } else {
         var_4  = -the_map->map_width;           /* scan upward */
@@ -1770,7 +1770,7 @@ die:
 void far do_bs2tn(m_actor far *a)
 {
     if (check_for_hit(a, 0x14) == 2) {
-        score_at(0xFA0, a->x, a->y);
+        score_at(a->center_x, a->center_y, 0xFA0);
         a->target->counter_26++;
         if (a->target->counter_26 == 4)
             a->target->field_28 = 0;

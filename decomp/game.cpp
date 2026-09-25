@@ -2039,14 +2039,13 @@ void update_air_guage(int arg_0, int arg_2, int arg_4)
 {
     byte var_1, var_2;
 
-    display->fill_rect(arg_2, arg_4, arg_2, arg_4 + 5, 0, -1, 0);
-    if (air_supply + arg_0 < 0)
-    {
-        if (air_supply + arg_0 >= 0)
-            air_supply += arg_0;
-        else
-            air_supply = 0;
-    }
+    display->fill_rect(arg_2, arg_4, arg_2 + 0x96, arg_4 + 5, 0, -1, 0);
+    if (air_supply + arg_0 >= 0x95)
+        air_supply = 0x95;
+    else if (air_supply + arg_0 < 0)
+        air_supply = 0;
+    else
+        air_supply += arg_0;
     var_1 = air_supply < 0x32 ? 0x20 : 0x60;
     if (air_supply >= 2)
     {
@@ -2070,14 +2069,13 @@ void update_shld_guage(int arg_0, int arg_2, int arg_4)
 {
     byte var_1, var_2;
 
-    display->fill_rect(arg_2, arg_4, arg_2, arg_4 + 5, 0, -1, 0);
-    if (shld_supply + arg_0 < 0)
-    {
-        if (shld_supply + arg_0 >= 0)
-            shld_supply += arg_0;
-        else
-            shld_supply = 0;
-    }
+    display->fill_rect(arg_2, arg_4, arg_2 + 0x96, arg_4 + 5, 0, -1, 0);
+    if (shld_supply + arg_0 >= 0x95)
+        shld_supply = 0x95;
+    else if (shld_supply + arg_0 < 0)
+        shld_supply = 0;
+    else
+        shld_supply += arg_0;
     var_1 = shld_supply < 0x32 ? 0x20 : 0x91;
     if (shld_supply >= 2)
     {

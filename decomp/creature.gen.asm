@@ -15,8 +15,8 @@ $comm	macro	name,dist,size,count
 	endif
 	?debug	V 300h
 	?debug	S "creature.cpp"
-	?debug	C E90140395D0C63726561747572652E637070
-	?debug	C E90140395D09726970746964652E68
+	?debug	C E9D551395D0C63726561747572652E637070
+	?debug	C E9D551395D09726970746964652E68
 	?debug	C E9253FD45C12443A5C494E434C5544455C737464696F2E68
 	?debug	C E9263FD45C12443A5C494E434C5544455C5F646566732E68
 	?debug	C E9263FD45C13443A5C494E434C5544455C5F6E66696C652E68
@@ -282,13 +282,13 @@ CREATURE_TEXT	segment byte public use16 'CODE'
 	cmp	ax,word ptr es:[bx+10]
 	jge	short @6@86
    ;	
-   ;	        var_2 += tbl_mul_tw[a->field_1C];       /* row just below the actor */
+   ;	        var_2 += tbl_mul_tw[a->field_1C - 1];   /* row just below the actor (orig: word_2BA84[field_1C]) */
    ;	
 	les	bx,dword ptr [bp+6]
 	mov	bx,word ptr es:[bx+28]
 	shl	bx,1
 	mov	ax,word ptr [bp-2]
-	add	ax,word ptr DGROUP:_tbl_mul_tw[bx]
+	add	ax,word ptr DGROUP:_tbl_mul_tw[bx-2]
 	mov	word ptr [bp-2],ax
    ;	
    ;	        var_4  = the_map->map_width;            /* scan downward */
@@ -2543,13 +2543,13 @@ CREATURE_TEXT	segment byte public use16 'CODE'
    ;	    if (diff_x >= 0x46)
    ;	
 	cmp	word ptr DGROUP:_diff_x,70
-	jge	short @25@478
+	jae	short @25@478
    ;	
    ;	        return;
    ;	    if (diff_x > 0x32)
    ;	
 	cmp	word ptr DGROUP:_diff_x,50
-	jle	short @25@226
+	jbe	short @25@226
    ;	
    ;	        var_2 = 2;
    ;	
@@ -2560,7 +2560,7 @@ CREATURE_TEXT	segment byte public use16 'CODE'
    ;	    else if (diff_x > 0x14)
    ;	
 	cmp	word ptr DGROUP:_diff_x,20
-	jle	short @25@282
+	jbe	short @25@282
    ;	
    ;	        var_2 = 3;
    ;	
@@ -2692,13 +2692,13 @@ CREATURE_TEXT	segment byte public use16 'CODE'
    ;	    if (diff_y >= 0x2D)
    ;	
 	cmp	word ptr DGROUP:_diff_y,45
-	jge	short @26@394
+	jae	short @26@394
    ;	
    ;	        return;
    ;	    if (diff_y > 0x0F && abs(cur_sub->x_speed) >= 4)
    ;	
 	cmp	word ptr DGROUP:_diff_y,15
-	jle	short @26@226
+	jbe	short @26@226
 	les	bx,dword ptr DGROUP:_cur_sub
 	push	word ptr es:[bx+20]
 	call	far ptr @abs$qi
@@ -3465,7 +3465,7 @@ CREATURE_TEXT	segment byte public use16 'CODE'
    ;	        if (diff_y > 0x0A) {
    ;	
 	cmp	word ptr DGROUP:_diff_y,10
-	jle	short @31@618
+	jbe	short @31@618
    ;	
    ;	            var_4 = 0x0A;
    ;	
@@ -3506,7 +3506,7 @@ CREATURE_TEXT	segment byte public use16 'CODE'
    ;	
 	mov	ax,word ptr DGROUP:_diff_x
 	cmp	ax,word ptr [bp-4]
-	jle	short @31@786
+	jbe	short @31@786
    ;	
    ;	            a->x_speed = (a->center_x < ego->center_x) ? 4 : -4;
    ;	
@@ -3919,7 +3919,7 @@ CREATURE_TEXT	segment byte public use16 'CODE'
    ;	    var_1 = check_horizontal_ray(a, diff_x >> 3);
    ;	
 	mov	ax,word ptr DGROUP:_diff_x
-	sar	ax,3
+	shr	ax,3
 	push	ax
 	push	word ptr [bp+8]
 	push	word ptr [bp+6]
@@ -3931,7 +3931,7 @@ CREATURE_TEXT	segment byte public use16 'CODE'
    ;	    var_2 = check_vertical_ray(a, diff_y >> 3);
    ;	
 	mov	ax,word ptr DGROUP:_diff_y
-	sar	ax,3
+	shr	ax,3
 	push	ax
 	push	word ptr [bp+8]
 	push	word ptr [bp+6]
@@ -3953,7 +3953,7 @@ CREATURE_TEXT	segment byte public use16 'CODE'
    ;	        if (diff_y <= 0x0A)
    ;	
 	cmp	word ptr DGROUP:_diff_y,10
-	jle	short @33@450
+	jbe	short @33@450
    ;	
    ;	            goto chase_x;
    ;	        a->y_speed = (cur_sub->center_y < a->center_y) ? -arg_4 : arg_4;
@@ -4133,7 +4133,7 @@ CREATURE_TEXT	segment byte public use16 'CODE'
    ;	    if (diff_y < 0x0A) {
    ;	
 	cmp	word ptr DGROUP:_diff_y,10
-	jge	short @34@310
+	jae	short @34@310
    ;	
    ;	        if (a->facing_actor(cur_sub)) {
    ;	
@@ -4555,7 +4555,7 @@ CREATURE_TEXT	segment byte public use16 'CODE'
    ;	        if (diff_y < 0x0A) {
    ;	
 	cmp	word ptr DGROUP:_diff_y,10
-	jge	short @36@366
+	jae	short @36@366
    ;	
    ;	            a->set_cycle(2, 3);
    ;	
@@ -4959,7 +4959,7 @@ CREATURE_TEXT	segment byte public use16 'CODE'
 	cmp	byte ptr DGROUP:_jason_on,0
 	jne	short @37@618
 	cmp	word ptr DGROUP:_diff_y,50
-	jge	short @37@618
+	jae	short @37@618
 	les	bx,dword ptr DGROUP:_cur_sub
 	mov	ax,word ptr es:[bx+8]
 	les	bx,dword ptr [bp+6]
@@ -5170,7 +5170,7 @@ CREATURE_TEXT	segment byte public use16 'CODE'
    ;	        if (diff_y < 0x0F && random(0x0C) == 0)
    ;	
 	cmp	word ptr DGROUP:_diff_y,15
-	jge	short @38@506
+	jae	short @38@506
 	push	12
 	call	far ptr @random$qi
 	pop	cx
@@ -5921,7 +5921,7 @@ CREATURE_TEXT	segment byte public use16 'CODE'
 	pop	cx
 	mov	word ptr DGROUP:_diff_y,ax
 	cmp	ax,30
-	jl	short @43@702
+	jb	short @43@702
 @43@590:
    ;	
    ;	            goto lunge;
@@ -6543,7 +6543,7 @@ CREATURE_TEXT	segment byte public use16 'CODE'
    ;	        if (diff_y < 0x41) {
    ;	
 	cmp	word ptr DGROUP:_diff_y,65
-	jge	short @45@422
+	jae	short @45@422
    ;	
    ;	            a->direction = (a->x < cur_sub->x) ? 0 : 1;
    ;	
@@ -6755,7 +6755,7 @@ CREATURE_TEXT	segment byte public use16 'CODE'
    ;	        if (diff_y < 0x1E && a->facing_actor(cur_sub)) {
    ;	
 	cmp	word ptr DGROUP:_diff_y,30
-	jge	short @46@394
+	jae	short @46@394
 	push	word ptr DGROUP:_cur_sub+2
 	push	word ptr DGROUP:_cur_sub
 	push	word ptr [bp+8]
@@ -7183,11 +7183,11 @@ CREATURE_TEXT	segment byte public use16 'CODE'
    ;	    if (diff_x < 0x32 && diff_y < 0x1E)
    ;	
 	cmp	word ptr DGROUP:_diff_x,50
-	jl short	@@69
+	jb short	@@69
 	jmp	@48@1122
 @@69:
 	cmp	word ptr DGROUP:_diff_y,30
-	jl short	@@70
+	jb short	@@70
 	jmp	@48@1122
 @@70:
    ;	
@@ -7863,9 +7863,9 @@ CREATURE_TEXT	segment byte public use16 'CODE'
    ;	    if (diff_y < 0x0F && diff_x < 0x5A && a->x_speed != 0) {
    ;	
 	cmp	word ptr DGROUP:_diff_y,15
-	jge	short @50@450
+	jae	short @50@450
 	cmp	word ptr DGROUP:_diff_x,90
-	jge	short @50@450
+	jae	short @50@450
 	les	bx,dword ptr [bp+6]
 	cmp	word ptr es:[bx+20],0
 	je	short @50@450
@@ -7908,9 +7908,9 @@ CREATURE_TEXT	segment byte public use16 'CODE'
    ;	    if (diff_x < 0x1E && diff_y < 0x3C && a->y_speed != 0) {
    ;	
 	cmp	word ptr DGROUP:_diff_x,30
-	jge	short @50@674
+	jae	short @50@674
 	cmp	word ptr DGROUP:_diff_y,60
-	jge	short @50@674
+	jae	short @50@674
 	les	bx,dword ptr [bp+6]
 	cmp	word ptr es:[bx+22],0
 	je	short @50@674
@@ -8737,7 +8737,7 @@ CREATURE_TEXT	segment byte public use16 'CODE'
 	sub	ax,dx
 	sar	ax,1
 	cmp	ax,word ptr DGROUP:_diff_y
-	jle	short @54@702
+	jbe	short @54@702
    ;	
    ;	                        act->door_open = 1;
    ;	
@@ -9062,13 +9062,13 @@ CREATURE_TEXT	segment byte public use16 'CODE'
 	cmp	al,2
 	jne	short @55@114
    ;	
-   ;	        score_at(0xFA0, a->x, a->y);
+   ;	        score_at(a->center_x, a->center_y, 0xFA0);
    ;	
-	les	bx,dword ptr [bp+6]
-	push	word ptr es:[bx+2]
-	les	bx,dword ptr [bp+6]
-	push	word ptr es:[bx]
 	push	4000
+	les	bx,dword ptr [bp+6]
+	push	word ptr es:[bx+10]
+	les	bx,dword ptr [bp+6]
+	push	word ptr es:[bx+8]
 	call	far ptr @score_at$qiii
 	add	sp,6
    ;	
@@ -9631,7 +9631,7 @@ CREATURE_TEXT	segment byte public use16 'CODE'
    ;	        if (diff_y < 0x28 && random(0x14) == 0)
    ;	
 	cmp	word ptr DGROUP:_diff_y,40
-	jge	short @58@814
+	jae	short @58@814
 	push	20
 	call	far ptr @random$qi
 	pop	cx
@@ -10494,9 +10494,9 @@ CREATURE_TEXT	segment byte public use16 'CODE'
    ;	    if (diff_x < 0x96 && diff_y < 0x28) {
    ;	
 	cmp	word ptr DGROUP:_diff_x,150
-	jge	short @61@1458
+	jae	short @61@1458
 	cmp	word ptr DGROUP:_diff_y,40
-	jge	short @61@1458
+	jae	short @61@1458
    ;	
    ;	        if (a->facing_actor(cur_sub) != 0 && random(0x0A) == 0) {
    ;	
@@ -10560,7 +10560,7 @@ CREATURE_TEXT	segment byte public use16 'CODE'
    ;	        if (diff_y > 0x0A && a->counter_24 == 0)
    ;	
 	cmp	word ptr DGROUP:_diff_y,10
-	jle	short @61@1626
+	jbe	short @61@1626
 	les	bx,dword ptr [bp+6]
 	cmp	word ptr es:[bx+34],0
 	jne	short @61@1626
@@ -11060,7 +11060,7 @@ CREATURE_TEXT	segment byte public use16 'CODE'
    ;	            if (diff_y < 0x28) {
    ;	
 	cmp	word ptr DGROUP:_diff_y,40
-	jge	short @62@1038
+	jae	short @62@1038
    ;	
    ;	                a->counter_26 = 5;
    ;	

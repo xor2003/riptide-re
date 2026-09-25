@@ -475,6 +475,7 @@ public:
     /* sizeof = 0x6E */
 
     pull_down(uchar far *);
+    ~pull_down();
     void add_item(uchar far *, void far *);
     virtual void draw();
     uchar activate();
@@ -728,7 +729,7 @@ extern uchar src[];                     /* 0F2A — "egodie2.l" */
 extern int  finish_tile, end_door_tile, secret_tile;  /* 34EC/34EE/34F0 dw */
 extern byte top_shot_count, shot_count, jason_count;  /* 34D1/34CF/34DB db */
 extern byte jason_msg, barrel_msg, gun_msg, cave_msg;
-extern int  diff_x, diff_y;
+extern uint diff_x, diff_y;  /* abs() results — orig compares unsigned (jbe/ja) */
 extern int  space_bar_been_up;
 extern byte zapper_count;               /* 3515 — db */
 extern m_actor far *end_door_ptr;       /* 34AC — far ptr */

@@ -15,8 +15,8 @@ $comm	macro	name,dist,size,count
 	endif
 	?debug	V 300h
 	?debug	S "tilemap.cpp"
-	?debug	C E98F0E385D0B74696C656D61702E637070
-	?debug	C E98F0E385D09726970746964652E68
+	?debug	C E9324D395D0B74696C656D61702E637070
+	?debug	C E9324D395D09726970746964652E68
 	?debug	C E9253FD45C12443A5C494E434C5544455C737464696F2E68
 	?debug	C E9263FD45C12443A5C494E434C5544455C5F646566732E68
 	?debug	C E9263FD45C13443A5C494E434C5544455C5F6E66696C652E68
@@ -1668,10 +1668,10 @@ TILEMAP_TEXT	segment byte public use16 'CODE'
 	push	word ptr [bp+12]
 	push	word ptr [bp+10]
 	call	far ptr @g_open_element$qnuc
-	add	sp,4
 	push	dx
 	push	ax
 	pop	eax
+	add	sp,4
 	cmp	eax,large -1
 	jne short	@@8
 	jmp	@16@450

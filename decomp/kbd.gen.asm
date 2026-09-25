@@ -15,8 +15,8 @@ $comm	macro	name,dist,size,count
 	endif
 	?debug	V 300h
 	?debug	S "kbd.cpp"
-	?debug	C E96E4E385D076B62642E637070
-	?debug	C E96E4E385D09726970746964652E68
+	?debug	C E95A4B395D076B62642E637070
+	?debug	C E95A4B395D09726970746964652E68
 	?debug	C E9253FD45C12443A5C494E434C5544455C737464696F2E68
 	?debug	C E9263FD45C12443A5C494E434C5544455C5F646566732E68
 	?debug	C E9263FD45C13443A5C494E434C5544455C5F6E66696C652E68
@@ -41,22 +41,6 @@ _DATA	ends
 _BSS	segment word public use16 'BSS'
 b@	label	byte
 b@w	label	word
-_BSS	ends
-_DATA	segment word public use16 'DATA'
-_gr_old_int9	label	dword
-	db	0
-	db	0
-	db	0
-	db	0
-_first_time	label	word
-	db	1
-	db	0
-_DATA	ends
-_BSS	segment word public use16 'BSS'
-_fp_kbd_head	label	dword
-	db	4 dup (?)
-_fp_kbd_tail	label	dword
-	db	4 dup (?)
 _BSS	ends
 KBD_TEXT	segment byte public use16 'CODE'
    ;	
@@ -356,10 +340,10 @@ _DATA	ends
 KBD_TEXT	segment byte public use16 'CODE'
 KBD_TEXT	ends
 	extrn	_atexit:far
-	public	_fp_kbd_tail
-	public	_fp_kbd_head
-	public	_first_time
-	public	_gr_old_int9
+	extrn	_fp_kbd_tail:dword
+	extrn	_fp_kbd_head:dword
+	extrn	_first_time:word
+	extrn	_gr_old_int9:dword
 	public	_gr_int9
 	public	_gr_inkey
 	public	_set_exit_routine

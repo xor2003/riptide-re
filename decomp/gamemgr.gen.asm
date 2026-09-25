@@ -15,8 +15,8 @@ $comm	macro	name,dist,size,count
 	endif
 	?debug	V 300h
 	?debug	S "gamemgr.cpp"
-	?debug	C E99BBA375D0B67616D656D67722E637070
-	?debug	C E99BBA375D09726970746964652E68
+	?debug	C E95A4B395D0B67616D656D67722E637070
+	?debug	C E95A4B395D09726970746964652E68
 	?debug	C E9253FD45C12443A5C494E434C5544455C737464696F2E68
 	?debug	C E9263FD45C12443A5C494E434C5544455C5F646566732E68
 	?debug	C E9263FD45C13443A5C494E434C5544455C5F6E66696C652E68
@@ -28,6 +28,7 @@ $comm	macro	name,dist,size,count
 	?debug	C E9253FD45C12443A5C494E434C5544455C636F6E696F2E68
 	?debug	C E9253FD45C12443A5C494E434C5544455C616C6C6F632E68
 	?debug	C E9263FD45C11443A5C494E434C5544455C74696D652E68
+	?debug	C E9253FD45C10443A5C494E434C5544455C6469722E68
 	?debug	C E9253FD45C10443A5C494E434C5544455C646F732E68
 GAMEMGR_TEXT	segment byte public use16 'CODE'
 GAMEMGR_TEXT	ends
@@ -230,9 +231,9 @@ GAMEMGR_TEXT	segment byte public use16 'CODE'
 	mov	word ptr [bp+8],dx
 	mov	word ptr [bp+6],ax
 	or	ax,dx
-	jne short	@@0
+	jne short	@@199
 	jmp	@4@618
-@@0:
+@@199:
 @4@86:
    ;	
    ;	    int var_4, var_2, var_6;
@@ -680,9 +681,9 @@ GAMEMGR_TEXT	segment byte public use16 'CODE'
    ;	
 	les	bx,dword ptr [bp+6]
 	cmp	byte ptr es:[bx+36],1
-	je short	@@1
+	je short	@@200
 	jmp	@6@954
-@@1:
+@@200:
    ;	
    ;	        asm cli;
    ;	
@@ -1035,9 +1036,9 @@ GAMEMGR_TEXT	segment byte public use16 'CODE'
 	mov	al,byte ptr es:[bx+57]
 	mov	ah,0
 	cmp	ax,word ptr [bp-2]
-	jne short	@@2
+	jne short	@@201
 	jmp	@11@506
-@@2:
+@@201:
    ;	
    ;	        return;
    ;	    if (sb_present != 0) {
@@ -1416,9 +1417,9 @@ GAMEMGR_TEXT	segment byte public use16 'CODE'
    ;	    if (cur_sound == 0) {
    ;	
 	cmp	dword ptr DGROUP:_cur_sound,large 0
-	je short	@@3
+	je short	@@202
 	jmp	@15@198
-@@3:
+@@202:
    ;	
    ;	        snd = get_sound(s2);
    ;	
@@ -1439,9 +1440,9 @@ GAMEMGR_TEXT	segment byte public use16 'CODE'
 	jne	short @15@114
 	les	bx,dword ptr [bp-4]
 	cmp	dword ptr es:[bx+6],large 0
-	jne short	@@4
+	jne short	@@203
 	jmp	@15@338
-@@4:
+@@203:
 @15@114:
    ;	
    ;	            cur_sound = snd;
@@ -1464,9 +1465,9 @@ GAMEMGR_TEXT	segment byte public use16 'CODE'
    ;	
 	les	bx,dword ptr [bp+6]
 	cmp	byte ptr es:[bx+6],0
-	jne short	@@5
+	jne short	@@204
 	jmp	@15@338
-@@5:
+@@204:
 @15@142:
    ;	
    ;	                play_voc((uchar far *)((gm_sound far *)cur_sound)->voc->seq);
@@ -1792,7 +1793,7 @@ GAMEMGR_TEXT	segment byte public use16 'CODE'
 	mov	bp,sp
    ;	
    ;	{
-   ;	    if ((int)field_1C != 0 && (int)sb_present != 0)
+   ;	    if (field_1C != 0 && sb_present != 0)
    ;	
 	les	bx,dword ptr [bp+6]
 	cmp	byte ptr es:[bx+28],0
@@ -2032,10 +2033,10 @@ GAMEMGR_TEXT	segment byte public use16 'CODE'
 	push	ds
 	push	offset DGROUP:__tmp
 	call	far ptr @g_open_element$qnuc
-	add	sp,4
 	push	dx
 	push	ax
 	pop	eax
+	add	sp,4
 	cmp	eax,large -1
 	jne	short @25@86
    ;	
@@ -2391,10 +2392,10 @@ GAMEMGR_TEXT	segment byte public use16 'CODE'
 	push	ds
 	push	offset DGROUP:__tmp
 	call	far ptr @g_open_element$qnuc
-	add	sp,4
 	push	dx
 	push	ax
 	pop	eax
+	add	sp,4
 	cmp	eax,large -1
 	jne	short @28@198
 	jmp	@28@618
@@ -2445,9 +2446,9 @@ GAMEMGR_TEXT	segment byte public use16 'CODE'
 	add	bx,ax
 	mov	ax,word ptr es:[bx+6]
 	or	ax,word ptr es:[bx+8]
-	jne short	@@6
+	jne short	@@205
 	jmp	@28@590
-@@6:
+@@205:
    ;	
    ;	            goto oom;
    ;	        if (g_element_read(&var_5, 1) != 1)
@@ -2579,9 +2580,9 @@ GAMEMGR_TEXT	segment byte public use16 'CODE'
 	mov	al,byte ptr es:[bx]
 	mov	ah,0
 	cmp	ax,word ptr [bp-10]
-	jle short	@@7
+	jle short	@@206
 	jmp	@28@282
-@@7:
+@@206:
    ;	
    ;	    }
    ;	    loops[field_38++] = buf;
@@ -2683,9 +2684,9 @@ GAMEMGR_TEXT	segment byte public use16 'CODE'
 	mov	al,byte ptr es:[bx+56]
 	mov	ah,0
 	cmp	ax,word ptr [bp-6]
-	jne short	@@8
+	jne short	@@207
 	jmp	@29@310
-@@8:
+@@207:
    ;	
    ;	        return;
    ;	    var_4 = var_2;

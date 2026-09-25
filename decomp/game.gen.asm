@@ -15,17 +15,20 @@ $comm	macro	name,dist,size,count
 	endif
 	?debug	V 300h
 	?debug	S "game.cpp"
-	?debug	C E94E8A375D0867616D652E637070
-	?debug	C E94E8A375D09726970746964652E68
+	?debug	C E92553395D0867616D652E637070
+	?debug	C E92553395D09726970746964652E68
 	?debug	C E9253FD45C12443A5C494E434C5544455C737464696F2E68
 	?debug	C E9263FD45C12443A5C494E434C5544455C5F646566732E68
 	?debug	C E9263FD45C13443A5C494E434C5544455C5F6E66696C652E68
 	?debug	C E9263FD45C12443A5C494E434C5544455C5F6E756C6C2E68
 	?debug	C E9263FD45C13443A5C494E434C5544455C737472696E672E68
+	?debug	C E9253FD45C0F443A5C494E434C5544455C696F2E68
+	?debug	C E9253FD45C12443A5C494E434C5544455C66636E746C2E68
 	?debug	C E9253FD45C10443A5C494E434C5544455C646F732E68
 	?debug	C E9253FD45C12443A5C494E434C5544455C636F6E696F2E68
 	?debug	C E9253FD45C12443A5C494E434C5544455C616C6C6F632E68
 	?debug	C E9263FD45C11443A5C494E434C5544455C74696D652E68
+	?debug	C E9253FD45C10443A5C494E434C5544455C6469722E68
 GAME_TEXT	segment byte public use16 'CODE'
 GAME_TEXT	ends
 DGROUP	group	_DATA,_BSS
@@ -100,9 +103,9 @@ _main	endp
    ;	    long t2, t1;
    ;	    unsigned long i;
    ;	
-   ;	    _gr_start_kbd_grab();
+   ;	    gr_start_kbd_grab();
    ;	
-	call	far ptr @_gr_start_kbd_grab$qv
+	call	far ptr _gr_start_kbd_grab
    ;	
    ;	    clrscr();
    ;	
@@ -176,9 +179,9 @@ _main	endp
    ;	    if (debug_mode == 0) {
    ;	
 	cmp	byte ptr DGROUP:_debug_mode,0
-	je short	@@14
+	je short	@@0
 	jmp	@2@422
-@@14:
+@@0:
    ;	
    ;	        if (the_game->sb_present)
    ;	
@@ -574,11 +577,11 @@ _main	endp
 @2@814:
    ;	
    ;	    }
-   ;	    _set_exit_routine(cb_quit);
+   ;	    set_exit_routine(cb_quit);
    ;	
 	push	seg @cb_quit$qv
 	push	offset @cb_quit$qv
-	call	far ptr @_set_exit_routine$qnqv$v
+	call	far ptr _set_exit_routine
 	add	sp,4
    ;	
    ;	}
@@ -586,199 +589,923 @@ _main	endp
 	leave	
 	ret	
 @init_game$qv	endp
-GAME_TEXT	ends
-_DATA	segment word public use16 'DATA'
-_all_secrets	label	byte
-	db	22
-	db	4
-	db	23
-	db	9
-_all_maps	label	word
-	dd	DGROUP:s@+251
-	dd	DGROUP:s@+257
-	dd	DGROUP:s@+263
-	dd	DGROUP:s@+265
-	db	0
-	db	0
-	db	0
-	db	0
-	dd	DGROUP:s@+277
-	dd	DGROUP:s@+283
-	dd	DGROUP:s@+289
-	dd	DGROUP:s@+295
-	db	0
-	db	0
-	db	0
-	db	0
-	dd	DGROUP:s@+308
-	dd	DGROUP:s@+314
-	dd	DGROUP:s@+320
-	dd	DGROUP:s@+326
-	db	0
-	db	0
-	db	0
-	db	0
-	dd	DGROUP:s@+338
-	dd	DGROUP:s@+344
-	dd	DGROUP:s@+350
-	dd	DGROUP:s@+356
-	db	0
-	db	0
-	db	0
-	db	0
-	dd	DGROUP:s@+365
-	dd	DGROUP:s@+371
-	dd	DGROUP:s@+377
-	dd	DGROUP:s@+385
-	db	0
-	db	0
-	db	0
-	db	0
-	dd	DGROUP:s@+402
-	dd	DGROUP:s@+408
-	dd	DGROUP:s@+414
-	dd	DGROUP:s@+418
-	db	0
-	db	0
-	db	0
-	db	0
-	dd	DGROUP:s@+429
-	dd	DGROUP:s@+435
-	dd	DGROUP:s@+441
-	dd	DGROUP:s@+445
-	dd	@bs1_start_up$qv
-	dd	DGROUP:s@+458
-	dd	DGROUP:s@+464
-	dd	DGROUP:s@+475
-	dd	DGROUP:s@+482
-	db	0
-	db	0
-	db	0
-	db	0
-	dd	DGROUP:s@+491
-	dd	DGROUP:s@+497
-	dd	DGROUP:s@+503
-	dd	DGROUP:s@+511
-	db	0
-	db	0
-	db	0
-	db	0
-	dd	DGROUP:s@+526
-	dd	DGROUP:s@+532
-	dd	DGROUP:s@+542
-	dd	DGROUP:s@+546
-	db	0
-	db	0
-	db	0
-	db	0
-	dd	DGROUP:s@+562
-	dd	DGROUP:s@+568
-	dd	DGROUP:s@+574
-	dd	DGROUP:s@+581
-	db	0
-	db	0
-	db	0
-	db	0
-	dd	DGROUP:s@+593
-	dd	DGROUP:s@+599
-	dd	DGROUP:s@+609
-	dd	DGROUP:s@+616
-	db	0
-	db	0
-	db	0
-	db	0
-	dd	DGROUP:s@+631
-	dd	DGROUP:s@+637
-	dd	DGROUP:s@+647
-	dd	DGROUP:s@+651
-	dd	@bs2_start_up$qv
-	dd	DGROUP:s@+662
-	dd	DGROUP:s@+668
-	dd	DGROUP:s@+674
-	dd	DGROUP:s@+680
-	db	0
-	db	0
-	db	0
-	db	0
-	dd	DGROUP:s@+691
-	dd	DGROUP:s@+697
-	dd	DGROUP:s@+708
-	dd	DGROUP:s@+715
-	db	0
-	db	0
-	db	0
-	db	0
-	dd	DGROUP:s@+727
-	dd	DGROUP:s@+733
-	dd	DGROUP:s@+739
-	dd	DGROUP:s@+743
-	db	0
-	db	0
-	db	0
-	db	0
-	dd	DGROUP:s@+756
-	dd	DGROUP:s@+762
-	dd	DGROUP:s@+768
-	dd	DGROUP:s@+775
-	db	0
-	db	0
-	db	0
-	db	0
-	dd	DGROUP:s@+784
-	dd	DGROUP:s@+790
-	dd	DGROUP:s@+800
-	dd	DGROUP:s@+806
-	db	0
-	db	0
-	db	0
-	db	0
-	dd	DGROUP:s@+816
-	dd	DGROUP:s@+822
-	dd	DGROUP:s@+831
-	dd	DGROUP:s@+838
-	db	0
-	db	0
-	db	0
-	db	0
-	dd	DGROUP:s@+853
-	dd	DGROUP:s@+859
-	dd	DGROUP:s@+865
-	dd	DGROUP:s@+869
-	db	0
-	db	0
-	db	0
-	db	0
-	dd	DGROUP:s@+883
-	dd	DGROUP:s@+889
-	dd	DGROUP:s@+900
-	dd	DGROUP:s@+904
-	db	0
-	db	0
-	db	0
-	db	0
-	dd	DGROUP:s@+920
-	dd	DGROUP:s@+926
-	dd	DGROUP:s@+932
-	dd	DGROUP:s@+936
-	dd	@bs3_start_up$qv
-	dd	DGROUP:s@+950
-	dd	DGROUP:s@+957
-	dd	DGROUP:s@+963
-	dd	DGROUP:s@+968
-	db	0
-	db	0
-	db	0
-	db	0
-	dd	DGROUP:s@+983
-	dd	DGROUP:s@+990
-	dd	DGROUP:s@+1000
-	dd	DGROUP:s@+1005
-	db	0
-	db	0
-	db	0
-	db	0
-_DATA	ends
-GAME_TEXT	segment byte public use16 'CODE'
+   ;	
+   ;	void far bs1_start_up(void)
+   ;	
+	assume	cs:GAME_TEXT
+@bs1_start_up$qv	proc	far
+	push	bp
+	mov	bp,sp
+   ;	
+   ;	{
+   ;	    act = the_cast->add((uchar far *)"bs1_bdl.l", mv_std, do_bs1);
+   ;	
+	push	seg @do_bs1$qn7m_actor
+	push	offset @do_bs1$qn7m_actor
+	push	seg @mv_std$qn7m_actornit2
+	push	offset @mv_std$qn7m_actornit2
+	push	ds
+	push	offset DGROUP:s@+251
+	push	word ptr DGROUP:_the_cast+2
+	push	word ptr DGROUP:_the_cast
+	call	far ptr @game_cast@add$qnucnvt2
+	add	sp,16
+	mov	word ptr DGROUP:_act+2,dx
+	mov	word ptr DGROUP:_act,ax
+   ;	
+   ;	    act->type = 1;
+   ;	
+	les	bx,dword ptr DGROUP:_act
+	mov	byte ptr es:[bx+53],1
+   ;	
+   ;	    act->direction = 1;
+   ;	
+	les	bx,dword ptr DGROUP:_act
+	mov	byte ptr es:[bx+52],1
+   ;	
+   ;	    act->target = end_door_ptr;
+   ;	
+	les	bx,dword ptr DGROUP:_act
+	mov	eax,dword ptr DGROUP:_end_door_ptr
+	mov	dword ptr es:[bx+44],eax
+   ;	
+   ;	    act->set_cycle(0, 0);
+   ;	
+	push	0
+	push	0
+	push	word ptr DGROUP:_act+2
+	push	word ptr DGROUP:_act
+	call	far ptr @m_actor@set_cycle$qucuc
+	add	sp,8
+   ;	
+   ;	    act->set_xy(0x1C4, 0x1DA);
+   ;	
+	push	474
+	push	452
+	push	word ptr DGROUP:_act+2
+	push	word ptr DGROUP:_act
+	call	far ptr @m_actor@set_xy$qii
+	add	sp,8
+   ;	
+   ;	    boss = act;
+   ;	
+	mov	eax,dword ptr DGROUP:_act
+	mov	dword ptr DGROUP:_boss,eax
+   ;	
+   ;	    enemy_count++;
+   ;	
+	inc	byte ptr DGROUP:_enemy_count
+   ;	
+   ;	}
+   ;	
+	pop	bp
+	ret	
+@bs1_start_up$qv	endp
+   ;	
+   ;	void far bs2_start_up(void)
+   ;	
+	assume	cs:GAME_TEXT
+@bs2_start_up$qv	proc	far
+	push	bp
+	mov	bp,sp
+   ;	
+   ;	{
+   ;	    smart_missiles = 1;
+   ;	
+	mov	byte ptr DGROUP:_smart_missiles,1
+   ;	
+   ;	    act = the_cast->add((uchar far *)"bs2_bod.l", mv_std, do_bs2);
+   ;	
+	push	seg @do_bs2$qn7m_actor
+	push	offset @do_bs2$qn7m_actor
+	push	seg @mv_std$qn7m_actornit2
+	push	offset @mv_std$qn7m_actornit2
+	push	ds
+	push	offset DGROUP:s@+261
+	push	word ptr DGROUP:_the_cast+2
+	push	word ptr DGROUP:_the_cast
+	call	far ptr @game_cast@add$qnucnvt2
+	add	sp,16
+	mov	word ptr DGROUP:_act+2,dx
+	mov	word ptr DGROUP:_act,ax
+   ;	
+   ;	    act->type = 1;
+   ;	
+	les	bx,dword ptr DGROUP:_act
+	mov	byte ptr es:[bx+53],1
+   ;	
+   ;	    act->x_speed = -1;
+   ;	
+	les	bx,dword ptr DGROUP:_act
+	mov	word ptr es:[bx+20],-1
+   ;	
+   ;	    act->direction = 1;
+   ;	
+	les	bx,dword ptr DGROUP:_act
+	mov	byte ptr es:[bx+52],1
+   ;	
+   ;	    act->target = end_door_ptr;
+   ;	
+	les	bx,dword ptr DGROUP:_act
+	mov	eax,dword ptr DGROUP:_end_door_ptr
+	mov	dword ptr es:[bx+44],eax
+   ;	
+   ;	    act->set_cycle(0, 0);
+   ;	
+	push	0
+	push	0
+	push	word ptr DGROUP:_act+2
+	push	word ptr DGROUP:_act
+	call	far ptr @m_actor@set_cycle$qucuc
+	add	sp,8
+   ;	
+   ;	    act->set_xy(0x1ED, 0x70);
+   ;	
+	push	112
+	push	493
+	push	word ptr DGROUP:_act+2
+	push	word ptr DGROUP:_act
+	call	far ptr @m_actor@set_xy$qii
+	add	sp,8
+   ;	
+   ;	    boss = act;
+   ;	
+	mov	eax,dword ptr DGROUP:_act
+	mov	dword ptr DGROUP:_boss,eax
+   ;	
+   ;	    enemy_count++;
+   ;	
+	inc	byte ptr DGROUP:_enemy_count
+   ;	
+   ;	
+   ;	    act = the_cast->add((uchar far *)"otiseyes.l", mv_bs2tn, do_bs2_eyes);
+   ;	
+	push	seg @do_bs2_eyes$qn7m_actor
+	push	offset @do_bs2_eyes$qn7m_actor
+	push	seg @mv_bs2tn$qn7m_actornit2
+	push	offset @mv_bs2tn$qn7m_actornit2
+	push	ds
+	push	offset DGROUP:s@+271
+	push	word ptr DGROUP:_the_cast+2
+	push	word ptr DGROUP:_the_cast
+	call	far ptr @game_cast@add$qnucnvt2
+	add	sp,16
+	mov	word ptr DGROUP:_act+2,dx
+	mov	word ptr DGROUP:_act,ax
+   ;	
+   ;	    act->direction = 1;
+   ;	
+	les	bx,dword ptr DGROUP:_act
+	mov	byte ptr es:[bx+52],1
+   ;	
+   ;	    act->target = boss;
+   ;	
+	les	bx,dword ptr DGROUP:_act
+	mov	eax,dword ptr DGROUP:_boss
+	mov	dword ptr es:[bx+44],eax
+   ;	
+   ;	    act->set_xy(0x1FB, 0x82);
+   ;	
+	push	130
+	push	507
+	push	word ptr DGROUP:_act+2
+	push	word ptr DGROUP:_act
+	call	far ptr @m_actor@set_xy$qii
+	add	sp,8
+   ;	
+   ;	    act->set_cycle(0, 0);
+   ;	
+	push	0
+	push	0
+	push	word ptr DGROUP:_act+2
+	push	word ptr DGROUP:_act
+	call	far ptr @m_actor@set_cycle$qucuc
+	add	sp,8
+   ;	
+   ;	    act->door_open = 1;
+   ;	
+	les	bx,dword ptr DGROUP:_act
+	or	byte ptr es:[bx+82],64
+   ;	
+   ;	    act->counter_24 = act->x - boss->x;
+   ;	
+	les	bx,dword ptr DGROUP:_act
+	mov	ax,word ptr es:[bx]
+	les	bx,dword ptr DGROUP:_boss
+	sub	ax,word ptr es:[bx]
+	les	bx,dword ptr DGROUP:_act
+	mov	word ptr es:[bx+34],ax
+   ;	
+   ;	    act->counter_26 = act->y - boss->y;
+   ;	
+	les	bx,dword ptr DGROUP:_act
+	mov	ax,word ptr es:[bx+2]
+	les	bx,dword ptr DGROUP:_boss
+	sub	ax,word ptr es:[bx+2]
+	les	bx,dword ptr DGROUP:_act
+	mov	word ptr es:[bx+36],ax
+   ;	
+   ;	
+   ;	    act = the_cast->add((uchar far *)"bs2_tnl2.l", mv_bs2tn, do_bs2tn);
+   ;	
+	push	seg @do_bs2tn$qn7m_actor
+	push	offset @do_bs2tn$qn7m_actor
+	push	seg @mv_bs2tn$qn7m_actornit2
+	push	offset @mv_bs2tn$qn7m_actornit2
+	push	ds
+	push	offset DGROUP:s@+282
+	push	word ptr DGROUP:_the_cast+2
+	push	word ptr DGROUP:_the_cast
+	call	far ptr @game_cast@add$qnucnvt2
+	add	sp,16
+	mov	word ptr DGROUP:_act+2,dx
+	mov	word ptr DGROUP:_act,ax
+   ;	
+   ;	    act->direction = 1;
+   ;	
+	les	bx,dword ptr DGROUP:_act
+	mov	byte ptr es:[bx+52],1
+   ;	
+   ;	    act->type = 1;
+   ;	
+	les	bx,dword ptr DGROUP:_act
+	mov	byte ptr es:[bx+53],1
+   ;	
+   ;	    act->target = boss;
+   ;	
+	les	bx,dword ptr DGROUP:_act
+	mov	eax,dword ptr DGROUP:_boss
+	mov	dword ptr es:[bx+44],eax
+   ;	
+   ;	    act->set_cycle(random(2) + 2, 1);
+   ;	
+	push	1
+	push	2
+	call	far ptr @random$qi
+	pop	cx
+	add	al,2
+	push	ax
+	push	word ptr DGROUP:_act+2
+	push	word ptr DGROUP:_act
+	call	far ptr @m_actor@set_cycle$qucuc
+	add	sp,8
+   ;	
+   ;	    act->set_xy(0x1CC, 0x90);
+   ;	
+	push	144
+	push	460
+	push	word ptr DGROUP:_act+2
+	push	word ptr DGROUP:_act
+	call	far ptr @m_actor@set_xy$qii
+	add	sp,8
+   ;	
+   ;	    act->counter_24 = act->x - boss->x;
+   ;	
+	les	bx,dword ptr DGROUP:_act
+	mov	ax,word ptr es:[bx]
+	les	bx,dword ptr DGROUP:_boss
+	sub	ax,word ptr es:[bx]
+	les	bx,dword ptr DGROUP:_act
+	mov	word ptr es:[bx+34],ax
+   ;	
+   ;	    act->counter_26 = act->y - boss->y;
+   ;	
+	les	bx,dword ptr DGROUP:_act
+	mov	ax,word ptr es:[bx+2]
+	les	bx,dword ptr DGROUP:_boss
+	sub	ax,word ptr es:[bx+2]
+	les	bx,dword ptr DGROUP:_act
+	mov	word ptr es:[bx+36],ax
+   ;	
+   ;	
+   ;	    act = the_cast->add((uchar far *)"bs2_tnr2.l", mv_bs2tn, do_bs2tn);
+   ;	
+	push	seg @do_bs2tn$qn7m_actor
+	push	offset @do_bs2tn$qn7m_actor
+	push	seg @mv_bs2tn$qn7m_actornit2
+	push	offset @mv_bs2tn$qn7m_actornit2
+	push	ds
+	push	offset DGROUP:s@+293
+	push	word ptr DGROUP:_the_cast+2
+	push	word ptr DGROUP:_the_cast
+	call	far ptr @game_cast@add$qnucnvt2
+	add	sp,16
+	mov	word ptr DGROUP:_act+2,dx
+	mov	word ptr DGROUP:_act,ax
+   ;	
+   ;	    act->direction = 1;
+   ;	
+	les	bx,dword ptr DGROUP:_act
+	mov	byte ptr es:[bx+52],1
+   ;	
+   ;	    act->type = 1;
+   ;	
+	les	bx,dword ptr DGROUP:_act
+	mov	byte ptr es:[bx+53],1
+   ;	
+   ;	    act->target = boss;
+   ;	
+	les	bx,dword ptr DGROUP:_act
+	mov	eax,dword ptr DGROUP:_boss
+	mov	dword ptr es:[bx+44],eax
+   ;	
+   ;	    act->set_cycle(random(2) + 2, 1);
+   ;	
+	push	1
+	push	2
+	call	far ptr @random$qi
+	pop	cx
+	add	al,2
+	push	ax
+	push	word ptr DGROUP:_act+2
+	push	word ptr DGROUP:_act
+	call	far ptr @m_actor@set_cycle$qucuc
+	add	sp,8
+   ;	
+   ;	    act->set_xy(0x217, 0x90);
+   ;	
+	push	144
+	push	535
+	push	word ptr DGROUP:_act+2
+	push	word ptr DGROUP:_act
+	call	far ptr @m_actor@set_xy$qii
+	add	sp,8
+   ;	
+   ;	    act->counter_24 = act->x - boss->x;
+   ;	
+	les	bx,dword ptr DGROUP:_act
+	mov	ax,word ptr es:[bx]
+	les	bx,dword ptr DGROUP:_boss
+	sub	ax,word ptr es:[bx]
+	les	bx,dword ptr DGROUP:_act
+	mov	word ptr es:[bx+34],ax
+   ;	
+   ;	    act->counter_26 = act->y - boss->y;
+   ;	
+	les	bx,dword ptr DGROUP:_act
+	mov	ax,word ptr es:[bx+2]
+	les	bx,dword ptr DGROUP:_boss
+	sub	ax,word ptr es:[bx+2]
+	les	bx,dword ptr DGROUP:_act
+	mov	word ptr es:[bx+36],ax
+   ;	
+   ;	
+   ;	    act = the_cast->add((uchar far *)"bs2_tnl1.l", mv_bs2tn, do_bs2tn);
+   ;	
+	push	seg @do_bs2tn$qn7m_actor
+	push	offset @do_bs2tn$qn7m_actor
+	push	seg @mv_bs2tn$qn7m_actornit2
+	push	offset @mv_bs2tn$qn7m_actornit2
+	push	ds
+	push	offset DGROUP:s@+304
+	push	word ptr DGROUP:_the_cast+2
+	push	word ptr DGROUP:_the_cast
+	call	far ptr @game_cast@add$qnucnvt2
+	add	sp,16
+	mov	word ptr DGROUP:_act+2,dx
+	mov	word ptr DGROUP:_act,ax
+   ;	
+   ;	    act->direction = 1;
+   ;	
+	les	bx,dword ptr DGROUP:_act
+	mov	byte ptr es:[bx+52],1
+   ;	
+   ;	    act->type = 1;
+   ;	
+	les	bx,dword ptr DGROUP:_act
+	mov	byte ptr es:[bx+53],1
+   ;	
+   ;	    act->target = boss;
+   ;	
+	les	bx,dword ptr DGROUP:_act
+	mov	eax,dword ptr DGROUP:_boss
+	mov	dword ptr es:[bx+44],eax
+   ;	
+   ;	    act->set_cycle(random(2) + 2, 1);
+   ;	
+	push	1
+	push	2
+	call	far ptr @random$qi
+	pop	cx
+	add	al,2
+	push	ax
+	push	word ptr DGROUP:_act+2
+	push	word ptr DGROUP:_act
+	call	far ptr @m_actor@set_cycle$qucuc
+	add	sp,8
+   ;	
+   ;	    act->set_xy(0x1D0, 0x94);
+   ;	
+	push	148
+	push	464
+	push	word ptr DGROUP:_act+2
+	push	word ptr DGROUP:_act
+	call	far ptr @m_actor@set_xy$qii
+	add	sp,8
+   ;	
+   ;	    act->counter_24 = act->x - boss->x;
+   ;	
+	les	bx,dword ptr DGROUP:_act
+	mov	ax,word ptr es:[bx]
+	les	bx,dword ptr DGROUP:_boss
+	sub	ax,word ptr es:[bx]
+	les	bx,dword ptr DGROUP:_act
+	mov	word ptr es:[bx+34],ax
+   ;	
+   ;	    act->counter_26 = act->y - boss->y;
+   ;	
+	les	bx,dword ptr DGROUP:_act
+	mov	ax,word ptr es:[bx+2]
+	les	bx,dword ptr DGROUP:_boss
+	sub	ax,word ptr es:[bx+2]
+	les	bx,dword ptr DGROUP:_act
+	mov	word ptr es:[bx+36],ax
+   ;	
+   ;	
+   ;	    act = the_cast->add((uchar far *)"bs2_tnr1.l", mv_bs2tn, do_bs2tn);
+   ;	
+	push	seg @do_bs2tn$qn7m_actor
+	push	offset @do_bs2tn$qn7m_actor
+	push	seg @mv_bs2tn$qn7m_actornit2
+	push	offset @mv_bs2tn$qn7m_actornit2
+	push	ds
+	push	offset DGROUP:s@+315
+	push	word ptr DGROUP:_the_cast+2
+	push	word ptr DGROUP:_the_cast
+	call	far ptr @game_cast@add$qnucnvt2
+	add	sp,16
+	mov	word ptr DGROUP:_act+2,dx
+	mov	word ptr DGROUP:_act,ax
+   ;	
+   ;	    act->direction = 1;
+   ;	
+	les	bx,dword ptr DGROUP:_act
+	mov	byte ptr es:[bx+52],1
+   ;	
+   ;	    act->type = 1;
+   ;	
+	les	bx,dword ptr DGROUP:_act
+	mov	byte ptr es:[bx+53],1
+   ;	
+   ;	    act->target = boss;
+   ;	
+	les	bx,dword ptr DGROUP:_act
+	mov	eax,dword ptr DGROUP:_boss
+	mov	dword ptr es:[bx+44],eax
+   ;	
+   ;	    act->set_cycle(random(2) + 2, 1);
+   ;	
+	push	1
+	push	2
+	call	far ptr @random$qi
+	pop	cx
+	add	al,2
+	push	ax
+	push	word ptr DGROUP:_act+2
+	push	word ptr DGROUP:_act
+	call	far ptr @m_actor@set_cycle$qucuc
+	add	sp,8
+   ;	
+   ;	    act->set_xy(0x213, 0x94);
+   ;	
+	push	148
+	push	531
+	push	word ptr DGROUP:_act+2
+	push	word ptr DGROUP:_act
+	call	far ptr @m_actor@set_xy$qii
+	add	sp,8
+   ;	
+   ;	    act->counter_24 = act->x - boss->x;
+   ;	
+	les	bx,dword ptr DGROUP:_act
+	mov	ax,word ptr es:[bx]
+	les	bx,dword ptr DGROUP:_boss
+	sub	ax,word ptr es:[bx]
+	les	bx,dword ptr DGROUP:_act
+	mov	word ptr es:[bx+34],ax
+   ;	
+   ;	    act->counter_26 = act->y - boss->y;
+   ;	
+	les	bx,dword ptr DGROUP:_act
+	mov	ax,word ptr es:[bx+2]
+	les	bx,dword ptr DGROUP:_boss
+	sub	ax,word ptr es:[bx+2]
+	les	bx,dword ptr DGROUP:_act
+	mov	word ptr es:[bx+36],ax
+   ;	
+   ;	}
+   ;	
+	pop	bp
+	ret	
+@bs2_start_up$qv	endp
+   ;	
+   ;	void far bs3_start_up(void)
+   ;	
+	assume	cs:GAME_TEXT
+@bs3_start_up$qv	proc	far
+	push	bp
+	mov	bp,sp
+   ;	
+   ;	{
+   ;	    smart_missiles = 1;
+   ;	
+	mov	byte ptr DGROUP:_smart_missiles,1
+   ;	
+   ;	    act = the_cast->add((uchar far *)"bs3_bdl.l", mv_std, do_bs3);
+   ;	
+	push	seg @do_bs3$qn7m_actor
+	push	offset @do_bs3$qn7m_actor
+	push	seg @mv_std$qn7m_actornit2
+	push	offset @mv_std$qn7m_actornit2
+	push	ds
+	push	offset DGROUP:s@+326
+	push	word ptr DGROUP:_the_cast+2
+	push	word ptr DGROUP:_the_cast
+	call	far ptr @game_cast@add$qnucnvt2
+	add	sp,16
+	mov	word ptr DGROUP:_act+2,dx
+	mov	word ptr DGROUP:_act,ax
+   ;	
+   ;	    act->x_speed = -2;
+   ;	
+	les	bx,dword ptr DGROUP:_act
+	mov	word ptr es:[bx+20],-2
+   ;	
+   ;	    act->type = 1;
+   ;	
+	les	bx,dword ptr DGROUP:_act
+	mov	byte ptr es:[bx+53],1
+   ;	
+   ;	    act->direction = 1;
+   ;	
+	les	bx,dword ptr DGROUP:_act
+	mov	byte ptr es:[bx+52],1
+   ;	
+   ;	    act->linked = end_door_ptr;
+   ;	
+	les	bx,dword ptr DGROUP:_act
+	mov	eax,dword ptr DGROUP:_end_door_ptr
+	mov	dword ptr es:[bx+48],eax
+   ;	
+   ;	    act->set_xy(0x193, 0x65);
+   ;	
+	push	101
+	push	403
+	push	word ptr DGROUP:_act+2
+	push	word ptr DGROUP:_act
+	call	far ptr @m_actor@set_xy$qii
+	add	sp,8
+   ;	
+   ;	    act->health = 1;
+   ;	
+	les	bx,dword ptr DGROUP:_act
+	mov	word ptr es:[bx+38],1
+   ;	
+   ;	    boss = act;
+   ;	
+	mov	eax,dword ptr DGROUP:_act
+	mov	dword ptr DGROUP:_boss,eax
+   ;	
+   ;	    enemy_count++;
+   ;	
+	inc	byte ptr DGROUP:_enemy_count
+   ;	
+   ;	
+   ;	    act = the_cast->add((uchar far *)"bs3_arr.l", mv_bs2tn, do_bs3a);
+   ;	
+	push	seg @do_bs3a$qn7m_actor
+	push	offset @do_bs3a$qn7m_actor
+	push	seg @mv_bs2tn$qn7m_actornit2
+	push	offset @mv_bs2tn$qn7m_actornit2
+	push	ds
+	push	offset DGROUP:s@+336
+	push	word ptr DGROUP:_the_cast+2
+	push	word ptr DGROUP:_the_cast
+	call	far ptr @game_cast@add$qnucnvt2
+	add	sp,16
+	mov	word ptr DGROUP:_act+2,dx
+	mov	word ptr DGROUP:_act,ax
+   ;	
+   ;	    act->type = 1;
+   ;	
+	les	bx,dword ptr DGROUP:_act
+	mov	byte ptr es:[bx+53],1
+   ;	
+   ;	    act->direction = 1;
+   ;	
+	les	bx,dword ptr DGROUP:_act
+	mov	byte ptr es:[bx+52],1
+   ;	
+   ;	    act->target = boss;
+   ;	
+	les	bx,dword ptr DGROUP:_act
+	mov	eax,dword ptr DGROUP:_boss
+	mov	dword ptr es:[bx+44],eax
+   ;	
+   ;	    act->set_xy(0x1A4, 0x8A);
+   ;	
+	push	138
+	push	420
+	push	word ptr DGROUP:_act+2
+	push	word ptr DGROUP:_act
+	call	far ptr @m_actor@set_xy$qii
+	add	sp,8
+   ;	
+   ;	    act->set_cycle(0, 0);
+   ;	
+	push	0
+	push	0
+	push	word ptr DGROUP:_act+2
+	push	word ptr DGROUP:_act
+	call	far ptr @m_actor@set_cycle$qucuc
+	add	sp,8
+   ;	
+   ;	    act->counter_24 = act->x - boss->x;
+   ;	
+	les	bx,dword ptr DGROUP:_act
+	mov	ax,word ptr es:[bx]
+	les	bx,dword ptr DGROUP:_boss
+	sub	ax,word ptr es:[bx]
+	les	bx,dword ptr DGROUP:_act
+	mov	word ptr es:[bx+34],ax
+   ;	
+   ;	    act->counter_26 = act->y - boss->y;
+   ;	
+	les	bx,dword ptr DGROUP:_act
+	mov	ax,word ptr es:[bx+2]
+	les	bx,dword ptr DGROUP:_boss
+	sub	ax,word ptr es:[bx+2]
+	les	bx,dword ptr DGROUP:_act
+	mov	word ptr es:[bx+36],ax
+   ;	
+   ;	    act->health = boss->width - act->counter_24 - act->width - 13;
+   ;	
+	les	bx,dword ptr DGROUP:_boss
+	mov	ax,word ptr es:[bx+16]
+	les	bx,dword ptr DGROUP:_act
+	sub	ax,word ptr es:[bx+34]
+	les	bx,dword ptr DGROUP:_act
+	sub	ax,word ptr es:[bx+16]
+	add	ax,-13
+	les	bx,dword ptr DGROUP:_act
+	mov	word ptr es:[bx+38],ax
+   ;	
+   ;	    boss->target = act;
+   ;	
+	les	bx,dword ptr DGROUP:_boss
+	mov	eax,dword ptr DGROUP:_act
+	mov	dword ptr es:[bx+44],eax
+   ;	
+   ;	    act->new_loop((uchar far *)"bs3_arl.l");
+   ;	
+	push	ds
+	push	offset DGROUP:s@+346
+	push	word ptr DGROUP:_act+2
+	push	word ptr DGROUP:_act
+	call	far ptr @m_actor@new_loop$qnuc
+	add	sp,8
+   ;	
+   ;	
+   ;	    act = the_cast->add((uchar far *)"bs3_prpr.l", mv_bs2tn, do_bs3_prop);
+   ;	
+	push	seg @do_bs3_prop$qn7m_actor
+	push	offset @do_bs3_prop$qn7m_actor
+	push	seg @mv_bs2tn$qn7m_actornit2
+	push	offset @mv_bs2tn$qn7m_actornit2
+	push	ds
+	push	offset DGROUP:s@+356
+	push	word ptr DGROUP:_the_cast+2
+	push	word ptr DGROUP:_the_cast
+	call	far ptr @game_cast@add$qnucnvt2
+	add	sp,16
+	mov	word ptr DGROUP:_act+2,dx
+	mov	word ptr DGROUP:_act,ax
+   ;	
+   ;	    act->direction = 1;
+   ;	
+	les	bx,dword ptr DGROUP:_act
+	mov	byte ptr es:[bx+52],1
+   ;	
+   ;	    act->target = boss;
+   ;	
+	les	bx,dword ptr DGROUP:_act
+	mov	eax,dword ptr DGROUP:_boss
+	mov	dword ptr es:[bx+44],eax
+   ;	
+   ;	    act->set_xy(0x1E8, 0x7D);
+   ;	
+	push	125
+	push	488
+	push	word ptr DGROUP:_act+2
+	push	word ptr DGROUP:_act
+	call	far ptr @m_actor@set_xy$qii
+	add	sp,8
+   ;	
+   ;	    act->set_cycle(1, 1);
+   ;	
+	push	1
+	push	1
+	push	word ptr DGROUP:_act+2
+	push	word ptr DGROUP:_act
+	call	far ptr @m_actor@set_cycle$qucuc
+	add	sp,8
+   ;	
+   ;	    act->counter_24 = act->x - boss->x;
+   ;	
+	les	bx,dword ptr DGROUP:_act
+	mov	ax,word ptr es:[bx]
+	les	bx,dword ptr DGROUP:_boss
+	sub	ax,word ptr es:[bx]
+	les	bx,dword ptr DGROUP:_act
+	mov	word ptr es:[bx+34],ax
+   ;	
+   ;	    act->counter_26 = act->y - boss->y;
+   ;	
+	les	bx,dword ptr DGROUP:_act
+	mov	ax,word ptr es:[bx+2]
+	les	bx,dword ptr DGROUP:_boss
+	sub	ax,word ptr es:[bx+2]
+	les	bx,dword ptr DGROUP:_act
+	mov	word ptr es:[bx+36],ax
+   ;	
+   ;	    act->health = boss->width - act->counter_24 - act->width - 13;
+   ;	
+	les	bx,dword ptr DGROUP:_boss
+	mov	ax,word ptr es:[bx+16]
+	les	bx,dword ptr DGROUP:_act
+	sub	ax,word ptr es:[bx+34]
+	les	bx,dword ptr DGROUP:_act
+	sub	ax,word ptr es:[bx+16]
+	add	ax,-13
+	les	bx,dword ptr DGROUP:_act
+	mov	word ptr es:[bx+38],ax
+   ;	
+   ;	    act->new_loop((uchar far *)"bs3_prpl.l");
+   ;	
+	push	ds
+	push	offset DGROUP:s@+367
+	push	word ptr DGROUP:_act+2
+	push	word ptr DGROUP:_act
+	call	far ptr @m_actor@new_loop$qnuc
+	add	sp,8
+   ;	
+   ;	
+   ;	    act = the_cast->add((uchar far *)"bs3_facr.l", mv_bs2tn, do_bs3_face);
+   ;	
+	push	seg @do_bs3_face$qn7m_actor
+	push	offset @do_bs3_face$qn7m_actor
+	push	seg @mv_bs2tn$qn7m_actornit2
+	push	offset @mv_bs2tn$qn7m_actornit2
+	push	ds
+	push	offset DGROUP:s@+378
+	push	word ptr DGROUP:_the_cast+2
+	push	word ptr DGROUP:_the_cast
+	call	far ptr @game_cast@add$qnucnvt2
+	add	sp,16
+	mov	word ptr DGROUP:_act+2,dx
+	mov	word ptr DGROUP:_act,ax
+   ;	
+   ;	    act->direction = 1;
+   ;	
+	les	bx,dword ptr DGROUP:_act
+	mov	byte ptr es:[bx+52],1
+   ;	
+   ;	    act->target = boss;
+   ;	
+	les	bx,dword ptr DGROUP:_act
+	mov	eax,dword ptr DGROUP:_boss
+	mov	dword ptr es:[bx+44],eax
+   ;	
+   ;	    act->set_xy(0x1A9, 0x6B);
+   ;	
+	push	107
+	push	425
+	push	word ptr DGROUP:_act+2
+	push	word ptr DGROUP:_act
+	call	far ptr @m_actor@set_xy$qii
+	add	sp,8
+   ;	
+   ;	    act->set_cycle(0xF, 0xA);
+   ;	
+	push	10
+	push	15
+	push	word ptr DGROUP:_act+2
+	push	word ptr DGROUP:_act
+	call	far ptr @m_actor@set_cycle$qucuc
+	add	sp,8
+   ;	
+   ;	    act->counter_24 = act->x - boss->x;
+   ;	
+	les	bx,dword ptr DGROUP:_act
+	mov	ax,word ptr es:[bx]
+	les	bx,dword ptr DGROUP:_boss
+	sub	ax,word ptr es:[bx]
+	les	bx,dword ptr DGROUP:_act
+	mov	word ptr es:[bx+34],ax
+   ;	
+   ;	    act->counter_26 = act->y - boss->y;
+   ;	
+	les	bx,dword ptr DGROUP:_act
+	mov	ax,word ptr es:[bx+2]
+	les	bx,dword ptr DGROUP:_boss
+	sub	ax,word ptr es:[bx+2]
+	les	bx,dword ptr DGROUP:_act
+	mov	word ptr es:[bx+36],ax
+   ;	
+   ;	    act->health = boss->width - act->counter_24 - act->width - 13;
+   ;	
+	les	bx,dword ptr DGROUP:_boss
+	mov	ax,word ptr es:[bx+16]
+	les	bx,dword ptr DGROUP:_act
+	sub	ax,word ptr es:[bx+34]
+	les	bx,dword ptr DGROUP:_act
+	sub	ax,word ptr es:[bx+16]
+	add	ax,-13
+	les	bx,dword ptr DGROUP:_act
+	mov	word ptr es:[bx+38],ax
+   ;	
+   ;	    act->new_loop((uchar far *)"bs3_facl.l");
+   ;	
+	push	ds
+	push	offset DGROUP:s@+389
+	push	word ptr DGROUP:_act+2
+	push	word ptr DGROUP:_act
+	call	far ptr @m_actor@new_loop$qnuc
+	add	sp,8
+   ;	
+   ;	}
+   ;	
+	pop	bp
+	ret	
+@bs3_start_up$qv	endp
+   ;	
+   ;	uchar far de_left(void)  { the_game->doit(); return byte_2D3F6 | the_game->field_29; }
+   ;	
+	assume	cs:GAME_TEXT
+@de_left$qv	proc	far
+	push	bp
+	mov	bp,sp
+	push	word ptr DGROUP:_the_game+2
+	push	word ptr DGROUP:_the_game
+	call	far ptr @game_manager@doit$qv
+	add	sp,4
+	les	bx,dword ptr DGROUP:_the_game
+	mov	al,byte ptr DGROUP:_byte_2D3F6
+	or	al,byte ptr es:[bx+41]
+	pop	bp
+	ret	
+@de_left$qv	endp
+   ;	
+   ;	uchar far de_right(void) { the_game->doit(); return byte_2D3F8 | the_game->field_2A; }
+   ;	
+	assume	cs:GAME_TEXT
+@de_right$qv	proc	far
+	push	bp
+	mov	bp,sp
+	push	word ptr DGROUP:_the_game+2
+	push	word ptr DGROUP:_the_game
+	call	far ptr @game_manager@doit$qv
+	add	sp,4
+	les	bx,dword ptr DGROUP:_the_game
+	mov	al,byte ptr DGROUP:_byte_2D3F8
+	or	al,byte ptr es:[bx+42]
+	pop	bp
+	ret	
+@de_right$qv	endp
+   ;	
+   ;	uchar far de_up(void)    { the_game->doit(); return byte_2D3F3 | the_game->field_27; }
+   ;	
+	assume	cs:GAME_TEXT
+@de_up$qv	proc	far
+	push	bp
+	mov	bp,sp
+	push	word ptr DGROUP:_the_game+2
+	push	word ptr DGROUP:_the_game
+	call	far ptr @game_manager@doit$qv
+	add	sp,4
+	les	bx,dword ptr DGROUP:_the_game
+	mov	al,byte ptr DGROUP:_byte_2D3F3
+	or	al,byte ptr es:[bx+39]
+	pop	bp
+	ret	
+@de_up$qv	endp
+   ;	
+   ;	uchar far de_down(void)  { the_game->doit(); return byte_2D3FB | the_game->field_28; }
+   ;	
+	assume	cs:GAME_TEXT
+@de_down$qv	proc	far
+	push	bp
+	mov	bp,sp
+	push	word ptr DGROUP:_the_game+2
+	push	word ptr DGROUP:_the_game
+	call	far ptr @game_manager@doit$qv
+	add	sp,4
+	les	bx,dword ptr DGROUP:_the_game
+	mov	al,byte ptr DGROUP:_byte_2D3FB
+	or	al,byte ptr es:[bx+40]
+	pop	bp
+	ret	
+@de_down$qv	endp
    ;	
    ;	void play_game(uchar map_id)
    ;	
@@ -802,7 +1529,7 @@ GAME_TEXT	segment byte public use16 'CODE'
 	push	0
 	push	0
 	push	ds
-	push	offset DGROUP:s@+1012
+	push	offset DGROUP:s@+400
 	push	word ptr DGROUP:_display+2
 	push	word ptr DGROUP:_display
 	call	far ptr @vga_display@show_pcx$qnucucuii
@@ -842,7 +1569,7 @@ GAME_TEXT	segment byte public use16 'CODE'
 	push	word ptr DGROUP:_display
 	call	far ptr @vga_display@copy_page$qucuc
 	add	sp,8
-@3@58:
+@10@58:
    ;	
    ;	
    ;	restart_map:                                        /* loc_6596 */
@@ -850,7 +1577,7 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	
 	mov	al,byte ptr [bp+6]
 	mov	byte ptr DGROUP:_cur_map,al
-@3@86:
+@10@86:
    ;	
    ;	reset_game:                                         /* loc_659C */
    ;	    game_in_progress = 1;
@@ -910,7 +1637,7 @@ GAME_TEXT	segment byte public use16 'CODE'
 	push	word ptr DGROUP:_the_game
 	call	far ptr @game_manager@clear_flags$qv
 	add	sp,4
-@3@114:
+@10@114:
    ;	
    ;	
    ;	    do {                                            /* loc_6C4A -> loc_65F3 */
@@ -927,7 +1654,7 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	        show_prelude();
    ;	
 	call	far ptr @show_prelude$qv
-@3@142:
+@10@142:
    ;	
    ;	replay:                                             /* loc_660A */
    ;	        the_game->play_song(all_maps[cur_map].song);
@@ -950,28 +1677,28 @@ GAME_TEXT	segment byte public use16 'CODE'
 	add	ax,-4
 	mov	bx,ax
 	cmp	bx,19
-	jbe short	@@15
-	jmp	@3@562
-@@15:
+	jbe short	@@1
+	jmp	@10@562
+@@1:
 	shl	bx,1
-	jmp	word ptr cs:@3@C1890[bx]
-@3@254:
+	jmp	word ptr cs:@10@C1890[bx]
+@10@254:
    ;	
    ;	        case 2:                                     /* cur_map=6 bs1.m */
    ;	            if (jason_present == 1)
    ;	
 	cmp	byte ptr DGROUP:_jason_present,1
-	jne	short @3@310
+	jne	short @10@310
    ;	
    ;	                jason_present = 0;
    ;	
 	mov	byte ptr DGROUP:_jason_present,0
-@3@310:
+@10@310:
    ;	
    ;	            the_game->load_loop((uchar far *)"bs1_bdl.l");
    ;	
 	push	ds
-	push	offset DGROUP:s@+1024
+	push	offset DGROUP:s@+412
 	push	word ptr DGROUP:_the_game+2
 	push	word ptr DGROUP:_the_game
 	call	far ptr @game_manager@load_loop$qnuc
@@ -980,7 +1707,7 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	            the_game->load_loop((uchar far *)"bs1_bdr.l");
    ;	
 	push	ds
-	push	offset DGROUP:s@+1034
+	push	offset DGROUP:s@+422
 	push	word ptr DGROUP:_the_game+2
 	push	word ptr DGROUP:_the_game
 	call	far ptr @game_manager@load_loop$qnuc
@@ -989,7 +1716,7 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	            the_game->load_loop((uchar far *)"bs1dr.l");
    ;	
 	push	ds
-	push	offset DGROUP:s@+1044
+	push	offset DGROUP:s@+432
 	push	word ptr DGROUP:_the_game+2
 	push	word ptr DGROUP:_the_game
 	call	far ptr @game_manager@load_loop$qnuc
@@ -998,7 +1725,7 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	            the_game->load_loop((uchar far *)"bosshit.l");
    ;	
 	push	ds
-	push	offset DGROUP:s@+1052
+	push	offset DGROUP:s@+440
 	push	word ptr DGROUP:_the_game+2
 	push	word ptr DGROUP:_the_game
 	call	far ptr @game_manager@load_loop$qnuc
@@ -1008,8 +1735,8 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	
 	push	0
 	push	ds
-	push	offset DGROUP:s@+1062
-@3@338:
+	push	offset DGROUP:s@+450
+@10@338:
 	push	word ptr DGROUP:_the_game+2
 	push	word ptr DGROUP:_the_game
 	call	far ptr @game_manager@define_sound$qnucuc
@@ -1017,24 +1744,24 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	
    ;	            break;
    ;	
-	jmp	@3@562
-@3@366:
+	jmp	@10@562
+@10@366:
    ;	
    ;	        case 8:                                     /* cur_map=12 bs2.m */
    ;	            if (jason_present == 1)
    ;	
 	cmp	byte ptr DGROUP:_jason_present,1
-	jne	short @3@422
+	jne	short @10@422
    ;	
    ;	                jason_present = 0;
    ;	
 	mov	byte ptr DGROUP:_jason_present,0
-@3@422:
+@10@422:
    ;	
    ;	            the_game->load_loop((uchar far *)"bs2_bod.l");
    ;	
 	push	ds
-	push	offset DGROUP:s@+1071
+	push	offset DGROUP:s@+459
 	push	word ptr DGROUP:_the_game+2
 	push	word ptr DGROUP:_the_game
 	call	far ptr @game_manager@load_loop$qnuc
@@ -1043,7 +1770,7 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	            the_game->load_loop((uchar far *)"bs2_tnr1.l");
    ;	
 	push	ds
-	push	offset DGROUP:s@+1081
+	push	offset DGROUP:s@+469
 	push	word ptr DGROUP:_the_game+2
 	push	word ptr DGROUP:_the_game
 	call	far ptr @game_manager@load_loop$qnuc
@@ -1052,7 +1779,7 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	            the_game->load_loop((uchar far *)"bs2_tnl1.l");
    ;	
 	push	ds
-	push	offset DGROUP:s@+1092
+	push	offset DGROUP:s@+480
 	push	word ptr DGROUP:_the_game+2
 	push	word ptr DGROUP:_the_game
 	call	far ptr @game_manager@load_loop$qnuc
@@ -1061,7 +1788,7 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	            the_game->load_loop((uchar far *)"bs2_tnr2.l");
    ;	
 	push	ds
-	push	offset DGROUP:s@+1103
+	push	offset DGROUP:s@+491
 	push	word ptr DGROUP:_the_game+2
 	push	word ptr DGROUP:_the_game
 	call	far ptr @game_manager@load_loop$qnuc
@@ -1070,7 +1797,7 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	            the_game->load_loop((uchar far *)"bs2_tnl2.l");
    ;	
 	push	ds
-	push	offset DGROUP:s@+1114
+	push	offset DGROUP:s@+502
 	push	word ptr DGROUP:_the_game+2
 	push	word ptr DGROUP:_the_game
 	call	far ptr @game_manager@load_loop$qnuc
@@ -1079,7 +1806,7 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	            the_game->load_loop((uchar far *)"msl_inkl.l");
    ;	
 	push	ds
-	push	offset DGROUP:s@+1125
+	push	offset DGROUP:s@+513
 	push	word ptr DGROUP:_the_game+2
 	push	word ptr DGROUP:_the_game
 	call	far ptr @game_manager@load_loop$qnuc
@@ -1088,7 +1815,7 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	            the_game->load_loop((uchar far *)"msl_inkr.l");
    ;	
 	push	ds
-	push	offset DGROUP:s@+1136
+	push	offset DGROUP:s@+524
 	push	word ptr DGROUP:_the_game+2
 	push	word ptr DGROUP:_the_game
 	call	far ptr @game_manager@load_loop$qnuc
@@ -1097,7 +1824,7 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	            the_game->load_loop((uchar far *)"otiseyes.l");
    ;	
 	push	ds
-	push	offset DGROUP:s@+1147
+	push	offset DGROUP:s@+535
 	push	word ptr DGROUP:_the_game+2
 	push	word ptr DGROUP:_the_game
 	call	far ptr @game_manager@load_loop$qnuc
@@ -1105,24 +1832,24 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	
    ;	            break;
    ;	
-	jmp	@3@562
-@3@450:
+	jmp	@10@562
+@10@450:
    ;	
    ;	        case 17:                                    /* cur_map=21 bs3.m */
    ;	            if (jason_present == 1)
    ;	
 	cmp	byte ptr DGROUP:_jason_present,1
-	jne	short @3@506
+	jne	short @10@506
    ;	
    ;	                jason_present = 0;
    ;	
 	mov	byte ptr DGROUP:_jason_present,0
-@3@506:
+@10@506:
    ;	
    ;	            the_game->load_loop((uchar far *)"bs3_bdr.l");
    ;	
 	push	ds
-	push	offset DGROUP:s@+1158
+	push	offset DGROUP:s@+546
 	push	word ptr DGROUP:_the_game+2
 	push	word ptr DGROUP:_the_game
 	call	far ptr @game_manager@load_loop$qnuc
@@ -1131,7 +1858,7 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	            the_game->load_loop((uchar far *)"bs3_arr.l");
    ;	
 	push	ds
-	push	offset DGROUP:s@+1168
+	push	offset DGROUP:s@+556
 	push	word ptr DGROUP:_the_game+2
 	push	word ptr DGROUP:_the_game
 	call	far ptr @game_manager@load_loop$qnuc
@@ -1140,7 +1867,7 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	            the_game->load_loop((uchar far *)"bs3_bdl.l");
    ;	
 	push	ds
-	push	offset DGROUP:s@+1178
+	push	offset DGROUP:s@+566
 	push	word ptr DGROUP:_the_game+2
 	push	word ptr DGROUP:_the_game
 	call	far ptr @game_manager@load_loop$qnuc
@@ -1149,7 +1876,7 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	            the_game->load_loop((uchar far *)"bs3_arl.l");
    ;	
 	push	ds
-	push	offset DGROUP:s@+1188
+	push	offset DGROUP:s@+576
 	push	word ptr DGROUP:_the_game+2
 	push	word ptr DGROUP:_the_game
 	call	far ptr @game_manager@load_loop$qnuc
@@ -1158,7 +1885,7 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	            the_game->load_loop((uchar far *)"bs3_dthr.l");
    ;	
 	push	ds
-	push	offset DGROUP:s@+1198
+	push	offset DGROUP:s@+586
 	push	word ptr DGROUP:_the_game+2
 	push	word ptr DGROUP:_the_game
 	call	far ptr @game_manager@load_loop$qnuc
@@ -1167,7 +1894,7 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	            the_game->load_loop((uchar far *)"bs3_prpl.l");
    ;	
 	push	ds
-	push	offset DGROUP:s@+1209
+	push	offset DGROUP:s@+597
 	push	word ptr DGROUP:_the_game+2
 	push	word ptr DGROUP:_the_game
 	call	far ptr @game_manager@load_loop$qnuc
@@ -1176,7 +1903,7 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	            the_game->load_loop((uchar far *)"bs3_prpr.l");
    ;	
 	push	ds
-	push	offset DGROUP:s@+1220
+	push	offset DGROUP:s@+608
 	push	word ptr DGROUP:_the_game+2
 	push	word ptr DGROUP:_the_game
 	call	far ptr @game_manager@load_loop$qnuc
@@ -1185,7 +1912,7 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	            the_game->load_loop((uchar far *)"bs3_facl.l");
    ;	
 	push	ds
-	push	offset DGROUP:s@+1231
+	push	offset DGROUP:s@+619
 	push	word ptr DGROUP:_the_game+2
 	push	word ptr DGROUP:_the_game
 	call	far ptr @game_manager@load_loop$qnuc
@@ -1194,7 +1921,7 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	            the_game->load_loop((uchar far *)"bs3_facr.l");
    ;	
 	push	ds
-	push	offset DGROUP:s@+1242
+	push	offset DGROUP:s@+630
 	push	word ptr DGROUP:_the_game+2
 	push	word ptr DGROUP:_the_game
 	call	far ptr @game_manager@load_loop$qnuc
@@ -1203,7 +1930,7 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	            the_game->load_loop((uchar far *)"chain.l");
    ;	
 	push	ds
-	push	offset DGROUP:s@+1253
+	push	offset DGROUP:s@+641
 	push	word ptr DGROUP:_the_game+2
 	push	word ptr DGROUP:_the_game
 	call	far ptr @game_manager@load_loop$qnuc
@@ -1212,7 +1939,7 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	            the_game->load_loop((uchar far *)"exp3.l");
    ;	
 	push	ds
-	push	offset DGROUP:s@+1261
+	push	offset DGROUP:s@+649
 	push	word ptr DGROUP:_the_game+2
 	push	word ptr DGROUP:_the_game
 	call	far ptr @game_manager@load_loop$qnuc
@@ -1222,9 +1949,9 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	
 	push	0
 	push	ds
-	push	offset DGROUP:s@+1268
-	jmp	@3@338
-@3@534:
+	push	offset DGROUP:s@+656
+	jmp	@10@338
+@10@534:
    ;	
    ;	            break;
    ;	        case 0:  case 3:  case 6:  case 10: case 11:/* shark levels */
@@ -1232,7 +1959,7 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	            the_game->load_loop((uchar far *)"sharkr.l");
    ;	
 	push	ds
-	push	offset DGROUP:s@+1275
+	push	offset DGROUP:s@+663
 	push	word ptr DGROUP:_the_game+2
 	push	word ptr DGROUP:_the_game
 	call	far ptr @game_manager@load_loop$qnuc
@@ -1241,7 +1968,7 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	            the_game->load_loop((uchar far *)"sharkl.l");
    ;	
 	push	ds
-	push	offset DGROUP:s@+1284
+	push	offset DGROUP:s@+672
 	push	word ptr DGROUP:_the_game+2
 	push	word ptr DGROUP:_the_game
 	call	far ptr @game_manager@load_loop$qnuc
@@ -1250,7 +1977,7 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	            the_game->load_loop((uchar far *)"sharkdie.l");
    ;	
 	push	ds
-	push	offset DGROUP:s@+1293
+	push	offset DGROUP:s@+681
 	push	word ptr DGROUP:_the_game+2
 	push	word ptr DGROUP:_the_game
 	call	far ptr @game_manager@load_loop$qnuc
@@ -1258,8 +1985,8 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	
    ;	            break;
    ;	
-	jmp	short @3@562
-@3@562:
+	jmp	short @10@562
+@10@562:
    ;	
    ;	        default:
    ;	            break;
@@ -1286,7 +2013,7 @@ GAME_TEXT	segment byte public use16 'CODE'
 	mov	bx,ax
 	mov	ax,word ptr DGROUP:_all_maps[bx+16]
 	or	ax,word ptr DGROUP:_all_maps[bx+18]
-	je	short @3@618
+	je	short @10@618
    ;	
    ;	            all_maps[cur_map].start_up();
    ;	
@@ -1295,7 +2022,7 @@ GAME_TEXT	segment byte public use16 'CODE'
 	imul	ax,ax,20
 	mov	bx,ax
 	call	dword ptr DGROUP:_all_maps[bx+16]
-@3@618:
+@10@618:
    ;	
    ;	
    ;	        do {
@@ -1306,7 +2033,7 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	        } while (stop_room == 0);
    ;	
 	cmp	byte ptr DGROUP:_stop_room,0
-	je	short @3@618
+	je	short @10@618
    ;	
    ;	
    ;	        switch (cur_map - 4) {                      /* jumptable off_6C92 */
@@ -1316,18 +2043,18 @@ GAME_TEXT	segment byte public use16 'CODE'
 	add	ax,-4
 	mov	bx,ax
 	cmp	bx,19
-	jbe short	@@16
-	jmp	@3@870
-@@16:
+	jbe short	@@2
+	jmp	@10@870
+@@2:
 	shl	bx,1
-	jmp	word ptr cs:@3@C1794[bx]
-@3@758:
+	jmp	word ptr cs:@10@C1794[bx]
+@10@758:
    ;	
    ;	        case 2:                                     /* bs1 */
    ;	            the_game->remove_loop((uchar far *)"bs1_bdl.l");
    ;	
 	push	ds
-	push	offset DGROUP:s@+1304
+	push	offset DGROUP:s@+692
 	push	word ptr DGROUP:_the_game+2
 	push	word ptr DGROUP:_the_game
 	call	far ptr @game_manager@remove_loop$qnuc
@@ -1336,7 +2063,7 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	            the_game->remove_loop((uchar far *)"bs1_bdr.l");
    ;	
 	push	ds
-	push	offset DGROUP:s@+1314
+	push	offset DGROUP:s@+702
 	push	word ptr DGROUP:_the_game+2
 	push	word ptr DGROUP:_the_game
 	call	far ptr @game_manager@remove_loop$qnuc
@@ -1345,7 +2072,7 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	            the_game->remove_loop((uchar far *)"bs1dr.l");
    ;	
 	push	ds
-	push	offset DGROUP:s@+1324
+	push	offset DGROUP:s@+712
 	push	word ptr DGROUP:_the_game+2
 	push	word ptr DGROUP:_the_game
 	call	far ptr @game_manager@remove_loop$qnuc
@@ -1354,7 +2081,7 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	            the_game->remove_loop((uchar far *)"bosshit.l");
    ;	
 	push	ds
-	push	offset DGROUP:s@+1332
+	push	offset DGROUP:s@+720
 	push	word ptr DGROUP:_the_game+2
 	push	word ptr DGROUP:_the_game
 	call	far ptr @game_manager@remove_loop$qnuc
@@ -1363,19 +2090,19 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	            the_game->remove_sound((uchar far *)"badgrunt");
    ;	
 	push	ds
-	push	offset DGROUP:s@+1342
+	push	offset DGROUP:s@+730
 	push	word ptr DGROUP:_the_game+2
 	push	word ptr DGROUP:_the_game
-	call	far ptr @game_manager@remove_sound$qve
+	call	far ptr @game_manager@remove_sound$qnuc
 	add	sp,8
-@3@786:
+@10@786:
    ;	
    ;	            /* fall through */
    ;	        case 8:                                     /* bs2 */
    ;	            the_game->remove_loop((uchar far *)"bs2_bod.l");
    ;	
 	push	ds
-	push	offset DGROUP:s@+1351
+	push	offset DGROUP:s@+739
 	push	word ptr DGROUP:_the_game+2
 	push	word ptr DGROUP:_the_game
 	call	far ptr @game_manager@remove_loop$qnuc
@@ -1384,7 +2111,7 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	            the_game->remove_loop((uchar far *)"bs2_tnr1.l");
    ;	
 	push	ds
-	push	offset DGROUP:s@+1361
+	push	offset DGROUP:s@+749
 	push	word ptr DGROUP:_the_game+2
 	push	word ptr DGROUP:_the_game
 	call	far ptr @game_manager@remove_loop$qnuc
@@ -1393,7 +2120,7 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	            the_game->remove_loop((uchar far *)"bs2_tnl1.l");
    ;	
 	push	ds
-	push	offset DGROUP:s@+1372
+	push	offset DGROUP:s@+760
 	push	word ptr DGROUP:_the_game+2
 	push	word ptr DGROUP:_the_game
 	call	far ptr @game_manager@remove_loop$qnuc
@@ -1402,7 +2129,7 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	            the_game->remove_loop((uchar far *)"bs2_tnr2.l");
    ;	
 	push	ds
-	push	offset DGROUP:s@+1383
+	push	offset DGROUP:s@+771
 	push	word ptr DGROUP:_the_game+2
 	push	word ptr DGROUP:_the_game
 	call	far ptr @game_manager@remove_loop$qnuc
@@ -1411,7 +2138,7 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	            the_game->remove_loop((uchar far *)"bs2_tnl2.l");
    ;	
 	push	ds
-	push	offset DGROUP:s@+1394
+	push	offset DGROUP:s@+782
 	push	word ptr DGROUP:_the_game+2
 	push	word ptr DGROUP:_the_game
 	call	far ptr @game_manager@remove_loop$qnuc
@@ -1420,7 +2147,7 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	            the_game->remove_loop((uchar far *)"msl_inkl.l");
    ;	
 	push	ds
-	push	offset DGROUP:s@+1405
+	push	offset DGROUP:s@+793
 	push	word ptr DGROUP:_the_game+2
 	push	word ptr DGROUP:_the_game
 	call	far ptr @game_manager@remove_loop$qnuc
@@ -1429,7 +2156,7 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	            the_game->remove_loop((uchar far *)"msl_inkr.l");
    ;	
 	push	ds
-	push	offset DGROUP:s@+1416
+	push	offset DGROUP:s@+804
 	push	word ptr DGROUP:_the_game+2
 	push	word ptr DGROUP:_the_game
 	call	far ptr @game_manager@remove_loop$qnuc
@@ -1438,19 +2165,19 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	            the_game->remove_loop((uchar far *)"otiseyes.l");
    ;	
 	push	ds
-	push	offset DGROUP:s@+1427
+	push	offset DGROUP:s@+815
 	push	word ptr DGROUP:_the_game+2
 	push	word ptr DGROUP:_the_game
 	call	far ptr @game_manager@remove_loop$qnuc
 	add	sp,8
-@3@814:
+@10@814:
    ;	
    ;	            /* fall through */
    ;	        case 17:                                    /* bs3 */
    ;	            the_game->remove_loop((uchar far *)"bs3_bdr.l");
    ;	
 	push	ds
-	push	offset DGROUP:s@+1438
+	push	offset DGROUP:s@+826
 	push	word ptr DGROUP:_the_game+2
 	push	word ptr DGROUP:_the_game
 	call	far ptr @game_manager@remove_loop$qnuc
@@ -1459,7 +2186,7 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	            the_game->remove_loop((uchar far *)"bs3_arr.l");
    ;	
 	push	ds
-	push	offset DGROUP:s@+1448
+	push	offset DGROUP:s@+836
 	push	word ptr DGROUP:_the_game+2
 	push	word ptr DGROUP:_the_game
 	call	far ptr @game_manager@remove_loop$qnuc
@@ -1468,7 +2195,7 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	            the_game->remove_loop((uchar far *)"bs3_bdl.l");
    ;	
 	push	ds
-	push	offset DGROUP:s@+1458
+	push	offset DGROUP:s@+846
 	push	word ptr DGROUP:_the_game+2
 	push	word ptr DGROUP:_the_game
 	call	far ptr @game_manager@remove_loop$qnuc
@@ -1477,7 +2204,7 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	            the_game->remove_loop((uchar far *)"bs3_arl.l");
    ;	
 	push	ds
-	push	offset DGROUP:s@+1468
+	push	offset DGROUP:s@+856
 	push	word ptr DGROUP:_the_game+2
 	push	word ptr DGROUP:_the_game
 	call	far ptr @game_manager@remove_loop$qnuc
@@ -1486,7 +2213,7 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	            the_game->remove_loop((uchar far *)"bs3_prpl.l");
    ;	
 	push	ds
-	push	offset DGROUP:s@+1478
+	push	offset DGROUP:s@+866
 	push	word ptr DGROUP:_the_game+2
 	push	word ptr DGROUP:_the_game
 	call	far ptr @game_manager@remove_loop$qnuc
@@ -1495,7 +2222,7 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	            the_game->remove_loop((uchar far *)"bs3_prpr.l");
    ;	
 	push	ds
-	push	offset DGROUP:s@+1489
+	push	offset DGROUP:s@+877
 	push	word ptr DGROUP:_the_game+2
 	push	word ptr DGROUP:_the_game
 	call	far ptr @game_manager@remove_loop$qnuc
@@ -1504,7 +2231,7 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	            the_game->remove_loop((uchar far *)"bs3_facl.l");
    ;	
 	push	ds
-	push	offset DGROUP:s@+1500
+	push	offset DGROUP:s@+888
 	push	word ptr DGROUP:_the_game+2
 	push	word ptr DGROUP:_the_game
 	call	far ptr @game_manager@remove_loop$qnuc
@@ -1513,7 +2240,7 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	            the_game->remove_loop((uchar far *)"bs3_facr.l");
    ;	
 	push	ds
-	push	offset DGROUP:s@+1511
+	push	offset DGROUP:s@+899
 	push	word ptr DGROUP:_the_game+2
 	push	word ptr DGROUP:_the_game
 	call	far ptr @game_manager@remove_loop$qnuc
@@ -1522,7 +2249,7 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	            the_game->remove_loop((uchar far *)"bs3_dthr.l");
    ;	
 	push	ds
-	push	offset DGROUP:s@+1522
+	push	offset DGROUP:s@+910
 	push	word ptr DGROUP:_the_game+2
 	push	word ptr DGROUP:_the_game
 	call	far ptr @game_manager@remove_loop$qnuc
@@ -1531,7 +2258,7 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	            the_game->remove_loop((uchar far *)"chain.l");
    ;	
 	push	ds
-	push	offset DGROUP:s@+1533
+	push	offset DGROUP:s@+921
 	push	word ptr DGROUP:_the_game+2
 	push	word ptr DGROUP:_the_game
 	call	far ptr @game_manager@remove_loop$qnuc
@@ -1540,7 +2267,7 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	            the_game->remove_loop((uchar far *)"exp3.l");
    ;	
 	push	ds
-	push	offset DGROUP:s@+1541
+	push	offset DGROUP:s@+929
 	push	word ptr DGROUP:_the_game+2
 	push	word ptr DGROUP:_the_game
 	call	far ptr @game_manager@remove_loop$qnuc
@@ -1549,12 +2276,12 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	            the_game->remove_sound((uchar far *)"plunk2");
    ;	
 	push	ds
-	push	offset DGROUP:s@+1548
+	push	offset DGROUP:s@+936
 	push	word ptr DGROUP:_the_game+2
 	push	word ptr DGROUP:_the_game
-	call	far ptr @game_manager@remove_sound$qve
+	call	far ptr @game_manager@remove_sound$qnuc
 	add	sp,8
-@3@842:
+@10@842:
    ;	
    ;	            /* fall through */
    ;	        case 0:  case 3:  case 6:  case 10: case 11:
@@ -1562,7 +2289,7 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	            the_game->remove_loop((uchar far *)"sharkr.l");
    ;	
 	push	ds
-	push	offset DGROUP:s@+1555
+	push	offset DGROUP:s@+943
 	push	word ptr DGROUP:_the_game+2
 	push	word ptr DGROUP:_the_game
 	call	far ptr @game_manager@remove_loop$qnuc
@@ -1571,7 +2298,7 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	            the_game->remove_loop((uchar far *)"sharkl.l");
    ;	
 	push	ds
-	push	offset DGROUP:s@+1564
+	push	offset DGROUP:s@+952
 	push	word ptr DGROUP:_the_game+2
 	push	word ptr DGROUP:_the_game
 	call	far ptr @game_manager@remove_loop$qnuc
@@ -1580,7 +2307,7 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	            the_game->remove_loop((uchar far *)"sharkdie.l");
    ;	
 	push	ds
-	push	offset DGROUP:s@+1573
+	push	offset DGROUP:s@+961
 	push	word ptr DGROUP:_the_game+2
 	push	word ptr DGROUP:_the_game
 	call	far ptr @game_manager@remove_loop$qnuc
@@ -1588,8 +2315,8 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	
    ;	            break;
    ;	
-	jmp	short @3@870
-@3@870:
+	jmp	short @10@870
+@10@870:
    ;	
    ;	        default:
    ;	            break;
@@ -1632,12 +2359,12 @@ GAME_TEXT	segment byte public use16 'CODE'
 	dec	ax
 	mov	bx,ax
 	cmp	bx,5
-	jbe short	@@17
-	jmp	@3@1430
-@@17:
+	jbe short	@@3
+	jmp	@10@1430
+@@3:
 	shl	bx,1
-	jmp	word ptr cs:@3@C1346[bx]
-@3@982:
+	jmp	word ptr cs:@10@C1346[bx]
+@10@982:
    ;	
    ;	        case 0:                                     /* level completed */
    ;	            end_room();
@@ -1647,26 +2374,26 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	            if (cur_map < 0x15)
    ;	
 	cmp	byte ptr DGROUP:_cur_map,21
-	jae	short @3@1038
+	jae	short @10@1038
    ;	
    ;	                ++cur_map;
    ;	
 	mov	al,byte ptr DGROUP:_cur_map
 	inc	al
 	mov	byte ptr DGROUP:_cur_map,al
-	jmp	short @3@1122
-@3@1038:
+	jmp	short @10@1122
+@10@1038:
    ;	
    ;	            else if (cur_map >= 0x16)
    ;	
 	cmp	byte ptr DGROUP:_cur_map,22
-	jb	short @3@1094
+	jb	short @10@1094
    ;	
    ;	                exit_secret_level();
    ;	
 	call	far ptr @exit_secret_level$qv
-	jmp	short @3@1122
-@3@1094:
+	jmp	short @10@1122
+@10@1094:
    ;	
    ;	            else {
    ;	                end_game();
@@ -1678,7 +2405,7 @@ GAME_TEXT	segment byte public use16 'CODE'
 	mov	al,byte ptr [bp-1]
 	inc	al
 	mov	byte ptr [bp-1],al
-@3@1122:
+@10@1122:
    ;	
    ;	            }
    ;	            switch (cur_map - 1) {                  /* jumptable off_6C58 */
@@ -1688,12 +2415,12 @@ GAME_TEXT	segment byte public use16 'CODE'
 	dec	ax
 	mov	bx,ax
 	cmp	bx,22
-	jbe short	@@18
-	jmp	@3@1430
-@@18:
+	jbe short	@@4
+	jmp	@10@1430
+@@4:
 	shl	bx,1
-	jmp	word ptr cs:@3@C1634[bx]
-@3@1206:
+	jmp	word ptr cs:@10@C1634[bx]
+@10@1206:
    ;	
    ;	            case 0:  case 1:  case 2:  case 3:  case 4:
    ;	            case 7:  case 8:  case 9:  case 10:
@@ -1702,7 +2429,7 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	                strcpy((char *)_tmp, "New password : ");
    ;	
 	push	ds
-	push	offset DGROUP:s@+1584
+	push	offset DGROUP:s@+972
 	push	ds
 	push	offset DGROUP:__tmp
 	call	far ptr _strcpy
@@ -1725,25 +2452,26 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	
 	push	0
 	push	0
+	push	0
 	push	ds
 	push	offset DGROUP:__tmp
-	call	far ptr @i_inform$qnucuce
-	add	sp,8
+	call	far ptr @i_inform$qnucuct1
+	add	sp,10
    ;	
    ;	                break;
    ;	
-	jmp	short @3@1430
+	jmp	short @10@1430
    ;	
    ;	            default:                                /* 5,6,11,20: no pw */
    ;	                break;
    ;	
-	jmp	short @3@1430
+	jmp	short @10@1430
    ;	
    ;	            }
    ;	            break;
    ;	
-	jmp	short @3@1430
-@3@1290:
+	jmp	short @10@1430
+@10@1290:
    ;	
    ;	        case 1:                                     /* jump to zoom_to_map */
    ;	            cur_map = zoom_to_map;
@@ -1760,13 +2488,13 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	
    ;	            goto reset_game;
    ;	
-	jmp	@3@86
+	jmp	@10@86
    ;	
    ;	        case 2:                                     /* replay map, keep state */
    ;	            goto replay;
    ;	
-	jmp	@3@142
-@3@1346:
+	jmp	@10@142
+@10@1346:
    ;	
    ;	        case 3:                                     /* died: restart level */
    ;	            display->fade_down();
@@ -1778,8 +2506,8 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	
    ;	            goto restart_map;
    ;	
-	jmp	@3@58
-@3@1374:
+	jmp	@10@58
+@10@1374:
    ;	
    ;	        case 4:                                     /* game over */
    ;	            end_game();
@@ -1794,8 +2522,8 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	
    ;	            break;
    ;	
-	jmp	short @3@1430
-@3@1402:
+	jmp	short @10@1430
+@10@1402:
    ;	
    ;	        case 5:                                     /* secret level entrance */
    ;	            end_room();
@@ -1808,8 +2536,8 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	
    ;	            break;
    ;	
-	jmp	short @3@1430
-@3@1430:
+	jmp	short @10@1430
+@10@1430:
    ;	
    ;	        default:
    ;	            break;
@@ -1821,88 +2549,88 @@ GAME_TEXT	segment byte public use16 'CODE'
 	mov	al,byte ptr [bp-1]
 	mov	ah,0
 	or	ax,ax
-	jne short	@@19
-	jmp	@3@114
-@@19:
+	jne short	@@5
+	jmp	@10@114
+@@5:
    ;	
    ;	}
    ;	
 	leave	
 	ret	
 @play_game$quc	endp
-@3@C1634	label	word
-	dw	@3@1206
-	dw	@3@1206
-	dw	@3@1206
-	dw	@3@1206
-	dw	@3@1206
-	dw	@3@1430
-	dw	@3@1430
-	dw	@3@1206
-	dw	@3@1206
-	dw	@3@1206
-	dw	@3@1206
-	dw	@3@1430
-	dw	@3@1206
-	dw	@3@1206
-	dw	@3@1206
-	dw	@3@1206
-	dw	@3@1206
-	dw	@3@1206
-	dw	@3@1206
-	dw	@3@1206
-	dw	@3@1430
-	dw	@3@1206
-	dw	@3@1206
-@3@C1346	label	word
-	dw	@3@982
-	dw	@3@1290
-	dw	@3@142
-	dw	@3@1346
-	dw	@3@1374
-	dw	@3@1402
-@3@C1794	label	word
-	dw	@3@842
-	dw	@3@870
-	dw	@3@758
-	dw	@3@842
-	dw	@3@870
-	dw	@3@870
-	dw	@3@842
-	dw	@3@870
-	dw	@3@786
-	dw	@3@870
-	dw	@3@842
-	dw	@3@842
-	dw	@3@870
-	dw	@3@870
-	dw	@3@842
-	dw	@3@870
-	dw	@3@842
-	dw	@3@814
-	dw	@3@842
-	dw	@3@842
-@3@C1890	label	word
-	dw	@3@534
-	dw	@3@562
-	dw	@3@254
-	dw	@3@534
-	dw	@3@562
-	dw	@3@562
-	dw	@3@534
-	dw	@3@562
-	dw	@3@366
-	dw	@3@562
-	dw	@3@534
-	dw	@3@534
-	dw	@3@562
-	dw	@3@562
-	dw	@3@534
-	dw	@3@562
-	dw	@3@534
-	dw	@3@450
-	dw	@3@534
-	dw	@3@534
+@10@C1634	label	word
+	dw	@10@1206
+	dw	@10@1206
+	dw	@10@1206
+	dw	@10@1206
+	dw	@10@1206
+	dw	@10@1430
+	dw	@10@1430
+	dw	@10@1206
+	dw	@10@1206
+	dw	@10@1206
+	dw	@10@1206
+	dw	@10@1430
+	dw	@10@1206
+	dw	@10@1206
+	dw	@10@1206
+	dw	@10@1206
+	dw	@10@1206
+	dw	@10@1206
+	dw	@10@1206
+	dw	@10@1206
+	dw	@10@1430
+	dw	@10@1206
+	dw	@10@1206
+@10@C1346	label	word
+	dw	@10@982
+	dw	@10@1290
+	dw	@10@142
+	dw	@10@1346
+	dw	@10@1374
+	dw	@10@1402
+@10@C1794	label	word
+	dw	@10@842
+	dw	@10@870
+	dw	@10@758
+	dw	@10@842
+	dw	@10@870
+	dw	@10@870
+	dw	@10@842
+	dw	@10@870
+	dw	@10@786
+	dw	@10@870
+	dw	@10@842
+	dw	@10@842
+	dw	@10@870
+	dw	@10@870
+	dw	@10@842
+	dw	@10@870
+	dw	@10@842
+	dw	@10@814
+	dw	@10@842
+	dw	@10@842
+@10@C1890	label	word
+	dw	@10@534
+	dw	@10@562
+	dw	@10@254
+	dw	@10@534
+	dw	@10@562
+	dw	@10@562
+	dw	@10@534
+	dw	@10@562
+	dw	@10@366
+	dw	@10@562
+	dw	@10@534
+	dw	@10@534
+	dw	@10@562
+	dw	@10@562
+	dw	@10@534
+	dw	@10@562
+	dw	@10@534
+	dw	@10@450
+	dw	@10@534
+	dw	@10@534
    ;	
    ;	void setup_secret_level(void)
    ;	
@@ -1921,8 +2649,8 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	    for (i = 0; i < 2; ++i)
    ;	
 	mov	byte ptr [bp-1],0
-	jmp	short @4@114
-@4@58:
+	jmp	short @11@114
+@11@58:
    ;	
    ;	        if (all_secrets[i * 2 + 1] == cur_map)
    ;	
@@ -1932,30 +2660,30 @@ GAME_TEXT	segment byte public use16 'CODE'
 	mov	bx,ax
 	mov	al,byte ptr DGROUP:_all_secrets[bx+1]
 	cmp	al,byte ptr DGROUP:_cur_map
-	je	short @4@142
+	je	short @11@142
 	mov	al,byte ptr [bp-1]
 	inc	al
 	mov	byte ptr [bp-1],al
-@4@114:
+@11@114:
 	cmp	byte ptr [bp-1],2
-	jb	short @4@58
-@4@142:
+	jb	short @11@58
+@11@142:
    ;	
    ;	            break;
    ;	    if (i == 2)
    ;	
 	cmp	byte ptr [bp-1],2
-	jne	short @4@198
+	jne	short @11@198
    ;	
    ;	        terminate((uchar far *)"Invalid secret level exit.", 0);
    ;	
 	push	0
 	push	0
 	push	ds
-	push	offset DGROUP:s@+1600
+	push	offset DGROUP:s@+988
 	call	far ptr @terminate$qnuct1
 	add	sp,8
-@4@198:
+@11@198:
    ;	
    ;	    cur_map = all_secrets[i * 2];
    ;	
@@ -1984,8 +2712,8 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	    for (i = 0; i < 2; ++i)
    ;	
 	mov	byte ptr [bp-1],0
-	jmp	short @5@114
-@5@58:
+	jmp	short @12@114
+@12@58:
    ;	
    ;	        if (all_secrets[i * 2] == cur_map)
    ;	
@@ -1995,30 +2723,30 @@ GAME_TEXT	segment byte public use16 'CODE'
 	mov	bx,ax
 	mov	al,byte ptr DGROUP:_all_secrets[bx]
 	cmp	al,byte ptr DGROUP:_cur_map
-	je	short @5@142
+	je	short @12@142
 	mov	al,byte ptr [bp-1]
 	inc	al
 	mov	byte ptr [bp-1],al
-@5@114:
+@12@114:
 	cmp	byte ptr [bp-1],2
-	jb	short @5@58
-@5@142:
+	jb	short @12@58
+@12@142:
    ;	
    ;	            break;
    ;	    if (i == 2)
    ;	
 	cmp	byte ptr [bp-1],2
-	jne	short @5@198
+	jne	short @12@198
    ;	
    ;	        terminate((uchar far *)"Invalid secret level re-entrance.", 0);
    ;	
 	push	0
 	push	0
 	push	ds
-	push	offset DGROUP:s@+1627
+	push	offset DGROUP:s@+1015
 	call	far ptr @terminate$qnuct1
 	add	sp,8
-@5@198:
+@12@198:
    ;	
    ;	    cur_map = all_secrets[i * 2 + 1] + 1;
    ;	
@@ -2156,12 +2884,12 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	    if (shld_supply < 0x3C)
    ;	
 	cmp	word ptr DGROUP:_shld_supply,60
-	jge	short @6@86
+	jge	short @13@86
    ;	
    ;	        shld_supply = 0x3C;
    ;	
 	mov	word ptr DGROUP:_shld_supply,60
-@6@86:
+@13@86:
    ;	
    ;	    cur_message = -1;
    ;	
@@ -2230,7 +2958,7 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	    if (the_map == NULL) {
    ;	
 	cmp	dword ptr DGROUP:_the_map,large 0
-	jne	short @6@142
+	jne	short @13@142
    ;	
    ;	        the_map = new tilemap(path, 0, 0);
    ;	
@@ -2254,8 +2982,8 @@ GAME_TEXT	segment byte public use16 'CODE'
 	push	word ptr DGROUP:_the_map+2
 	push	word ptr DGROUP:_the_map
 	call	far ptr @tilemap@set_viewport$qiiii
-	jmp	short @6@170
-@6@142:
+	jmp	short @13@170
+@13@142:
    ;	
    ;	    } else {
    ;	        the_map->new_map(path, 0, 0);
@@ -2266,8 +2994,8 @@ GAME_TEXT	segment byte public use16 'CODE'
 	push	word ptr [bp+6]
 	push	word ptr DGROUP:_the_map+2
 	push	word ptr DGROUP:_the_map
-	call	far ptr @tilemap@new_map$qve
-@6@170:
+	call	far ptr @tilemap@new_map$qnucii
+@13@170:
 	add	sp,12
    ;	
    ;	    }
@@ -2319,8 +3047,8 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	    for (pos = 0; pos < (uint)the_map->map_size; ++pos) {
    ;	
 	mov	word ptr [bp-2],0
-	jmp	short @6@422
-@6@226:
+	jmp	short @13@422
+@13@226:
    ;	
    ;	        attr = the_map->tile_attr[pos].type;     /* 4-byte recs, word at +2 */
    ;	
@@ -2341,12 +3069,12 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	        if (bits) add_switch(pos, bits);
    ;	
 	cmp	word ptr [bp-6],0
-	je	short @6@282
+	je	short @13@282
 	push	word ptr [bp-6]
 	push	word ptr [bp-2]
 	call	far ptr @add_switch$quiui
 	add	sp,4
-@6@282:
+@13@282:
    ;	
    ;	        bits = attr & 0x300;
    ;	
@@ -2357,12 +3085,12 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	        if (bits) add_door(pos, bits);
    ;	
 	cmp	word ptr [bp-6],0
-	je	short @6@338
+	je	short @13@338
 	push	word ptr [bp-6]
 	push	word ptr [bp-2]
 	call	far ptr @add_door$quiui
 	add	sp,4
-@6@338:
+@13@338:
    ;	
    ;	        bits = attr & 0x3F;
    ;	
@@ -2373,25 +3101,25 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	        if (bits) add_barrel(pos, bits);
    ;	
 	cmp	word ptr [bp-6],0
-	je	short @6@394
+	je	short @13@394
 	push	word ptr [bp-6]
 	push	word ptr [bp-2]
 	call	far ptr @add_barrel$quiui
 	add	sp,4
-@6@394:
+@13@394:
 	inc	word ptr [bp-2]
-@6@422:
+@13@422:
 	les	bx,dword ptr DGROUP:_the_map
 	mov	ax,word ptr es:[bx+148]
 	cmp	ax,word ptr [bp-2]
-	ja	short @6@226
+	ja	short @13@226
    ;	
    ;	    }
    ;	    for (pos = 0; pos < (uint)the_map->map_size; ++pos) {
    ;	
 	mov	word ptr [bp-2],0
-	jmp	short @6@562
-@6@478:
+	jmp	short @13@562
+@13@478:
    ;	
    ;	        attr = the_map->tile_attr[pos].type;
    ;	
@@ -2412,18 +3140,18 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	        if (bits) add_map_item(pos, bits);
    ;	
 	cmp	word ptr [bp-6],0
-	je	short @6@534
+	je	short @13@534
 	push	word ptr [bp-6]
 	push	word ptr [bp-2]
 	call	far ptr @add_map_item$quiui
 	add	sp,4
-@6@534:
+@13@534:
 	inc	word ptr [bp-2]
-@6@562:
+@13@562:
 	les	bx,dword ptr DGROUP:_the_map
 	mov	ax,word ptr es:[bx+148]
 	cmp	ax,word ptr [bp-2]
-	ja	short @6@478
+	ja	short @13@478
    ;	
    ;	    }
    ;	
@@ -2435,7 +3163,7 @@ GAME_TEXT	segment byte public use16 'CODE'
 	cwd	
 	idiv	bx
 	or	dx,dx
-	je	short @6@646
+	je	short @13@646
    ;	
    ;	        ego = the_cast->add((uchar *)"subl.l", mv_ego, do_ego);
    ;	
@@ -2444,7 +3172,7 @@ GAME_TEXT	segment byte public use16 'CODE'
 	push	seg @mv_ego$qn7m_actornit2
 	push	offset @mv_ego$qn7m_actornit2
 	push	ds
-	push	offset DGROUP:s@+1661
+	push	offset DGROUP:s@+1049
 	push	word ptr DGROUP:_the_cast+2
 	push	word ptr DGROUP:_the_cast
 	call	far ptr @game_cast@add$qnucnvt2
@@ -2459,8 +3187,8 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	
    ;	    } else {
    ;	
-	jmp	short @6@674
-@6@646:
+	jmp	short @13@674
+@13@646:
    ;	
    ;	        ego = the_cast->add((uchar *)"subr.l", mv_ego, do_ego);
    ;	
@@ -2469,7 +3197,7 @@ GAME_TEXT	segment byte public use16 'CODE'
 	push	seg @mv_ego$qn7m_actornit2
 	push	offset @mv_ego$qn7m_actornit2
 	push	ds
-	push	offset DGROUP:s@+1668
+	push	offset DGROUP:s@+1056
 	push	word ptr DGROUP:_the_cast+2
 	push	word ptr DGROUP:_the_cast
 	call	far ptr @game_cast@add$qnucnvt2
@@ -2481,7 +3209,7 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	
 	les	bx,dword ptr DGROUP:_ego
 	mov	byte ptr es:[bx+52],0
-@6@674:
+@13@674:
    ;	
    ;	    }
    ;	    ego->set_cycle(0x0C, 1);
@@ -2536,12 +3264,12 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	    if (jason_present)
    ;	
 	cmp	byte ptr DGROUP:_jason_present,0
-	je	short @6@730
+	je	short @13@730
    ;	
    ;	        add_jason();
    ;	
 	call	far ptr @add_jason$qv
-@6@730:
+@13@730:
    ;	
    ;	    update_jason_guage();
    ;	
@@ -2585,8 +3313,8 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	    for (pos = 0x0A; pos < 0x1E; pos += 2) {        /* teleport pairs */
    ;	
 	mov	word ptr [bp-2],10
-	jmp	short @6@842
-@6@758:
+	jmp	short @13@842
+@13@758:
    ;	
    ;	        if (the_map->map_hdr[pos] != 0) {
    ;	
@@ -2595,7 +3323,7 @@ GAME_TEXT	segment byte public use16 'CODE'
 	les	bx,dword ptr DGROUP:_the_map
 	add	bx,ax
 	cmp	word ptr es:[bx+36],0
-	je	short @6@814
+	je	short @13@814
    ;	
    ;	            all_teleports[teleport_count][0] = the_map->map_hdr[pos];
    ;	
@@ -2629,11 +3357,11 @@ GAME_TEXT	segment byte public use16 'CODE'
 	mov	al,byte ptr DGROUP:_teleport_count
 	inc	al
 	mov	byte ptr DGROUP:_teleport_count,al
-@6@814:
+@13@814:
 	add	word ptr [bp-2],2
-@6@842:
+@13@842:
 	cmp	word ptr [bp-2],30
-	jb	short @6@758
+	jb	short @13@758
    ;	
    ;	        }
    ;	    }
@@ -2645,8 +3373,8 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	    for (pos = 0x1E; pos < 0x28; pos += 2) {        /* message pairs */
    ;	
 	mov	word ptr [bp-2],30
-	jmp	short @6@982
-@6@898:
+	jmp	short @13@982
+@13@898:
    ;	
    ;	        if (the_map->map_hdr[pos] == 0)
    ;	
@@ -2655,7 +3383,7 @@ GAME_TEXT	segment byte public use16 'CODE'
 	les	bx,dword ptr DGROUP:_the_map
 	add	bx,ax
 	cmp	word ptr es:[bx+36],0
-	je	short @6@1010
+	je	short @13@1010
    ;	
    ;	            break;
    ;	        map_messages[message_count]     = the_map->map_hdr[pos];
@@ -2691,10 +3419,10 @@ GAME_TEXT	segment byte public use16 'CODE'
 	add	al,2
 	mov	byte ptr DGROUP:_message_count,al
 	add	word ptr [bp-2],2
-@6@982:
+@13@982:
 	cmp	word ptr [bp-2],40
-	jb	short @6@898
-@6@1010:
+	jb	short @13@898
+@13@1010:
    ;	
    ;	    }
    ;	
@@ -2734,9 +3462,9 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	    if (heavy_timer <= 5 && heavy_timer != 0)
    ;	
 	cmp	word ptr DGROUP:_heavy_timer,5
-	jg	short @6@1094
+	jg	short @13@1094
 	cmp	word ptr DGROUP:_heavy_timer,0
-	je	short @6@1094
+	je	short @13@1094
    ;	
    ;	        display->put_bits(0x80, 0x97, 0xBE, 0xA1,
    ;	
@@ -2755,7 +3483,7 @@ GAME_TEXT	segment byte public use16 'CODE'
 	push	word ptr DGROUP:_display
 	call	far ptr @vga_display@put_bits$qiiiinucuiui
 	add	sp,20
-@6@1094:
+@13@1094:
    ;	
    ;	    display->fade_up();
    ;	
@@ -2795,8 +3523,8 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	    for (i = 0; i < the_cast->count; i++) {
    ;	
 	mov	word ptr [bp-2],0
-	jmp	@7@422
-@7@58:
+	jmp	@14@422
+@14@58:
    ;	
    ;	        act = the_cast->actors[i];
    ;	
@@ -2813,22 +3541,22 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	
 	les	bx,dword ptr DGROUP:_act
 	test	byte ptr es:[bx+53],2
-	je	short @7@198
+	je	short @14@198
    ;	
    ;	            if (barrier_count == 0x22)
    ;	
 	cmp	byte ptr DGROUP:_barrier_count,34
-	jne	short @7@142
+	jne	short @14@142
    ;	
    ;	                terminate((uchar far *)"Too many barriers for list.", 0);
    ;	
 	push	0
 	push	0
 	push	ds
-	push	offset DGROUP:s@+1675
+	push	offset DGROUP:s@+1063
 	call	far ptr @terminate$qnuct1
 	add	sp,8
-@7@142:
+@14@142:
    ;	
    ;	            if (!act->inactive)
    ;	
@@ -2837,7 +3565,7 @@ GAME_TEXT	segment byte public use16 'CODE'
 	shr	ax,5
 	and	ax,1
 	or	ax,ax
-	jne	short @7@198
+	jne	short @14@198
    ;	
    ;	                barrier_list[barrier_count++] = act;
    ;	
@@ -2850,7 +3578,7 @@ GAME_TEXT	segment byte public use16 'CODE'
 	mov	word ptr DGROUP:_barrier_list[si+2],dx
 	mov	word ptr DGROUP:_barrier_list[si],bx
 	inc	byte ptr DGROUP:_barrier_count
-@7@198:
+@14@198:
    ;	
    ;	        }
    ;	        if (act->in_window == 1 && (act->type & 1) && !(act->type & 0x10)) {
@@ -2860,30 +3588,30 @@ GAME_TEXT	segment byte public use16 'CODE'
 	shr	ax,1
 	and	ax,1
 	cmp	ax,1
-	jne	short @7@394
+	jne	short @14@394
 	les	bx,dword ptr DGROUP:_act
 	test	byte ptr es:[bx+53],1
-	je	short @7@394
+	je	short @14@394
 	les	bx,dword ptr DGROUP:_act
 	mov	al,byte ptr es:[bx+53]
 	mov	ah,0
 	test	ax,16
-	jne	short @7@394
+	jne	short @14@394
    ;	
    ;	            if (shootable_count == 0x1D)
    ;	
 	cmp	byte ptr DGROUP:_shootable_count,29
-	jne	short @7@338
+	jne	short @14@338
    ;	
    ;	                terminate((uchar far *)"Too many shootables.", 0);
    ;	
 	push	0
 	push	0
 	push	ds
-	push	offset DGROUP:s@+1703
+	push	offset DGROUP:s@+1091
 	call	far ptr @terminate$qnuct1
 	add	sp,8
-@7@338:
+@14@338:
    ;	
    ;	            if (!act->inactive)
    ;	
@@ -2892,7 +3620,7 @@ GAME_TEXT	segment byte public use16 'CODE'
 	shr	ax,5
 	and	ax,1
 	or	ax,ax
-	jne	short @7@394
+	jne	short @14@394
    ;	
    ;	                shootable_list[shootable_count++] = act;
    ;	
@@ -2905,16 +3633,16 @@ GAME_TEXT	segment byte public use16 'CODE'
 	mov	word ptr DGROUP:_shootable_list[si+2],dx
 	mov	word ptr DGROUP:_shootable_list[si],bx
 	inc	byte ptr DGROUP:_shootable_count
-@7@394:
+@14@394:
 	inc	word ptr [bp-2]
-@7@422:
+@14@422:
 	les	bx,dword ptr DGROUP:_the_cast
 	mov	al,byte ptr es:[bx]
 	mov	ah,0
 	cmp	ax,word ptr [bp-2]
-	jbe short	@@20
-	jmp	@7@58
-@@20:
+	jbe short	@@6
+	jmp	@14@58
+@@6:
    ;	
    ;	        }
    ;	    }
@@ -2936,7 +3664,7 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	
 	les	bx,dword ptr DGROUP:_ego
 	cmp	byte ptr es:[bx+61],2
-	je	short @7@506
+	je	short @14@506
    ;	
    ;	        centered = the_map->center_on(cx, cy);
    ;	
@@ -2947,14 +3675,14 @@ GAME_TEXT	segment byte public use16 'CODE'
 	call	far ptr @tilemap@center_on$quiui
 	add	sp,8
 	mov	byte ptr [bp-7],al
-	jmp	short @7@534
-@7@506:
+	jmp	short @14@534
+@14@506:
    ;	
    ;	    else
    ;	        centered = 0;
    ;	
 	mov	byte ptr [bp-7],0
-@7@534:
+@14@534:
    ;	
    ;	    the_cast->update(centered);
    ;	
@@ -2980,17 +3708,17 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	    if (cur_map == 6 || cur_map == 0x0C || cur_map == 0x15)
    ;	
 	cmp	byte ptr DGROUP:_cur_map,6
-	je	short @7@618
+	je	short @14@618
 	cmp	byte ptr DGROUP:_cur_map,12
-	je	short @7@618
+	je	short @14@618
 	cmp	byte ptr DGROUP:_cur_map,21
-	jne	short @7@646
-@7@618:
+	jne	short @14@646
+@14@618:
    ;	
    ;	        update_boss_guage();
    ;	
 	call	far ptr @update_boss_guage$qv
-@7@646:
+@14@646:
    ;	
    ;	    i = display->doit();
    ;	
@@ -3016,12 +3744,12 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	    if (i && !display->field_06)
    ;	
 	cmp	word ptr [bp-2],0
-	je	short @7@730
+	je	short @14@730
 	les	bx,dword ptr DGROUP:_display
 	mov	al,byte ptr es:[bx+6]
 	mov	ah,0
 	or	ax,ax
-	jne	short @7@730
+	jne	short @14@730
    ;	
    ;	        forcepal(palette, 1);
    ;	
@@ -3030,13 +3758,13 @@ GAME_TEXT	segment byte public use16 'CODE'
 	push	offset DGROUP:_palette
 	call	far ptr _forcepal
 	add	sp,6
-@7@730:
+@14@730:
    ;	
    ;	    if (the_map->exploded == 2)
    ;	
 	les	bx,dword ptr DGROUP:_the_map
 	cmp	byte ptr es:[bx+924],2
-	jne	short @7@786
+	jne	short @14@786
    ;	
    ;	        display->pause(1);
    ;	
@@ -3045,7 +3773,7 @@ GAME_TEXT	segment byte public use16 'CODE'
 	push	word ptr DGROUP:_display
 	call	far ptr @vga_display@pause$qui
 	add	sp,6
-@7@786:
+@14@786:
    ;	
    ;	    displayed_page = non_displayed_page;
    ;	
@@ -3075,9 +3803,9 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	    if (jason_on == 0) {
    ;	
 	cmp	byte ptr DGROUP:_jason_on,0
-	je short	@@21
-	jmp	@7@1178
-@@21:
+	je short	@@7
+	jmp	@14@1178
+@@7:
    ;	
    ;	        if (ego->on_pos(finish_tile))
    ;	
@@ -3087,29 +3815,29 @@ GAME_TEXT	segment byte public use16 'CODE'
 	call	far ptr @m_actor@on_pos$qui
 	add	sp,6
 	or	al,al
-	je	short @7@870
+	je	short @14@870
    ;	
    ;	            stop_room = 1;
    ;	
 	mov	byte ptr DGROUP:_stop_room,1
-@7@870:
+@14@870:
    ;	
    ;	        if (secret_tile && ego->on_pos(secret_tile))
    ;	
 	cmp	word ptr DGROUP:_secret_tile,0
-	je	short @7@954
+	je	short @14@954
 	push	word ptr DGROUP:_secret_tile
 	push	word ptr DGROUP:_ego+2
 	push	word ptr DGROUP:_ego
 	call	far ptr @m_actor@on_pos$qui
 	add	sp,6
 	or	al,al
-	je	short @7@954
+	je	short @14@954
    ;	
    ;	            stop_room = 6;
    ;	
 	mov	byte ptr DGROUP:_stop_room,6
-@7@954:
+@14@954:
    ;	
    ;	        if (ego->on_pos(end_door_tile)) {
    ;	
@@ -3119,22 +3847,22 @@ GAME_TEXT	segment byte public use16 'CODE'
 	call	far ptr @m_actor@on_pos$qui
 	add	sp,6
 	or	al,al
-	je	short @7@1178
+	je	short @14@1178
    ;	
    ;	            if (!end_door_ptr)
    ;	
 	cmp	dword ptr DGROUP:_end_door_ptr,large 0
-	jne	short @7@1038
+	jne	short @14@1038
    ;	
    ;	                terminate((uchar far *)"End door switch without door.", 0);
    ;	
 	push	0
 	push	0
 	push	ds
-	push	offset DGROUP:s@+1724
+	push	offset DGROUP:s@+1112
 	call	far ptr @terminate$qnuct1
 	add	sp,8
-@7@1038:
+@14@1038:
    ;	
    ;	            if (!end_door_ptr->door_open && got_key)
    ;	
@@ -3143,29 +3871,29 @@ GAME_TEXT	segment byte public use16 'CODE'
 	shr	ax,6
 	and	ax,1
 	or	ax,ax
-	jne	short @7@1122
+	jne	short @14@1122
 	cmp	byte ptr DGROUP:_got_key,0
-	je	short @7@1122
+	je	short @14@1122
    ;	
    ;	                end_door_ptr->door_open = 1;
    ;	
 	les	bx,dword ptr DGROUP:_end_door_ptr
 	or	byte ptr es:[bx+82],64
-@7@1122:
+@14@1122:
    ;	
    ;	            if (!got_key)
    ;	
 	mov	al,byte ptr DGROUP:_got_key
 	mov	ah,0
 	or	ax,ax
-	jne	short @7@1178
+	jne	short @14@1178
    ;	
    ;	                post_message(0);
    ;	
 	push	0
 	call	far ptr @post_message$quc
 	pop	cx
-@7@1178:
+@14@1178:
    ;	
    ;	        }
    ;	    }
@@ -3173,12 +3901,12 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	    if (heavy_timer) {
    ;	
 	cmp	word ptr DGROUP:_heavy_timer,0
-	je	short @7@1318
+	je	short @14@1318
    ;	
    ;	        if (heavy_timer == 5)
    ;	
 	cmp	word ptr DGROUP:_heavy_timer,5
-	jne	short @7@1262
+	jne	short @14@1262
    ;	
    ;	            display->put_bits(0x80, 0x97, 0xBE, 0xA1,
    ;	
@@ -3197,12 +3925,12 @@ GAME_TEXT	segment byte public use16 'CODE'
 	push	word ptr DGROUP:_display
 	call	far ptr @vga_display@put_bits$qiiiinucuiui
 	add	sp,20
-@7@1262:
+@14@1262:
    ;	
    ;	        if (heavy_timer == 1) {
    ;	
 	cmp	word ptr DGROUP:_heavy_timer,1
-	jne	short @7@1318
+	jne	short @14@1318
    ;	
    ;	            gun_count = 0;
    ;	
@@ -3231,7 +3959,7 @@ GAME_TEXT	segment byte public use16 'CODE'
 	push	word ptr DGROUP:_display
 	call	far ptr @vga_display@copy_bits$qiiiiiiuiuiuiui
 	add	sp,24
-@7@1318:
+@14@1318:
    ;	
    ;	        }
    ;	    }
@@ -3241,7 +3969,7 @@ GAME_TEXT	segment byte public use16 'CODE'
 	mov	al,byte ptr DGROUP:_score_count
 	inc	byte ptr DGROUP:_score_count
 	cmp	al,40
-	jne	short @7@1402
+	jne	short @14@1402
    ;	
    ;	        score_count = 0;
    ;	
@@ -3260,48 +3988,48 @@ GAME_TEXT	segment byte public use16 'CODE'
 	call	far ptr @random$qi
 	pop	cx
 	or	ax,ax
-	jne	short @7@1402
+	jne	short @14@1402
    ;	
    ;	            the_game->play_sound((uchar far *)"bubbles2", 2);
    ;	
 	push	2
 	push	ds
-	push	offset DGROUP:s@+1754
+	push	offset DGROUP:s@+1142
 	push	word ptr DGROUP:_the_game+2
 	push	word ptr DGROUP:_the_game
 	call	far ptr @game_manager@play_sound$qnucuc
 	add	sp,10
-@7@1402:
+@14@1402:
    ;	
    ;	    }
    ;	
    ;	    if (displayed_page == 0) {
    ;	
 	cmp	byte ptr DGROUP:_displayed_page,0
-	je short	@@22
-	jmp	@7@2046
-@@22:
+	je short	@@8
+	jmp	@14@2046
+@@8:
    ;	
    ;	        if (cur_map == 0) {
    ;	
 	cmp	byte ptr DGROUP:_cur_map,0
-	je short	@@23
-	jmp	@7@1794
-@@23:
+	je short	@@9
+	jmp	@14@1794
+@@9:
    ;	
    ;	            if (!jason_msg && cur_sub->on_pos(0x823)) {
    ;	
 	mov	al,byte ptr DGROUP:_jason_msg
 	mov	ah,0
 	or	ax,ax
-	jne	short @7@1542
+	jne	short @14@1542
 	push	2083
 	push	word ptr DGROUP:_cur_sub+2
 	push	word ptr DGROUP:_cur_sub
 	call	far ptr @m_actor@on_pos$qui
 	add	sp,6
 	or	al,al
-	je	short @7@1542
+	je	short @14@1542
    ;	
    ;	                jason_msg = 1;
    ;	
@@ -3312,7 +4040,7 @@ GAME_TEXT	segment byte public use16 'CODE'
 	push	14
 	call	far ptr @post_message$quc
 	pop	cx
-@7@1542:
+@14@1542:
    ;	
    ;	            }
    ;	            if (!barrel_msg && cur_sub->on_pos(0x403)) {
@@ -3320,14 +4048,14 @@ GAME_TEXT	segment byte public use16 'CODE'
 	mov	al,byte ptr DGROUP:_barrel_msg
 	mov	ah,0
 	or	ax,ax
-	jne	short @7@1626
+	jne	short @14@1626
 	push	1027
 	push	word ptr DGROUP:_cur_sub+2
 	push	word ptr DGROUP:_cur_sub
 	call	far ptr @m_actor@on_pos$qui
 	add	sp,6
 	or	al,al
-	je	short @7@1626
+	je	short @14@1626
    ;	
    ;	                barrel_msg = 1;
    ;	
@@ -3338,7 +4066,7 @@ GAME_TEXT	segment byte public use16 'CODE'
 	push	10
 	call	far ptr @post_message$quc
 	pop	cx
-@7@1626:
+@14@1626:
    ;	
    ;	            }
    ;	            if (!gun_msg && cur_sub->on_pos(0xC23)) {
@@ -3346,14 +4074,14 @@ GAME_TEXT	segment byte public use16 'CODE'
 	mov	al,byte ptr DGROUP:_gun_msg
 	mov	ah,0
 	or	ax,ax
-	jne	short @7@1710
+	jne	short @14@1710
 	push	3107
 	push	word ptr DGROUP:_cur_sub+2
 	push	word ptr DGROUP:_cur_sub
 	call	far ptr @m_actor@on_pos$qui
 	add	sp,6
 	or	al,al
-	je	short @7@1710
+	je	short @14@1710
    ;	
    ;	                gun_msg = 1;
    ;	
@@ -3364,7 +4092,7 @@ GAME_TEXT	segment byte public use16 'CODE'
 	push	12
 	call	far ptr @post_message$quc
 	pop	cx
-@7@1710:
+@14@1710:
    ;	
    ;	            }
    ;	            if (!cave_msg && cur_sub->on_pos(0x687)) {
@@ -3372,14 +4100,14 @@ GAME_TEXT	segment byte public use16 'CODE'
 	mov	al,byte ptr DGROUP:_cave_msg
 	mov	ah,0
 	or	ax,ax
-	jne	short @7@1794
+	jne	short @14@1794
 	push	1671
 	push	word ptr DGROUP:_cur_sub+2
 	push	word ptr DGROUP:_cur_sub
 	call	far ptr @m_actor@on_pos$qui
 	add	sp,6
 	or	al,al
-	je	short @7@1794
+	je	short @14@1794
    ;	
    ;	                cave_msg = 1;
    ;	
@@ -3390,22 +4118,22 @@ GAME_TEXT	segment byte public use16 'CODE'
 	push	13
 	call	far ptr @post_message$quc
 	pop	cx
-@7@1794:
+@14@1794:
    ;	
    ;	            }
    ;	        }
    ;	        for (i = 0; i < message_count; i += 2) {
    ;	
 	mov	word ptr [bp-2],0
-	jmp	short @7@1934
-@7@1822:
+	jmp	short @14@1934
+@14@1822:
    ;	
    ;	            if (map_messages[i] && cur_sub->on_pos(map_messages[i])) {
    ;	
 	mov	bx,word ptr [bp-2]
 	shl	bx,1
 	cmp	word ptr DGROUP:_map_messages[bx],0
-	je	short @7@1906
+	je	short @14@1906
 	mov	bx,word ptr [bp-2]
 	shl	bx,1
 	push	word ptr DGROUP:_map_messages[bx]
@@ -3414,7 +4142,7 @@ GAME_TEXT	segment byte public use16 'CODE'
 	call	far ptr @m_actor@on_pos$qui
 	add	sp,6
 	or	al,al
-	je	short @7@1906
+	je	short @14@1906
    ;	
    ;	                post_message(map_messages[i + 1]);
    ;	
@@ -3431,44 +4159,44 @@ GAME_TEXT	segment byte public use16 'CODE'
 	mov	bx,word ptr [bp-2]
 	shl	bx,1
 	mov	word ptr DGROUP:_map_messages[bx],0
-@7@1906:
+@14@1906:
 	add	word ptr [bp-2],2
-@7@1934:
+@14@1934:
 	mov	al,byte ptr DGROUP:_message_count
 	mov	ah,0
 	cmp	ax,word ptr [bp-2]
-	ja	short @7@1822
+	ja	short @14@1822
    ;	
    ;	            }
    ;	        }
    ;	        if (message_posted && --message_posted == 0)
    ;	
 	cmp	byte ptr DGROUP:_message_posted,0
-	je	short @7@2046
+	je	short @14@2046
 	mov	al,byte ptr DGROUP:_message_posted
 	add	al,255
 	mov	byte ptr DGROUP:_message_posted,al
 	or	al,al
-	jne	short @7@2046
+	jne	short @14@2046
    ;	
    ;	            clear_message();
    ;	
 	call	far ptr @clear_message$qv
-@7@2046:
+@14@2046:
    ;	
    ;	    }
    ;	
    ;	    if (cur_map == 0x15 && the_game->field_0F == 1) {
    ;	
 	cmp	byte ptr DGROUP:_cur_map,21
-	je short	@@24
-	jmp	@7@2914
-@@24:
+	je short	@@10
+	jmp	@14@2914
+@@10:
 	les	bx,dword ptr DGROUP:_the_game
 	cmp	byte ptr es:[bx+15],1
-	je short	@@25
-	jmp	@7@2914
-@@25:
+	je short	@@11
+	jmp	@14@2914
+@@11:
    ;	
    ;	        pause(2);
    ;	
@@ -3493,19 +4221,19 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	
 	les	bx,dword ptr DGROUP:_the_game
 	cmp	byte ptr es:[bx+16],0
-	je short	@@26
-	jmp	@7@2578
-@@26:
+	je short	@@12
+	jmp	@14@2578
+@@12:
    ;	
    ;	            if (control)
    ;	
 	cmp	byte ptr DGROUP:_control,0
-	je	short @7@2186
+	je	short @14@2186
    ;	
    ;	                control = 0;
    ;	
 	mov	byte ptr DGROUP:_control,0
-@7@2186:
+@14@2186:
    ;	
    ;	            if (cur_sub->old_y != boss->center_y) {
    ;	
@@ -3513,7 +4241,7 @@ GAME_TEXT	segment byte public use16 'CODE'
 	mov	ax,word ptr es:[bx+6]
 	les	bx,dword ptr DGROUP:_boss
 	cmp	ax,word ptr es:[bx+10]
-	je	short @7@2326
+	je	short @14@2326
    ;	
    ;	                ego->x_speed = 0;
    ;	
@@ -3526,28 +4254,28 @@ GAME_TEXT	segment byte public use16 'CODE'
 	mov	ax,word ptr es:[bx+6]
 	les	bx,dword ptr DGROUP:_boss
 	cmp	ax,word ptr es:[bx+10]
-	jge	short @7@2270
+	jge	short @14@2270
    ;	
    ;	                    ego->y_speed = 1;
    ;	
 	les	bx,dword ptr DGROUP:_ego
 	mov	word ptr es:[bx+22],1
-	jmp	@7@2914
-@7@2270:
+	jmp	@14@2914
+@14@2270:
    ;	
    ;	                else
    ;	                    ego->y_speed = -1;
    ;	
 	les	bx,dword ptr DGROUP:_ego
 	mov	word ptr es:[bx+22],-1
-	jmp	@7@2914
+	jmp	@14@2914
    ;	
    ;	            } else if (dist > 4) {
    ;	
-	jmp	@7@2914
-@7@2326:
+	jmp	@14@2914
+@14@2326:
 	cmp	word ptr [bp-10],4
-	jbe	short @7@2466
+	jbe	short @14@2466
    ;	
    ;	                ego->y_speed = 0;
    ;	
@@ -3560,26 +4288,26 @@ GAME_TEXT	segment byte public use16 'CODE'
 	mov	ax,word ptr es:[bx+4]
 	les	bx,dword ptr DGROUP:_ego
 	cmp	ax,word ptr es:[bx]
-	jle	short @7@2410
+	jle	short @14@2410
    ;	
    ;	                    ego->x_speed = 4;
    ;	
 	les	bx,dword ptr DGROUP:_ego
 	mov	word ptr es:[bx+20],4
-	jmp	@7@2914
-@7@2410:
+	jmp	@14@2914
+@14@2410:
    ;	
    ;	                else
    ;	                    ego->x_speed = -4;
    ;	
 	les	bx,dword ptr DGROUP:_ego
 	mov	word ptr es:[bx+20],-4
-	jmp	@7@2914
+	jmp	@14@2914
    ;	
    ;	            } else {
    ;	
-	jmp	@7@2914
-@7@2466:
+	jmp	@14@2914
+@14@2466:
    ;	
    ;	                the_game->field_10 = 1;
    ;	
@@ -3590,12 +4318,12 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	
 	les	bx,dword ptr DGROUP:_ego
 	cmp	byte ptr es:[bx+52],0
-	je	short @7@2522
+	je	short @14@2522
    ;	
    ;	                    ego->new_loop((uchar far *)"subr.l");
    ;	
 	push	ds
-	push	offset DGROUP:s@+1763
+	push	offset DGROUP:s@+1151
 	push	word ptr DGROUP:_ego+2
 	push	word ptr DGROUP:_ego
 	call	far ptr @m_actor@new_loop$qnuc
@@ -3605,7 +4333,7 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	
 	les	bx,dword ptr DGROUP:_ego
 	mov	byte ptr es:[bx+52],0
-@7@2522:
+@14@2522:
    ;	
    ;	                }
    ;	                act = the_cast->add((uchar far *)"chain.l", 0, 0);
@@ -3615,7 +4343,7 @@ GAME_TEXT	segment byte public use16 'CODE'
 	push	0
 	push	0
 	push	ds
-	push	offset DGROUP:s@+1770
+	push	offset DGROUP:s@+1158
 	push	word ptr DGROUP:_the_cast+2
 	push	word ptr DGROUP:_the_cast
 	call	far ptr @game_cast@add$qnucnvt2
@@ -3663,43 +4391,43 @@ GAME_TEXT	segment byte public use16 'CODE'
 	mov	word ptr es:[bx+22],ax
 	les	bx,dword ptr DGROUP:_ego
 	mov	word ptr es:[bx+20],ax
-	jmp	@7@2914
+	jmp	@14@2914
    ;	
    ;	            }
    ;	        } else {
    ;	
-	jmp	@7@2914
-@7@2578:
+	jmp	@14@2914
+@14@2578:
    ;	
    ;	            if (ego->target->current_loop == 2)
    ;	
 	les	bx,dword ptr DGROUP:_ego
 	les	bx,dword ptr es:[bx+44]
 	cmp	byte ptr es:[bx+60],2
-	jne	short @7@2634
+	jne	short @14@2634
    ;	
    ;	                the_game->play_sound((uchar far *)"plunk2", 0x0F);
    ;	
 	push	15
 	push	ds
-	push	offset DGROUP:s@+1778
+	push	offset DGROUP:s@+1166
 	push	word ptr DGROUP:_the_game+2
 	push	word ptr DGROUP:_the_game
 	call	far ptr @game_manager@play_sound$qnucuc
 	add	sp,10
-@7@2634:
+@14@2634:
    ;	
    ;	            if (boss->x_speed == 0 && !ego->target->frame)
    ;	
 	les	bx,dword ptr DGROUP:_boss
 	cmp	word ptr es:[bx+20],0
-	jne	short @7@2718
+	jne	short @14@2718
 	les	bx,dword ptr DGROUP:_ego
 	les	bx,dword ptr es:[bx+44]
 	mov	al,byte ptr es:[bx+56]
 	mov	ah,0
 	or	ax,ax
-	jne	short @7@2718
+	jne	short @14@2718
    ;	
    ;	                ego->x_speed = ego->target->x_speed = boss->x_speed = 4;
    ;	
@@ -3711,7 +4439,7 @@ GAME_TEXT	segment byte public use16 'CODE'
 	mov	word ptr es:[bx+20],ax
 	les	bx,dword ptr DGROUP:_ego
 	mov	word ptr es:[bx+20],ax
-@7@2718:
+@14@2718:
    ;	
    ;	            pause(3);
    ;	
@@ -3723,15 +4451,15 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	
 	les	bx,dword ptr DGROUP:_ego
 	cmp	word ptr es:[bx],600
-	jg short	@@27
-	jmp	@7@2914
-@@27:
+	jg short	@@13
+	jmp	@14@2914
+@@13:
 	mov	al,byte ptr DGROUP:_displayed_page
 	mov	ah,0
 	or	ax,ax
-	je short	@@28
-	jmp	@7@2914
-@@28:
+	je short	@@14
+	jmp	@14@2914
+@@14:
    ;	
    ;	                show_loop((uchar far *)"the.l", 0x23, 0x41, 0, 0);
    ;	
@@ -3740,7 +4468,7 @@ GAME_TEXT	segment byte public use16 'CODE'
 	push	65
 	push	35
 	push	ds
-	push	offset DGROUP:s@+1785
+	push	offset DGROUP:s@+1173
 	call	far ptr @show_loop$qnuciiucui
 	add	sp,12
    ;	
@@ -3751,7 +4479,7 @@ GAME_TEXT	segment byte public use16 'CODE'
 	push	65
 	push	165
 	push	ds
-	push	offset DGROUP:s@+1791
+	push	offset DGROUP:s@+1179
 	call	far ptr @show_loop$qnuciiucui
 	add	sp,12
    ;	
@@ -3764,8 +4492,8 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	                for (n = 0; n < 0x1F400; n++) {
    ;	
 	mov	dword ptr [bp-14],large 0
-	jmp	short @7@2858
-@7@2802:
+	jmp	short @14@2858
+@14@2802:
    ;	
    ;	                    cx = random(0x140);
    ;	
@@ -3806,15 +4534,15 @@ GAME_TEXT	segment byte public use16 'CODE'
 	call	far ptr @vga_display@fill_rect$qiiiiiiuc
 	add	sp,18
 	inc	dword ptr [bp-14]
-@7@2858:
+@14@2858:
 	cmp	dword ptr [bp-14],large 00001F400h
-	jb	short @7@2802
+	jb	short @14@2802
    ;	
    ;	                }
    ;	                stop_room = 1;
    ;	
 	mov	byte ptr DGROUP:_stop_room,1
-@7@2914:
+@14@2914:
    ;	
    ;	            }
    ;	        }
@@ -3879,9 +4607,9 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	    if (stop_room == 5) {
    ;	
 	cmp	byte ptr DGROUP:_stop_room,5
-	je short	@@29
-	jmp	@9@310
-@@29:
+	je short	@@15
+	jmp	@16@310
+@@15:
    ;	
    ;	        if (random(2) == 0)
    ;	
@@ -3889,7 +4617,7 @@ GAME_TEXT	segment byte public use16 'CODE'
 	call	far ptr @random$qi
 	pop	cx
 	or	ax,ax
-	jne	short @9@114
+	jne	short @16@114
    ;	
    ;	            display->show_pcx((uchar far *)"p_death1.pcx", 0, 0, -1);
    ;	
@@ -3897,9 +4625,9 @@ GAME_TEXT	segment byte public use16 'CODE'
 	push	0
 	push	0
 	push	ds
-	push	offset DGROUP:s@+1797
-	jmp	short @9@142
-@9@114:
+	push	offset DGROUP:s@+1185
+	jmp	short @16@142
+@16@114:
    ;	
    ;	        else
    ;	            display->show_pcx((uchar far *)"p_death2.pcx", 0, 0, -1);
@@ -3908,8 +4636,8 @@ GAME_TEXT	segment byte public use16 'CODE'
 	push	0
 	push	0
 	push	ds
-	push	offset DGROUP:s@+1810
-@9@142:
+	push	offset DGROUP:s@+1198
+@16@142:
 	push	word ptr DGROUP:_display+2
 	push	word ptr DGROUP:_display
 	call	far ptr @vga_display@show_pcx$qnucucuii
@@ -3926,21 +4654,21 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	
 	les	bx,dword ptr DGROUP:_the_game
 	cmp	byte ptr es:[bx+6],0
-	je	short @9@226
+	je	short @16@226
    ;	
    ;	            the_game->play_sound_file((uchar far *)"bubbles2");
    ;	
 	push	ds
-	push	offset DGROUP:s@+1823
-	jmp	short @9@254
-@9@226:
+	push	offset DGROUP:s@+1211
+	jmp	short @16@254
+@16@226:
    ;	
    ;	        else
    ;	            the_game->play_sound_file((uchar far *)"dead");
    ;	
 	push	ds
-	push	offset DGROUP:s@+1832
-@9@254:
+	push	offset DGROUP:s@+1220
+@16@254:
 	push	word ptr DGROUP:_the_game+2
 	push	word ptr DGROUP:_the_game
 	call	far ptr @game_manager@play_sound_file$qnuc
@@ -3976,7 +4704,7 @@ GAME_TEXT	segment byte public use16 'CODE'
 	push	word ptr DGROUP:_display
 	call	far ptr @vga_display@set_palette$qv
 	add	sp,4
-@9@310:
+@16@310:
    ;	
    ;	    }
    ;	    is_rec = is_record(score);
@@ -3989,12 +4717,12 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	    if (is_rec) {
    ;	
 	cmp	byte ptr [bp-1],0
-	je	short @9@478
+	je	short @16@478
    ;	
    ;	        if (cheat_mode == 1) {
    ;	
 	cmp	byte ptr DGROUP:_cheat_mode,1
-	jne	short @9@394
+	jne	short @16@394
    ;	
    ;	            i_inform((uchar far *)"You made the top 10!  Unfortunately\nyou are a big cheater, so no cigar.", 0, (uchar far *)0)
    ;	
@@ -4002,8 +4730,8 @@ GAME_TEXT	segment byte public use16 'CODE'
 	push	0
 	push	0
 	push	ds
-	push	offset DGROUP:s@+1837
-	call	far ptr @i_inform$qnucuce
+	push	offset DGROUP:s@+1225
+	call	far ptr @i_inform$qnucuct1
 	add	sp,10
    ;	
    ;	            is_rec = 0;
@@ -4012,8 +4740,8 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	
    ;	        } else {
    ;	
-	jmp	short @9@478
-@9@394:
+	jmp	short @16@478
+@16@394:
    ;	
    ;	            name = i_get_string((uchar far *)"Enter Name",
    ;	
@@ -4021,9 +4749,9 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	                                (uchar far *)"You're in the top 10!");
    ;	
 	push	ds
-	push	offset DGROUP:s@+1920
+	push	offset DGROUP:s@+1308
 	push	ds
-	push	offset DGROUP:s@+1909
+	push	offset DGROUP:s@+1297
 	call	far ptr @i_get_string$qnuct1
 	add	sp,8
 	mov	word ptr [bp-4],dx
@@ -4032,13 +4760,13 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	            if (name == 0)
    ;	
 	cmp	dword ptr [bp-6],large 0
-	jne	short @9@450
+	jne	short @16@450
    ;	
    ;	                name = (uchar far *)"";
    ;	
 	mov	word ptr [bp-4],ds
-	mov	word ptr [bp-6],offset DGROUP:s@+1942
-@9@450:
+	mov	word ptr [bp-6],offset DGROUP:s@+1330
+@16@450:
    ;	
    ;	            save_new_score(score, name, 0);
    ;	
@@ -4048,7 +4776,7 @@ GAME_TEXT	segment byte public use16 'CODE'
 	push	dword ptr DGROUP:_score
 	call	far ptr @save_new_score$qulnucuc
 	add	sp,10
-@9@478:
+@16@478:
    ;	
    ;	        }
    ;	    }
@@ -4098,27 +4826,27 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	    if (god_mode == 1)
    ;	
 	cmp	byte ptr DGROUP:_god_mode,1
-	jne short	@@30
-	jmp	@10@954
-@@30:
+	jne short	@@16
+	jmp	@17@954
+@@16:
    ;	
    ;	        return;
    ;	    if (cur_sub->state == 6)
    ;	
 	les	bx,dword ptr DGROUP:_cur_sub
 	cmp	byte ptr es:[bx+61],6
-	jne short	@@31
-	jmp	@10@954
-@@31:
+	jne short	@@17
+	jmp	@17@954
+@@17:
    ;	
    ;	        return;
    ;	    if (ego->state == 2) {
    ;	
 	les	bx,dword ptr DGROUP:_ego
 	cmp	byte ptr es:[bx+61],2
-	je short	@@32
-	jmp	@10@198
-@@32:
+	je short	@@18
+	jmp	@17@198
+@@18:
    ;	
    ;	        ego->erase();
    ;	
@@ -4130,9 +4858,9 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	        if (death_type == 0) {
    ;	
 	cmp	byte ptr DGROUP:_death_type,0
-	je short	@@33
-	jmp	@10@282
-@@33:
+	je short	@@19
+	jmp	@17@282
+@@19:
    ;	
    ;	            the_game->load_loop(src);
    ;	
@@ -4146,7 +4874,7 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	            ego->new_loop((uchar far *)"egodie2.l");
    ;	
 	push	ds
-	push	offset DGROUP:s@+1943
+	push	offset DGROUP:s@+1331
 	push	word ptr DGROUP:_ego+2
 	push	word ptr DGROUP:_ego
 	call	far ptr @m_actor@new_loop$qnuc
@@ -4175,19 +4903,19 @@ GAME_TEXT	segment byte public use16 'CODE'
 	push	word ptr DGROUP:_ego
 	call	far ptr @m_actor@set_xy$qii
 	add	sp,8
-	jmp	@10@282
+	jmp	@17@282
    ;	
    ;	        }
    ;	    } else {
    ;	
-	jmp	@10@282
-@10@198:
+	jmp	@17@282
+@17@198:
    ;	
    ;	        the_game->play_sound((uchar far *)"swish", 0x0F);
    ;	
 	push	15
 	push	ds
-	push	offset DGROUP:s@+1953
+	push	offset DGROUP:s@+1341
 	push	word ptr DGROUP:_the_game+2
 	push	word ptr DGROUP:_the_game
 	call	far ptr @game_manager@play_sound$qnucuc
@@ -4196,7 +4924,7 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	        the_game->load_loop((uchar far *)"gotcha.l");
    ;	
 	push	ds
-	push	offset DGROUP:s@+1959
+	push	offset DGROUP:s@+1347
 	push	word ptr DGROUP:_the_game+2
 	push	word ptr DGROUP:_the_game
 	call	far ptr @game_manager@load_loop$qnuc
@@ -4205,7 +4933,7 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	        ego->new_loop((uchar far *)"gotcha.l");
    ;	
 	push	ds
-	push	offset DGROUP:s@+1968
+	push	offset DGROUP:s@+1356
 	push	word ptr DGROUP:_ego+2
 	push	word ptr DGROUP:_ego
 	call	far ptr @m_actor@new_loop$qnuc
@@ -4237,7 +4965,7 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	
 	push	15
 	push	ds
-	push	offset DGROUP:s@+1977
+	push	offset DGROUP:s@+1365
 	push	word ptr DGROUP:_the_game+2
 	push	word ptr DGROUP:_the_game
 	call	far ptr @game_manager@play_sound$qnucuc
@@ -4264,49 +4992,49 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	        if (jason_present == 1)
    ;	
 	cmp	byte ptr DGROUP:_jason_present,1
-	jne	short @10@254
+	jne	short @17@254
    ;	
    ;	            kill_jason();
    ;	
 	call	far ptr @kill_jason$qv
-@10@254:
+@17@254:
    ;	
    ;	        control = 0;
    ;	
 	mov	byte ptr DGROUP:_control,0
-@10@282:
+@17@282:
    ;	
    ;	    }
    ;	    if (death_type == 0 && ego->current_loop == 4)
    ;	
 	cmp	byte ptr DGROUP:_death_type,0
-	jne	short @10@366
+	jne	short @17@366
 	les	bx,dword ptr DGROUP:_ego
 	cmp	byte ptr es:[bx+60],4
-	jne	short @10@366
+	jne	short @17@366
    ;	
    ;	        the_game->play_sound((uchar far *)"exp2", 0x0F);
    ;	
 	push	15
 	push	ds
-	push	offset DGROUP:s@+1983
+	push	offset DGROUP:s@+1371
 	push	word ptr DGROUP:_the_game+2
 	push	word ptr DGROUP:_the_game
 	call	far ptr @game_manager@play_sound$qnucuc
 	add	sp,10
-@10@366:
+@17@366:
    ;	
    ;	    if (ego->current_loop > 4 && !ego->door_open)
    ;	
 	les	bx,dword ptr DGROUP:_ego
 	cmp	byte ptr es:[bx+60],4
-	jbe	short @10@450
+	jbe	short @17@450
 	les	bx,dword ptr DGROUP:_ego
 	mov	al,byte ptr es:[bx+82]
 	shr	ax,6
 	and	ax,1
 	or	ax,ax
-	jne	short @10@450
+	jne	short @17@450
    ;	
    ;	        add_bubble(ego->x + random(ego->width),
    ;	
@@ -4332,35 +5060,35 @@ GAME_TEXT	segment byte public use16 'CODE'
 	push	dx
 	call	far ptr @add_bubble$qiii
 	add	sp,6
-@10@450:
+@17@450:
    ;	
    ;	    if (ego->frame)
    ;	
 	les	bx,dword ptr DGROUP:_ego
 	cmp	byte ptr es:[bx+56],0
-	je short	@@34
-	jmp	@10@954
-@@34:
+	je short	@@20
+	jmp	@17@954
+@@20:
    ;	
    ;	        return;
    ;	    if (death_type == 0)
    ;	
 	cmp	byte ptr DGROUP:_death_type,0
-	jne	short @10@534
+	jne	short @17@534
    ;	
    ;	        the_game->remove_loop((uchar far *)"egodie2.l");
    ;	
 	push	ds
-	push	offset DGROUP:s@+1988
-	jmp	short @10@562
-@10@534:
+	push	offset DGROUP:s@+1376
+	jmp	short @17@562
+@17@534:
    ;	
    ;	    else
    ;	        the_game->remove_loop((uchar far *)"gotcha.l");
    ;	
 	push	ds
-	push	offset DGROUP:s@+1998
-@10@562:
+	push	offset DGROUP:s@+1386
+@17@562:
 	push	word ptr DGROUP:_the_game+2
 	push	word ptr DGROUP:_the_game
 	call	far ptr @game_manager@remove_loop$qnuc
@@ -4381,29 +5109,29 @@ GAME_TEXT	segment byte public use16 'CODE'
 	cwd	
 	idiv	bx
 	or	dx,dx
-	je	short @10@730
+	je	short @17@730
 	cmp	dx,1
-	je	short @10@758
-	jmp	short @10@814
-@10@730:
+	je	short @17@758
+	jmp	short @17@814
+@17@730:
    ;	
    ;	        case 0: the_game->play_sound_file((uchar far *)"cry");     break;
    ;	
 	push	ds
-	push	offset DGROUP:s@+2007
-	jmp	short @10@786
-@10@758:
+	push	offset DGROUP:s@+1395
+	jmp	short @17@786
+@17@758:
    ;	
    ;	        case 1: the_game->play_sound_file((uchar far *)"villans"); break;
    ;	
 	push	ds
-	push	offset DGROUP:s@+2011
-@10@786:
+	push	offset DGROUP:s@+1399
+@17@786:
 	push	word ptr DGROUP:_the_game+2
 	push	word ptr DGROUP:_the_game
 	call	far ptr @game_manager@play_sound_file$qnuc
 	add	sp,8
-@10@814:
+@17@814:
    ;	
    ;	    }
    ;	    display->fade_down();
@@ -4416,7 +5144,7 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	    if (men == 0) {
    ;	
 	cmp	byte ptr DGROUP:_men,0
-	jne	short @10@870
+	jne	short @17@870
    ;	
    ;	        stop_room = 5;
    ;	
@@ -4424,8 +5152,8 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	
    ;	        return;
    ;	
-	jmp	short @10@954
-@10@870:
+	jmp	short @17@954
+@17@870:
    ;	
    ;	    }
    ;	    stop_room = 3;
@@ -4435,12 +5163,12 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	    if (heavy_timer == 0)
    ;	
 	cmp	word ptr DGROUP:_heavy_timer,0
-	jne	short @10@926
+	jne	short @17@926
    ;	
    ;	        shot_size = 0;
    ;	
 	mov	byte ptr DGROUP:_shot_size,0
-@10@926:
+@17@926:
    ;	
    ;	    auto_fire = 0;
    ;	
@@ -4477,7 +5205,7 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	    update_men();
    ;	
 	call	far ptr @update_men$qv
-@10@954:
+@17@954:
    ;	
    ;	}
    ;	
@@ -4499,60 +5227,60 @@ GAME_TEXT	segment byte public use16 'CODE'
 	mov	ax,word ptr [bp+10]
 	mov	word ptr [bp-6],ax
 	mov	cx,6
-	mov	bx,offset @11@C50
-@11@86:
+	mov	bx,offset @18@C50
+@18@86:
 	mov	ax,word ptr cs:[bx]
 	cmp	ax,word ptr [bp-6]
-	je	short @11@170
+	je	short @18@170
 	add	bx,2
-	loop	short @11@86
-	jmp	short @11@366
-@11@170:
+	loop	short @18@86
+	jmp	short @18@366
+@18@170:
 	jmp	word ptr cs:[bx+12]
-@11@198:
+@18@198:
    ;	
    ;	    {
    ;	    case 100:  s2 = (uchar far *)"scr_100.l";  break;
    ;	
 	mov	word ptr [bp-2],ds
-	mov	word ptr [bp-4],offset DGROUP:s@+2019
-	jmp	short @11@394
-@11@226:
+	mov	word ptr [bp-4],offset DGROUP:s@+1407
+	jmp	short @18@394
+@18@226:
    ;	
    ;	    case 500:  s2 = (uchar far *)"scr_500.l";  break;
    ;	
 	mov	word ptr [bp-2],ds
-	mov	word ptr [bp-4],offset DGROUP:s@+2029
-	jmp	short @11@394
-@11@254:
+	mov	word ptr [bp-4],offset DGROUP:s@+1417
+	jmp	short @18@394
+@18@254:
    ;	
    ;	    case 1000: s2 = (uchar far *)"scr_1000.l"; break;
    ;	
 	mov	word ptr [bp-2],ds
-	mov	word ptr [bp-4],offset DGROUP:s@+2039
-	jmp	short @11@394
-@11@282:
+	mov	word ptr [bp-4],offset DGROUP:s@+1427
+	jmp	short @18@394
+@18@282:
    ;	
    ;	    case 2000: s2 = (uchar far *)"scr_2000.l"; break;
    ;	
 	mov	word ptr [bp-2],ds
-	mov	word ptr [bp-4],offset DGROUP:s@+2050
-	jmp	short @11@394
-@11@310:
+	mov	word ptr [bp-4],offset DGROUP:s@+1438
+	jmp	short @18@394
+@18@310:
    ;	
    ;	    case 3000: s2 = (uchar far *)"scr_3000.l"; break;
    ;	
 	mov	word ptr [bp-2],ds
-	mov	word ptr [bp-4],offset DGROUP:s@+2061
-	jmp	short @11@394
-@11@338:
+	mov	word ptr [bp-4],offset DGROUP:s@+1449
+	jmp	short @18@394
+@18@338:
    ;	
    ;	    case 4000: s2 = (uchar far *)"scr_4000.l"; break;
    ;	
 	mov	word ptr [bp-2],ds
-	mov	word ptr [bp-4],offset DGROUP:s@+2072
-	jmp	short @11@394
-@11@366:
+	mov	word ptr [bp-4],offset DGROUP:s@+1460
+	jmp	short @18@394
+@18@366:
    ;	
    ;	    default:
    ;	        terminate((uchar far *)"Undefined score animation.", 0);
@@ -4560,13 +5288,13 @@ GAME_TEXT	segment byte public use16 'CODE'
 	push	0
 	push	0
 	push	ds
-	push	offset DGROUP:s@+2083
+	push	offset DGROUP:s@+1471
 	call	far ptr @terminate$qnuct1
 	add	sp,8
    ;	
    ;	        break;
    ;	
-@11@394:
+@18@394:
    ;	
    ;	    }
    ;	
@@ -4614,7 +5342,7 @@ GAME_TEXT	segment byte public use16 'CODE'
 	leave	
 	ret	
 @score_at$qiii	endp
-@11@C50	label	word
+@18@C50	label	word
 	db	100
 	db	0
 	db	244
@@ -4627,12 +5355,12 @@ GAME_TEXT	segment byte public use16 'CODE'
 	db	11
 	db	160
 	db	15
-	dw	@11@198
-	dw	@11@226
-	dw	@11@254
-	dw	@11@282
-	dw	@11@310
-	dw	@11@338
+	dw	@18@198
+	dw	@18@226
+	dw	@18@254
+	dw	@18@282
+	dw	@18@310
+	dw	@18@338
    ;	
    ;	void post_message(uchar msg)
    ;	
@@ -4649,18 +5377,18 @@ GAME_TEXT	segment byte public use16 'CODE'
 	mov	al,byte ptr [bp+6]
 	mov	ah,0
 	cmp	ax,word ptr DGROUP:_cur_message
-	jne short	@@35
-	jmp	@12@674
-@@35:
+	jne short	@@21
+	jmp	@19@674
+@@21:
    ;	
    ;	        return;
    ;	
    ;	    if (msg >= 10)
    ;	
 	cmp	byte ptr [bp+6],10
-	jae short	@@36
-	jmp	@12@646
-@@36:
+	jae short	@@22
+	jmp	@19@646
+@@22:
    ;	
    ;	    {
    ;	        switch (msg - 10)
@@ -4670,38 +5398,38 @@ GAME_TEXT	segment byte public use16 'CODE'
 	add	ax,-10
 	mov	bx,ax
 	cmp	bx,4
-	ja	short @12@282
+	ja	short @19@282
 	shl	bx,1
-	jmp	word ptr cs:@12@C578[bx]
-@12@170:
+	jmp	word ptr cs:@19@C578[bx]
+@19@170:
    ;	
    ;	        {
    ;	        case 0: s2 = (uchar far *)"msg_bar.l";  break;
    ;	
 	mov	word ptr [bp-2],ds
-	mov	word ptr [bp-4],offset DGROUP:s@+2110
-	jmp	short @12@282
-@12@198:
+	mov	word ptr [bp-4],offset DGROUP:s@+1498
+	jmp	short @19@282
+@19@198:
    ;	
    ;	        case 2: s2 = (uchar far *)"msg_gun.l";  break;
    ;	
 	mov	word ptr [bp-2],ds
-	mov	word ptr [bp-4],offset DGROUP:s@+2120
-	jmp	short @12@282
-@12@226:
+	mov	word ptr [bp-4],offset DGROUP:s@+1508
+	jmp	short @19@282
+@19@226:
    ;	
    ;	        case 3: s2 = (uchar far *)"msg_cave.l"; break;
    ;	
 	mov	word ptr [bp-2],ds
-	mov	word ptr [bp-4],offset DGROUP:s@+2130
-	jmp	short @12@282
-@12@254:
+	mov	word ptr [bp-4],offset DGROUP:s@+1518
+	jmp	short @19@282
+@19@254:
    ;	
    ;	        case 4: s2 = (uchar far *)"msg_jasn.l"; break;
    ;	
 	mov	word ptr [bp-2],ds
-	mov	word ptr [bp-4],offset DGROUP:s@+2141
-@12@282:
+	mov	word ptr [bp-4],offset DGROUP:s@+1529
+@19@282:
    ;	
    ;	        }
    ;	        show_loop(s2, 0x69, 0x37, 0, page_offsets[displayed_page]);
@@ -4718,8 +5446,8 @@ GAME_TEXT	segment byte public use16 'CODE'
 	push	word ptr [bp-4]
 	call	far ptr @show_loop$qnuciiucui
 	add	sp,12
-	jmp	short @12@338
-@12@310:
+	jmp	short @19@338
+@19@310:
    ;	
    ;	        while (gr_keys[0x1C] || the_game->field_2C)
    ;	            the_game->doit();
@@ -4728,14 +5456,14 @@ GAME_TEXT	segment byte public use16 'CODE'
 	push	word ptr DGROUP:_the_game
 	call	far ptr @game_manager@doit$qv
 	add	sp,4
-@12@338:
+@19@338:
 	cmp	byte ptr DGROUP:_gr_keys+28,0
-	jne	short @12@310
+	jne	short @19@310
 	les	bx,dword ptr DGROUP:_the_game
 	cmp	byte ptr es:[bx+44],0
-	jne	short @12@310
-	jmp	short @12@450
-@12@422:
+	jne	short @19@310
+	jmp	short @19@450
+@19@422:
    ;	
    ;	        while (!gr_keys[0x1C] && !the_game->field_2C)
    ;	            the_game->doit();
@@ -4744,18 +5472,18 @@ GAME_TEXT	segment byte public use16 'CODE'
 	push	word ptr DGROUP:_the_game
 	call	far ptr @game_manager@doit$qv
 	add	sp,4
-@12@450:
+@19@450:
 	mov	al,byte ptr DGROUP:_gr_keys+28
 	mov	ah,0
 	or	ax,ax
-	jne	short @12@562
+	jne	short @19@562
 	les	bx,dword ptr DGROUP:_the_game
 	mov	al,byte ptr es:[bx+44]
 	mov	ah,0
 	or	ax,ax
-	je	short @12@422
-	jmp	short @12@562
-@12@534:
+	je	short @19@422
+	jmp	short @19@562
+@19@534:
    ;	
    ;	        while (gr_keys[0x1C] || the_game->field_2C)
    ;	            the_game->doit();
@@ -4764,17 +5492,17 @@ GAME_TEXT	segment byte public use16 'CODE'
 	push	word ptr DGROUP:_the_game
 	call	far ptr @game_manager@doit$qv
 	add	sp,4
-@12@562:
+@19@562:
 	cmp	byte ptr DGROUP:_gr_keys+28,0
-	jne	short @12@534
+	jne	short @19@534
 	les	bx,dword ptr DGROUP:_the_game
 	cmp	byte ptr es:[bx+44],0
-	jne	short @12@534
+	jne	short @19@534
    ;	
    ;	        return;
    ;	
-	jmp	@12@674
-@12@646:
+	jmp	@19@674
+@19@646:
    ;	
    ;	    }
    ;	
@@ -4852,19 +5580,19 @@ GAME_TEXT	segment byte public use16 'CODE'
 	mov	al,byte ptr [bp+6]
 	mov	ah,0
 	mov	word ptr DGROUP:_cur_message,ax
-@12@674:
+@19@674:
    ;	
    ;	}
    ;	
 	leave	
 	ret	
 @post_message$quc	endp
-@12@C578	label	word
-	dw	@12@170
-	dw	@12@282
-	dw	@12@198
-	dw	@12@226
-	dw	@12@254
+@19@C578	label	word
+	dw	@19@170
+	dw	@19@282
+	dw	@19@198
+	dw	@19@226
+	dw	@19@254
    ;	
    ;	void clear_message(void)
    ;	
@@ -4932,7 +5660,7 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	    if (arg_2 & 0xF)
    ;	
 	test	word ptr [bp+8],15
-	je	short @14@114
+	je	short @21@114
    ;	
    ;	    {
    ;	        add_map_pup(arg_0, arg_2 & 0xF);
@@ -4942,13 +5670,13 @@ GAME_TEXT	segment byte public use16 'CODE'
 	push	ax
 	push	word ptr [bp+6]
 	call	far ptr @add_map_pup$quiui
-@14@86:
+@21@86:
 	add	sp,4
    ;	
    ;	        return;
    ;	
-	jmp	@14@3250
-@14@114:
+	jmp	@21@3250
+@21@114:
    ;	
    ;	    }
    ;	    var_5 = !(arg_0 & 1);
@@ -4977,17 +5705,17 @@ GAME_TEXT	segment byte public use16 'CODE'
 	mov	ax,word ptr [bp+8]
 	mov	word ptr [bp-12],ax
 	mov	cx,31
-	mov	bx,offset @14@C114
-@14@198:
+	mov	bx,offset @21@C114
+@21@198:
 	mov	ax,word ptr cs:[bx]
 	cmp	ax,word ptr [bp-12]
-	je	short @14@282
+	je	short @21@282
 	add	bx,2
-	loop	short @14@198
-	jmp	@14@3222
-@14@282:
+	loop	short @21@198
+	jmp	@21@3222
+@21@282:
 	jmp	word ptr cs:[bx+62]
-@14@310:
+@21@310:
    ;	
    ;	    {
    ;	    case 0x10:                  /* coin / gem / bonus group */
@@ -4997,19 +5725,19 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	        if (arg_2 == 0x2800)
    ;	
 	cmp	word ptr [bp+8],10240
-	jne	short @14@366
+	jne	short @21@366
    ;	
    ;	            s2 = (uchar far *)"gem.l";
    ;	
 	mov	word ptr [bp-2],ds
-	mov	word ptr [bp-4],offset DGROUP:s@+2152
-	jmp	short @14@618
-@14@366:
+	mov	word ptr [bp-4],offset DGROUP:s@+1540
+	jmp	short @21@618
+@21@366:
    ;	
    ;	        else if (arg_2 == 0x5000)
    ;	
 	cmp	word ptr [bp+8],20480
-	jne	short @14@590
+	jne	short @21@590
    ;	
    ;	        {
    ;	            switch (var_5)
@@ -5017,38 +5745,38 @@ GAME_TEXT	segment byte public use16 'CODE'
 	mov	al,byte ptr [bp-5]
 	mov	ah,0
 	or	ax,ax
-	je	short @14@506
+	je	short @21@506
 	cmp	ax,1
-	je	short @14@534
-	jmp	short @14@618
-@14@506:
+	je	short @21@534
+	jmp	short @21@618
+@21@506:
    ;	
    ;	            {
    ;	            case 0: s2 = (uchar far *)"bonus1.l"; break;
    ;	
 	mov	word ptr [bp-2],ds
-	mov	word ptr [bp-4],offset DGROUP:s@+2158
-	jmp	short @14@618
-@14@534:
+	mov	word ptr [bp-4],offset DGROUP:s@+1546
+	jmp	short @21@618
+@21@534:
    ;	
    ;	            case 1: s2 = (uchar far *)"bonus2.l"; break;
    ;	
 	mov	word ptr [bp-2],ds
-	mov	word ptr [bp-4],offset DGROUP:s@+2167
-	jmp	short @14@618
+	mov	word ptr [bp-4],offset DGROUP:s@+1555
+	jmp	short @21@618
    ;	
    ;	            }
    ;	        }
    ;	
-	jmp	short @14@618
-@14@590:
+	jmp	short @21@618
+@21@590:
    ;	
    ;	        else
    ;	            s2 = (uchar far *)"coin.l";
    ;	
 	mov	word ptr [bp-2],ds
-	mov	word ptr [bp-4],offset DGROUP:s@+2176
-@14@618:
+	mov	word ptr [bp-4],offset DGROUP:s@+1564
+@21@618:
    ;	
    ;	        act = the_cast->add(s2, 0, do_coin);
    ;	
@@ -5081,10 +5809,10 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	        if (arg_2 == 0x2800) act->flag_7 = 1;
    ;	
 	cmp	word ptr [bp+8],10240
-	jne	short @14@674
+	jne	short @21@674
 	les	bx,dword ptr DGROUP:_act
 	or	byte ptr es:[bx+82],128
-@14@674:
+@21@674:
    ;	
    ;	        var_2 += act->width >> 1;
    ;	
@@ -5096,20 +5824,20 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	        if (arg_2 != 0x10) ++goody_count;
    ;	
 	cmp	word ptr [bp+8],16
-	jne short	@@37
-	jmp	@14@3222
-@@37:
-@14@702:
+	jne short	@@23
+	jmp	@21@3222
+@@23:
+@21@702:
 	mov	al,byte ptr DGROUP:_goody_count
 	inc	al
-@14@730:
+@21@730:
 	mov	byte ptr DGROUP:_goody_count,al
-	jmp	@14@3222
+	jmp	@21@3222
    ;	
    ;	        break;
    ;	
-	jmp	@14@3222
-@14@786:
+	jmp	@21@3222
+@21@786:
    ;	
    ;	
    ;	    case 0x20:                  /* pod */
@@ -5117,7 +5845,7 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	        if (var_5)
    ;	
 	cmp	byte ptr [bp-5],0
-	je	short @14@842
+	je	short @21@842
    ;	
    ;	            act = the_cast->add((uchar far *)"pod1.l", mv_std, do_pod);
    ;	
@@ -5126,15 +5854,15 @@ GAME_TEXT	segment byte public use16 'CODE'
 	push	seg @mv_std$qn7m_actornit2
 	push	offset @mv_std$qn7m_actornit2
 	push	ds
-	push	offset DGROUP:s@+2183
+	push	offset DGROUP:s@+1571
 	push	word ptr DGROUP:_the_cast+2
 	push	word ptr DGROUP:_the_cast
 	call	far ptr @game_cast@add$qnucnvt2
 	add	sp,16
 	mov	word ptr DGROUP:_act+2,dx
 	mov	word ptr DGROUP:_act,ax
-	jmp	short @14@870
-@14@842:
+	jmp	short @21@870
+@21@842:
    ;	
    ;	        else
    ;	        {
@@ -5145,7 +5873,7 @@ GAME_TEXT	segment byte public use16 'CODE'
 	push	seg @mv_std$qn7m_actornit2
 	push	offset @mv_std$qn7m_actornit2
 	push	ds
-	push	offset DGROUP:s@+2190
+	push	offset DGROUP:s@+1578
 	push	word ptr DGROUP:_the_cast+2
 	push	word ptr DGROUP:_the_cast
 	call	far ptr @game_cast@add$qnucnvt2
@@ -5157,7 +5885,7 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	
 	les	bx,dword ptr DGROUP:_act
 	mov	word ptr es:[bx+38],1
-@14@870:
+@21@870:
    ;	
    ;	        }
    ;	        act->set_cycle(2, 1);
@@ -5177,16 +5905,16 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	        if (arg_2 == 0x1000) ++enemy_count;
    ;	
 	cmp	word ptr [bp+8],4096
-	jne	short @14@926
-	jmp	@14@2634
-@14@926:
-	jmp	@14@2690
+	jne	short @21@926
+	jmp	@21@2634
+@21@926:
+	jmp	@21@2690
    ;	
    ;	        else var_4 += act->height;
    ;	        break;
    ;	
-	jmp	@14@3222
-@14@982:
+	jmp	@21@3222
+@21@982:
    ;	
    ;	
    ;	    case 0x800:                 /* mine */
@@ -5197,7 +5925,7 @@ GAME_TEXT	segment byte public use16 'CODE'
 	push	0
 	push	0
 	push	ds
-	push	offset DGROUP:s@+2197
+	push	offset DGROUP:s@+1585
 	push	word ptr DGROUP:_the_cast+2
 	push	word ptr DGROUP:_the_cast
 	call	far ptr @game_cast@add$qnucnvt2
@@ -5235,10 +5963,10 @@ GAME_TEXT	segment byte public use16 'CODE'
 	call	far ptr @random$qi
 	pop	cx
 	add	al,15
-@14@1010:
+@21@1010:
 	push	ax
-	jmp	@14@1514
-@14@1038:
+	jmp	@21@1514
+@21@1038:
    ;	
    ;	        break;
    ;	
@@ -5256,7 +5984,7 @@ GAME_TEXT	segment byte public use16 'CODE'
 	push	0
 	push	0
 	push	ds
-	push	offset DGROUP:s@+2204
+	push	offset DGROUP:s@+1592
 	push	word ptr DGROUP:_the_cast+2
 	push	word ptr DGROUP:_the_cast
 	call	far ptr @game_cast@add$qnucnvt2
@@ -5304,15 +6032,15 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	
    ;	        break;
    ;	
-	jmp	@14@3222
-@14@1066:
+	jmp	@21@3222
+@21@1066:
    ;	
    ;	
    ;	    case 0x1400:                /* fish */
    ;	        if (var_5)
    ;	
 	cmp	byte ptr [bp-5],0
-	je	short @14@1122
+	je	short @21@1122
    ;	
    ;	        {
    ;	            act = the_cast->add((uchar far *)"fish1r.l", 0, do_fish);
@@ -5322,7 +6050,7 @@ GAME_TEXT	segment byte public use16 'CODE'
 	push	0
 	push	0
 	push	ds
-	push	offset DGROUP:s@+2213
+	push	offset DGROUP:s@+1601
 	push	word ptr DGROUP:_the_cast+2
 	push	word ptr DGROUP:_the_cast
 	call	far ptr @game_cast@add$qnucnvt2
@@ -5337,8 +6065,8 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	
    ;	        }
    ;	
-	jmp	short @14@1150
-@14@1122:
+	jmp	short @21@1150
+@21@1122:
    ;	
    ;	        else
    ;	        {
@@ -5349,7 +6077,7 @@ GAME_TEXT	segment byte public use16 'CODE'
 	push	0
 	push	0
 	push	ds
-	push	offset DGROUP:s@+2222
+	push	offset DGROUP:s@+1610
 	push	word ptr DGROUP:_the_cast+2
 	push	word ptr DGROUP:_the_cast
 	call	far ptr @game_cast@add$qnucnvt2
@@ -5361,7 +6089,7 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	
 	les	bx,dword ptr DGROUP:_act
 	mov	word ptr es:[bx+38],2
-@14@1150:
+@21@1150:
    ;	
    ;	        }
    ;	        var_4 -= act->height / 2;
@@ -5396,8 +6124,8 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	
 	push	1
 	push	3
-	jmp	@14@1514
-@14@1178:
+	jmp	@21@1514
+@21@1178:
    ;	
    ;	        break;
    ;	
@@ -5409,7 +6137,7 @@ GAME_TEXT	segment byte public use16 'CODE'
 	push	0
 	push	0
 	push	ds
-	push	offset DGROUP:s@+2231
+	push	offset DGROUP:s@+1619
 	push	word ptr DGROUP:_the_cast+2
 	push	word ptr DGROUP:_the_cast
 	call	far ptr @game_cast@add$qnucnvt2
@@ -5440,8 +6168,8 @@ GAME_TEXT	segment byte public use16 'CODE'
 	call	far ptr @random$qi
 	pop	cx
 	add	al,10
-	jmp	@14@1010
-@14@1206:
+	jmp	@21@1010
+@21@1206:
    ;	
    ;	        break;
    ;	
@@ -5453,7 +6181,7 @@ GAME_TEXT	segment byte public use16 'CODE'
 	push	0
 	push	0
 	push	ds
-	push	offset DGROUP:s@+2239
+	push	offset DGROUP:s@+1627
 	push	word ptr DGROUP:_the_cast+2
 	push	word ptr DGROUP:_the_cast
 	call	far ptr @game_cast@add$qnucnvt2
@@ -5486,8 +6214,8 @@ GAME_TEXT	segment byte public use16 'CODE'
 	les	bx,dword ptr es:[bx+10]
 	mov	ax,word ptr es:[bx+4]
 	add	ax,3
-	jmp	@14@3054
-@14@1234:
+	jmp	@21@3054
+@21@1234:
    ;	
    ;	        break;
    ;	
@@ -5499,7 +6227,7 @@ GAME_TEXT	segment byte public use16 'CODE'
 	push	0
 	push	0
 	push	ds
-	push	offset DGROUP:s@+2247
+	push	offset DGROUP:s@+1635
 	push	word ptr DGROUP:_the_cast+2
 	push	word ptr DGROUP:_the_cast
 	call	far ptr @game_cast@add$qnucnvt2
@@ -5540,8 +6268,8 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	
 	mov	al,byte ptr DGROUP:_goody_count
 	add	al,10
-	jmp	@14@730
-@14@1262:
+	jmp	@21@730
+@21@1262:
    ;	
    ;	        break;
    ;	
@@ -5549,7 +6277,7 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	        if (var_5)
    ;	
 	cmp	byte ptr [bp-5],0
-	je	short @14@1318
+	je	short @21@1318
    ;	
    ;	        {
    ;	            act = the_cast->add((uchar far *)"duct_r.l", 0, do_duct_lr);
@@ -5559,7 +6287,7 @@ GAME_TEXT	segment byte public use16 'CODE'
 	push	0
 	push	0
 	push	ds
-	push	offset DGROUP:s@+2255
+	push	offset DGROUP:s@+1643
 	push	word ptr DGROUP:_the_cast+2
 	push	word ptr DGROUP:_the_cast
 	call	far ptr @game_cast@add$qnucnvt2
@@ -5574,8 +6302,8 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	
    ;	        }
    ;	
-	jmp	short @14@1346
-@14@1318:
+	jmp	short @21@1346
+@21@1318:
    ;	
    ;	        else
    ;	        {
@@ -5586,7 +6314,7 @@ GAME_TEXT	segment byte public use16 'CODE'
 	push	0
 	push	0
 	push	ds
-	push	offset DGROUP:s@+2264
+	push	offset DGROUP:s@+1652
 	push	word ptr DGROUP:_the_cast+2
 	push	word ptr DGROUP:_the_cast
 	call	far ptr @game_cast@add$qnucnvt2
@@ -5598,14 +6326,14 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	
 	les	bx,dword ptr DGROUP:_act
 	mov	byte ptr es:[bx+52],1
-@14@1346:
+@21@1346:
    ;	
    ;	        }
    ;	        var_4 += 8;
    ;	
 	add	word ptr [bp-10],8
-	jmp	short @14@1486
-@14@1374:
+	jmp	short @21@1486
+@21@1374:
    ;	
    ;	        act->set_cycle(1, 1);
    ;	        break;
@@ -5614,7 +6342,7 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	        if (var_5)
    ;	
 	cmp	byte ptr [bp-5],0
-	je	short @14@1430
+	je	short @21@1430
    ;	
    ;	        {
    ;	            act = the_cast->add((uchar far *)"duct_u.l", 0, do_duct_ud);
@@ -5624,7 +6352,7 @@ GAME_TEXT	segment byte public use16 'CODE'
 	push	0
 	push	0
 	push	ds
-	push	offset DGROUP:s@+2273
+	push	offset DGROUP:s@+1661
 	push	word ptr DGROUP:_the_cast+2
 	push	word ptr DGROUP:_the_cast
 	call	far ptr @game_cast@add$qnucnvt2
@@ -5639,8 +6367,8 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	
    ;	        }
    ;	
-	jmp	short @14@1458
-@14@1430:
+	jmp	short @21@1458
+@21@1430:
    ;	
    ;	        else
    ;	        {
@@ -5651,7 +6379,7 @@ GAME_TEXT	segment byte public use16 'CODE'
 	push	0
 	push	0
 	push	ds
-	push	offset DGROUP:s@+2282
+	push	offset DGROUP:s@+1670
 	push	word ptr DGROUP:_the_cast+2
 	push	word ptr DGROUP:_the_cast
 	call	far ptr @game_cast@add$qnucnvt2
@@ -5663,19 +6391,19 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	
 	les	bx,dword ptr DGROUP:_act
 	mov	byte ptr es:[bx+52],3
-@14@1458:
+@21@1458:
    ;	
    ;	        }
    ;	        var_2 += 8;
    ;	
 	add	word ptr [bp-8],8
-@14@1486:
+@21@1486:
    ;	
    ;	        act->set_cycle(1, 1);
    ;	
 	push	1
 	push	1
-@14@1514:
+@21@1514:
 	push	word ptr DGROUP:_act+2
 	push	word ptr DGROUP:_act
 	call	far ptr @m_actor@set_cycle$qucuc
@@ -5683,15 +6411,15 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	
    ;	        break;
    ;	
-	jmp	@14@3222
-@14@1542:
+	jmp	@21@3222
+@21@1542:
    ;	
    ;	
    ;	    case 0x2400:                /* pirana */
    ;	        if (var_5)
    ;	
 	cmp	byte ptr [bp-5],0
-	je	short @14@1598
+	je	short @21@1598
    ;	
    ;	        {
    ;	            act = the_cast->add((uchar far *)"piranar.l", mv_pirana, do_pirana);
@@ -5701,7 +6429,7 @@ GAME_TEXT	segment byte public use16 'CODE'
 	push	seg @mv_pirana$qn7m_actornit2
 	push	offset @mv_pirana$qn7m_actornit2
 	push	ds
-	push	offset DGROUP:s@+2291
+	push	offset DGROUP:s@+1679
 	push	word ptr DGROUP:_the_cast+2
 	push	word ptr DGROUP:_the_cast
 	call	far ptr @game_cast@add$qnucnvt2
@@ -5721,8 +6449,8 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	
    ;	        }
    ;	
-	jmp	short @14@1626
-@14@1598:
+	jmp	short @21@1626
+@21@1598:
    ;	
    ;	        else
    ;	        {
@@ -5733,7 +6461,7 @@ GAME_TEXT	segment byte public use16 'CODE'
 	push	seg @mv_pirana$qn7m_actornit2
 	push	offset @mv_pirana$qn7m_actornit2
 	push	ds
-	push	offset DGROUP:s@+2301
+	push	offset DGROUP:s@+1689
 	push	word ptr DGROUP:_the_cast+2
 	push	word ptr DGROUP:_the_cast
 	call	far ptr @game_cast@add$qnucnvt2
@@ -5750,7 +6478,7 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	
 	les	bx,dword ptr DGROUP:_act
 	mov	byte ptr es:[bx+52],1
-@14@1626:
+@21@1626:
    ;	
    ;	        }
    ;	        act->type = 1;
@@ -5780,13 +6508,13 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	
 	push	1
 	push	5
-@14@1654:
+@21@1654:
 	push	word ptr DGROUP:_act+2
 	push	word ptr DGROUP:_act
 	call	far ptr @m_actor@set_cycle$qucuc
 	add	sp,8
-	jmp	@14@2634
-@14@1682:
+	jmp	@21@2634
+@21@1682:
    ;	
    ;	        ++enemy_count;
    ;	        break;
@@ -5795,15 +6523,15 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	        if (var_5) act = the_cast->add((uchar far *)"block2.l", 0, do_block);
    ;	
 	cmp	byte ptr [bp-5],0
-	je	short @14@1738
+	je	short @21@1738
 	push	seg @do_block$qn7m_actor
 	push	offset @do_block$qn7m_actor
 	push	0
 	push	0
 	push	ds
-	push	offset DGROUP:s@+2311
-	jmp	short @14@1766
-@14@1738:
+	push	offset DGROUP:s@+1699
+	jmp	short @21@1766
+@21@1738:
    ;	
    ;	        else       act = the_cast->add((uchar far *)"block.l", 0, do_block);
    ;	
@@ -5812,8 +6540,8 @@ GAME_TEXT	segment byte public use16 'CODE'
 	push	0
 	push	0
 	push	ds
-	push	offset DGROUP:s@+2320
-@14@1766:
+	push	offset DGROUP:s@+1708
+@21@1766:
 	push	word ptr DGROUP:_the_cast+2
 	push	word ptr DGROUP:_the_cast
 	call	far ptr @game_cast@add$qnucnvt2
@@ -5828,8 +6556,8 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	
    ;	        break;
    ;	
-	jmp	@14@3222
-@14@1822:
+	jmp	@21@3222
+@21@1822:
    ;	
    ;	
    ;	    case 0x3800:                /* face left/right */
@@ -5837,7 +6565,7 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	        if (arg_2 == 0x3800)
    ;	
 	cmp	word ptr [bp+8],14336
-	jne	short @14@1878
+	jne	short @21@1878
    ;	
    ;	        {
    ;	            act = the_cast->add((uchar far *)"face_r.l", 0, do_face);
@@ -5847,7 +6575,7 @@ GAME_TEXT	segment byte public use16 'CODE'
 	push	0
 	push	0
 	push	ds
-	push	offset DGROUP:s@+2328
+	push	offset DGROUP:s@+1716
 	push	word ptr DGROUP:_the_cast+2
 	push	word ptr DGROUP:_the_cast
 	call	far ptr @game_cast@add$qnucnvt2
@@ -5866,8 +6594,8 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	
    ;	        }
    ;	
-	jmp	short @14@1906
-@14@1878:
+	jmp	short @21@1906
+@21@1878:
    ;	
    ;	        else
    ;	        {
@@ -5878,7 +6606,7 @@ GAME_TEXT	segment byte public use16 'CODE'
 	push	0
 	push	0
 	push	ds
-	push	offset DGROUP:s@+2337
+	push	offset DGROUP:s@+1725
 	push	word ptr DGROUP:_the_cast+2
 	push	word ptr DGROUP:_the_cast
 	call	far ptr @game_cast@add$qnucnvt2
@@ -5897,7 +6625,7 @@ GAME_TEXT	segment byte public use16 'CODE'
 	mov	ax,word ptr es:[bx+16]
 	dec	ax
 	sub	word ptr [bp-8],ax
-@14@1906:
+@21@1906:
    ;	
    ;	        }
    ;	        act->set_cycle(0, 0);
@@ -5917,8 +6645,8 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	        var_4 -= 2;
    ;	
 	sub	word ptr [bp-10],2
-	jmp	@14@2634
-@14@1934:
+	jmp	@21@2634
+@21@1934:
    ;	
    ;	        ++enemy_count;
    ;	        break;
@@ -5927,7 +6655,7 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	        if (var_5)
    ;	
 	cmp	byte ptr [bp-5],0
-	je	short @14@1990
+	je	short @21@1990
    ;	
    ;	        {
    ;	            act = the_cast->add((uchar far *)"serp_r.l", mv_pace, do_serpent);
@@ -5937,7 +6665,7 @@ GAME_TEXT	segment byte public use16 'CODE'
 	push	seg @mv_pace$qn7m_actornit2
 	push	offset @mv_pace$qn7m_actornit2
 	push	ds
-	push	offset DGROUP:s@+2346
+	push	offset DGROUP:s@+1734
 	push	word ptr DGROUP:_the_cast+2
 	push	word ptr DGROUP:_the_cast
 	call	far ptr @game_cast@add$qnucnvt2
@@ -5957,8 +6685,8 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	
    ;	        }
    ;	
-	jmp	short @14@2018
-@14@1990:
+	jmp	short @21@2018
+@21@1990:
    ;	
    ;	        else
    ;	        {
@@ -5969,7 +6697,7 @@ GAME_TEXT	segment byte public use16 'CODE'
 	push	seg @mv_pace$qn7m_actornit2
 	push	offset @mv_pace$qn7m_actornit2
 	push	ds
-	push	offset DGROUP:s@+2355
+	push	offset DGROUP:s@+1743
 	push	word ptr DGROUP:_the_cast+2
 	push	word ptr DGROUP:_the_cast
 	call	far ptr @game_cast@add$qnucnvt2
@@ -5986,7 +6714,7 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	
 	les	bx,dword ptr DGROUP:_act
 	mov	word ptr es:[bx+20],-1
-@14@2018:
+@21@2018:
    ;	
    ;	        }
    ;	        var_2 -= act->width / 2;
@@ -6013,8 +6741,8 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	
 	push	1
 	push	1
-	jmp	@14@1654
-@14@2046:
+	jmp	@21@1654
+@21@2046:
    ;	
    ;	        ++enemy_count;
    ;	        break;
@@ -6027,7 +6755,7 @@ GAME_TEXT	segment byte public use16 'CODE'
 	push	seg @mv_pace$qn7m_actornit2
 	push	offset @mv_pace$qn7m_actornit2
 	push	ds
-	push	offset DGROUP:s@+2364
+	push	offset DGROUP:s@+1752
 	push	word ptr DGROUP:_the_cast+2
 	push	word ptr DGROUP:_the_cast
 	call	far ptr @game_cast@add$qnucnvt2
@@ -6038,13 +6766,13 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	        if (var_5) { act->direction = 0; act->x_speed = 2; }
    ;	
 	cmp	byte ptr [bp-5],0
-	je	short @14@2102
+	je	short @21@2102
 	les	bx,dword ptr DGROUP:_act
 	mov	byte ptr es:[bx+52],0
 	les	bx,dword ptr DGROUP:_act
 	mov	word ptr es:[bx+20],2
-	jmp	short @14@2130
-@14@2102:
+	jmp	short @21@2130
+@21@2102:
    ;	
    ;	        else       { act->direction = 1; act->x_speed = -2; }
    ;	
@@ -6052,7 +6780,7 @@ GAME_TEXT	segment byte public use16 'CODE'
 	mov	byte ptr es:[bx+52],1
 	les	bx,dword ptr DGROUP:_act
 	mov	word ptr es:[bx+20],-2
-@14@2130:
+@21@2130:
    ;	
    ;	        act->set_cycle(1, 1);
    ;	
@@ -6073,8 +6801,8 @@ GAME_TEXT	segment byte public use16 'CODE'
 	les	bx,dword ptr DGROUP:_act
 	mov	ax,word ptr es:[bx+18]
 	sub	word ptr [bp-10],ax
-	jmp	@14@2634
-@14@2158:
+	jmp	@21@2634
+@21@2158:
    ;	
    ;	        ++enemy_count;
    ;	        break;
@@ -6084,10 +6812,10 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	
 	les	bx,dword ptr DGROUP:_the_game
 	cmp	byte ptr es:[bx+9],1
-	je	short @14@2214
+	je	short @21@2214
 	cmp	byte ptr DGROUP:_gun_count,4
-	jne	short @14@2242
-@14@2214:
+	jne	short @21@2242
+@21@2214:
    ;	
    ;	        {
    ;	            add_barrel(arg_0, 0x10);
@@ -6095,8 +6823,8 @@ GAME_TEXT	segment byte public use16 'CODE'
 	push	16
 	push	word ptr [bp+6]
 	call	far ptr @add_barrel$quiui
-	jmp	@14@86
-@14@2242:
+	jmp	@21@86
+@21@2242:
    ;	
    ;	            return;
    ;	        }
@@ -6106,38 +6834,38 @@ GAME_TEXT	segment byte public use16 'CODE'
 	mov	ah,0
 	mov	bx,ax
 	cmp	bx,3
-	ja	short @14@2438
+	ja	short @21@2438
 	shl	bx,1
-	jmp	word ptr cs:@14@C2370[bx]
-@14@2326:
+	jmp	word ptr cs:@21@C2370[bx]
+@21@2326:
    ;	
    ;	        {
    ;	        case 0: s2 = (uchar far *)"piece_1.l"; break;
    ;	
 	mov	word ptr [bp-2],ds
-	mov	word ptr [bp-4],offset DGROUP:s@+2371
-	jmp	short @14@2438
-@14@2354:
+	mov	word ptr [bp-4],offset DGROUP:s@+1759
+	jmp	short @21@2438
+@21@2354:
    ;	
    ;	        case 1: s2 = (uchar far *)"piece_2.l"; break;
    ;	
 	mov	word ptr [bp-2],ds
-	mov	word ptr [bp-4],offset DGROUP:s@+2381
-	jmp	short @14@2438
-@14@2382:
+	mov	word ptr [bp-4],offset DGROUP:s@+1769
+	jmp	short @21@2438
+@21@2382:
    ;	
    ;	        case 2: s2 = (uchar far *)"piece_3.l"; break;
    ;	
 	mov	word ptr [bp-2],ds
-	mov	word ptr [bp-4],offset DGROUP:s@+2391
-	jmp	short @14@2438
-@14@2410:
+	mov	word ptr [bp-4],offset DGROUP:s@+1779
+	jmp	short @21@2438
+@21@2410:
    ;	
    ;	        case 3: s2 = (uchar far *)"piece_4.l"; break;
    ;	
 	mov	word ptr [bp-2],ds
-	mov	word ptr [bp-4],offset DGROUP:s@+2401
-@14@2438:
+	mov	word ptr [bp-4],offset DGROUP:s@+1789
+@21@2438:
    ;	
    ;	        }
    ;	        act = the_cast->add(s2, 0, do_gun_piece);
@@ -6169,8 +6897,8 @@ GAME_TEXT	segment byte public use16 'CODE'
 	les	bx,dword ptr DGROUP:_act
 	mov	ax,word ptr es:[bx+18]
 	sub	word ptr [bp-10],ax
-	jmp	@14@702
-@14@2466:
+	jmp	@21@702
+@21@2466:
    ;	
    ;	        ++goody_count;
    ;	        break;
@@ -6183,7 +6911,7 @@ GAME_TEXT	segment byte public use16 'CODE'
 	push	0
 	push	0
 	push	ds
-	push	offset DGROUP:s@+2411
+	push	offset DGROUP:s@+1799
 	push	word ptr DGROUP:_the_cast+2
 	push	word ptr DGROUP:_the_cast
 	call	far ptr @game_cast@add$qnucnvt2
@@ -6204,8 +6932,8 @@ GAME_TEXT	segment byte public use16 'CODE'
 	pop	cx
 	add	al,4
 	push	ax
-	jmp	@14@2606
-@14@2494:
+	jmp	@21@2606
+@21@2494:
    ;	
    ;	        var_2 -= act->width / 2;
    ;	        ++enemy_count;
@@ -6215,7 +6943,7 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	        if (var_5)
    ;	
 	cmp	byte ptr [bp-5],0
-	je	short @14@2550
+	je	short @21@2550
    ;	
    ;	        {
    ;	            act = the_cast->add((uchar far *)"sharkr.l", mv_shark, do_shark);
@@ -6225,7 +6953,7 @@ GAME_TEXT	segment byte public use16 'CODE'
 	push	seg @mv_shark$qn7m_actornit2
 	push	offset @mv_shark$qn7m_actornit2
 	push	ds
-	push	offset DGROUP:s@+2419
+	push	offset DGROUP:s@+1807
 	push	word ptr DGROUP:_the_cast+2
 	push	word ptr DGROUP:_the_cast
 	call	far ptr @game_cast@add$qnucnvt2
@@ -6240,8 +6968,8 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	
    ;	        }
    ;	
-	jmp	short @14@2578
-@14@2550:
+	jmp	short @21@2578
+@21@2550:
    ;	
    ;	        else
    ;	        {
@@ -6252,7 +6980,7 @@ GAME_TEXT	segment byte public use16 'CODE'
 	push	seg @mv_shark$qn7m_actornit2
 	push	offset @mv_shark$qn7m_actornit2
 	push	ds
-	push	offset DGROUP:s@+2428
+	push	offset DGROUP:s@+1816
 	push	word ptr DGROUP:_the_cast+2
 	push	word ptr DGROUP:_the_cast
 	call	far ptr @game_cast@add$qnucnvt2
@@ -6264,7 +6992,7 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	
 	les	bx,dword ptr DGROUP:_act
 	mov	byte ptr es:[bx+52],1
-@14@2578:
+@21@2578:
    ;	
    ;	        }
    ;	        act->type = 1;
@@ -6276,7 +7004,7 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	
 	push	0
 	push	0
-@14@2606:
+@21@2606:
 	push	word ptr DGROUP:_act+2
 	push	word ptr DGROUP:_act
 	call	far ptr @m_actor@set_cycle$qucuc
@@ -6290,7 +7018,7 @@ GAME_TEXT	segment byte public use16 'CODE'
 	sub	ax,dx
 	sar	ax,1
 	sub	word ptr [bp-8],ax
-@14@2634:
+@21@2634:
    ;	
    ;	        ++enemy_count;
    ;	
@@ -6300,8 +7028,8 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	
    ;	        break;
    ;	
-	jmp	@14@3222
-@14@2662:
+	jmp	@21@3222
+@21@2662:
    ;	
    ;	
    ;	    case 0x5400:                /* tentacle */
@@ -6312,7 +7040,7 @@ GAME_TEXT	segment byte public use16 'CODE'
 	push	0
 	push	0
 	push	ds
-	push	offset DGROUP:s@+2437
+	push	offset DGROUP:s@+1825
 	push	word ptr DGROUP:_the_cast+2
 	push	word ptr DGROUP:_the_cast
 	call	far ptr @game_cast@add$qnucnvt2
@@ -6345,22 +7073,22 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	
    ;	        var_4 += act->height;
    ;	
-@14@2690:
+@21@2690:
 	les	bx,dword ptr DGROUP:_act
 	mov	ax,word ptr es:[bx+18]
 	add	word ptr [bp-10],ax
    ;	
    ;	        break;
    ;	
-	jmp	@14@3222
-@14@2718:
+	jmp	@21@3222
+@21@2718:
    ;	
    ;	
    ;	    case 0x5800:                /* spikes */
    ;	        if (var_5)
    ;	
 	cmp	byte ptr [bp-5],0
-	je	short @14@2774
+	je	short @21@2774
    ;	
    ;	        {
    ;	            act = the_cast->add((uchar far *)"spikes_d.l", 0, do_spikes);
@@ -6370,7 +7098,7 @@ GAME_TEXT	segment byte public use16 'CODE'
 	push	0
 	push	0
 	push	ds
-	push	offset DGROUP:s@+2448
+	push	offset DGROUP:s@+1836
 	push	word ptr DGROUP:_the_cast+2
 	push	word ptr DGROUP:_the_cast
 	call	far ptr @game_cast@add$qnucnvt2
@@ -6384,8 +7112,8 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	
    ;	        }
    ;	
-	jmp	short @14@2802
-@14@2774:
+	jmp	short @21@2802
+@21@2774:
    ;	
    ;	        else
    ;	        {
@@ -6396,7 +7124,7 @@ GAME_TEXT	segment byte public use16 'CODE'
 	push	0
 	push	0
 	push	ds
-	push	offset DGROUP:s@+2459
+	push	offset DGROUP:s@+1847
 	push	word ptr DGROUP:_the_cast+2
 	push	word ptr DGROUP:_the_cast
 	call	far ptr @game_cast@add$qnucnvt2
@@ -6409,7 +7137,7 @@ GAME_TEXT	segment byte public use16 'CODE'
 	les	bx,dword ptr DGROUP:_act
 	mov	ax,word ptr es:[bx+18]
 	sub	word ptr [bp-10],ax
-@14@2802:
+@21@2802:
    ;	
    ;	        }
    ;	        act->counter_26 = random(0x19) + 0x28;
@@ -6434,8 +7162,8 @@ GAME_TEXT	segment byte public use16 'CODE'
 	push	word ptr DGROUP:_act
 	call	far ptr @m_actor@set_cycle$qucuc
 	add	sp,8
-	jmp	@14@2998
-@14@2830:
+	jmp	@21@2998
+@21@2830:
    ;	
    ;	        var_2 += act->width;
    ;	        break;
@@ -6448,7 +7176,7 @@ GAME_TEXT	segment byte public use16 'CODE'
 	push	0
 	push	0
 	push	ds
-	push	offset DGROUP:s@+2470
+	push	offset DGROUP:s@+1858
 	push	word ptr DGROUP:_the_cast+2
 	push	word ptr DGROUP:_the_cast
 	call	far ptr @game_cast@add$qnucnvt2
@@ -6469,8 +7197,8 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	
 	les	bx,dword ptr DGROUP:_act
 	mov	ax,word ptr es:[bx+18]
-	jmp	@14@3054
-@14@2858:
+	jmp	@21@3054
+@21@2858:
    ;	
    ;	        break;
    ;	
@@ -6482,7 +7210,7 @@ GAME_TEXT	segment byte public use16 'CODE'
 	push	0
 	push	0
 	push	ds
-	push	offset DGROUP:s@+2479
+	push	offset DGROUP:s@+1867
 	push	word ptr DGROUP:_the_cast+2
 	push	word ptr DGROUP:_the_cast
 	call	far ptr @game_cast@add$qnucnvt2
@@ -6502,17 +7230,17 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	        if (var_5) act->counter_26 = 0x50;
    ;	
 	cmp	byte ptr [bp-5],0
-	je	short @14@2914
+	je	short @21@2914
 	les	bx,dword ptr DGROUP:_act
 	mov	word ptr es:[bx+36],80
-	jmp	short @14@2942
-@14@2914:
+	jmp	short @21@2942
+@21@2914:
    ;	
    ;	        else       act->counter_26 = 0x28;
    ;	
 	les	bx,dword ptr DGROUP:_act
 	mov	word ptr es:[bx+36],40
-@14@2942:
+@21@2942:
    ;	
    ;	        var_4 -= 5;
    ;	
@@ -6520,8 +7248,8 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	
    ;	        break;
    ;	
-	jmp	@14@3222
-@14@2970:
+	jmp	@21@3222
+@21@2970:
    ;	
    ;	
    ;	    case 0x6400:                /* shuttle */
@@ -6532,7 +7260,7 @@ GAME_TEXT	segment byte public use16 'CODE'
 	push	0
 	push	0
 	push	ds
-	push	offset DGROUP:s@+2490
+	push	offset DGROUP:s@+1878
 	push	word ptr DGROUP:_the_cast+2
 	push	word ptr DGROUP:_the_cast
 	call	far ptr @game_cast@add$qnucnvt2
@@ -6549,7 +7277,7 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	
 	les	bx,dword ptr DGROUP:_act
 	mov	byte ptr es:[bx+52],1
-@14@2998:
+@21@2998:
    ;	
    ;	        var_2 += act->width;
    ;	
@@ -6559,8 +7287,8 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	
    ;	        break;
    ;	
-	jmp	@14@3222
-@14@3026:
+	jmp	@21@3222
+@21@3026:
    ;	
    ;	
    ;	    case 0x6800:                /* clam */
@@ -6571,7 +7299,7 @@ GAME_TEXT	segment byte public use16 'CODE'
 	push	0
 	push	0
 	push	ds
-	push	offset DGROUP:s@+2500
+	push	offset DGROUP:s@+1888
 	push	word ptr DGROUP:_the_cast+2
 	push	word ptr DGROUP:_the_cast
 	call	far ptr @game_cast@add$qnucnvt2
@@ -6607,13 +7335,13 @@ GAME_TEXT	segment byte public use16 'CODE'
 	les	bx,dword ptr DGROUP:_act
 	mov	ax,word ptr es:[bx+18]
 	add	ax,-2
-@14@3054:
+@21@3054:
 	sub	word ptr [bp-10],ax
    ;	
    ;	        break;
    ;	
-	jmp	@14@3222
-@14@3082:
+	jmp	@21@3222
+@21@3082:
    ;	
    ;	
    ;	    case 0x6C00:                /* cannon */
@@ -6624,7 +7352,7 @@ GAME_TEXT	segment byte public use16 'CODE'
 	push	seg @mv_std$qn7m_actornit2
 	push	offset @mv_std$qn7m_actornit2
 	push	ds
-	push	offset DGROUP:s@+2507
+	push	offset DGROUP:s@+1895
 	push	word ptr DGROUP:_the_cast+2
 	push	word ptr DGROUP:_the_cast
 	call	far ptr @game_cast@add$qnucnvt2
@@ -6669,15 +7397,15 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	
    ;	        break;
    ;	
-	jmp	@14@3222
-@14@3110:
+	jmp	@21@3222
+@21@3110:
    ;	
    ;	
    ;	    case 0x7400:                /* ship */
    ;	        if (var_5)
    ;	
 	cmp	byte ptr [bp-5],0
-	je	short @14@3166
+	je	short @21@3166
    ;	
    ;	        {
    ;	            act = the_cast->add((uchar far *)"shipl.l", mv_ship, do_ship);
@@ -6687,7 +7415,7 @@ GAME_TEXT	segment byte public use16 'CODE'
 	push	seg @mv_ship$qn7m_actornit2
 	push	offset @mv_ship$qn7m_actornit2
 	push	ds
-	push	offset DGROUP:s@+2517
+	push	offset DGROUP:s@+1905
 	push	word ptr DGROUP:_the_cast+2
 	push	word ptr DGROUP:_the_cast
 	call	far ptr @game_cast@add$qnucnvt2
@@ -6707,8 +7435,8 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	
    ;	        }
    ;	
-	jmp	short @14@3194
-@14@3166:
+	jmp	short @21@3194
+@21@3166:
    ;	
    ;	        else
    ;	        {
@@ -6719,7 +7447,7 @@ GAME_TEXT	segment byte public use16 'CODE'
 	push	seg @mv_ship$qn7m_actornit2
 	push	offset @mv_ship$qn7m_actornit2
 	push	ds
-	push	offset DGROUP:s@+2525
+	push	offset DGROUP:s@+1913
 	push	word ptr DGROUP:_the_cast+2
 	push	word ptr DGROUP:_the_cast
 	call	far ptr @game_cast@add$qnucnvt2
@@ -6736,7 +7464,7 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	
 	les	bx,dword ptr DGROUP:_act
 	mov	byte ptr es:[bx+52],0
-@14@3194:
+@21@3194:
    ;	
    ;	        }
    ;	        act->set_cycle(1, 0xA);
@@ -6768,7 +7496,7 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	
    ;	        break;
    ;	
-@14@3222:
+@21@3222:
    ;	
    ;	    }
    ;	    act->set_xy(var_2, var_4);
@@ -6779,19 +7507,19 @@ GAME_TEXT	segment byte public use16 'CODE'
 	push	word ptr DGROUP:_act
 	call	far ptr @m_actor@set_xy$qii
 	add	sp,8
-@14@3250:
+@21@3250:
    ;	
    ;	}
    ;	
 	leave	
 	ret	
 @add_map_item$quiui	endp
-@14@C2370	label	word
-	dw	@14@2326
-	dw	@14@2354
-	dw	@14@2382
-	dw	@14@2410
-@14@C114	label	word
+@21@C2370	label	word
+	dw	@21@2326
+	dw	@21@2354
+	dw	@21@2382
+	dw	@21@2410
+@21@C114	label	word
 	db	16
 	db	0
 	db	32
@@ -6854,37 +7582,37 @@ GAME_TEXT	segment byte public use16 'CODE'
 	db	112
 	db	0
 	db	116
-	dw	@14@310
-	dw	@14@786
-	dw	@14@310
-	dw	@14@982
-	dw	@14@1038
-	dw	@14@786
-	dw	@14@1066
-	dw	@14@1178
-	dw	@14@1206
-	dw	@14@1234
-	dw	@14@1542
-	dw	@14@310
-	dw	@14@1262
-	dw	@14@1374
-	dw	@14@1682
-	dw	@14@1822
-	dw	@14@1934
-	dw	@14@2046
-	dw	@14@2158
-	dw	@14@2466
-	dw	@14@2494
-	dw	@14@310
-	dw	@14@2662
-	dw	@14@2718
-	dw	@14@2830
-	dw	@14@2858
-	dw	@14@2970
-	dw	@14@3026
-	dw	@14@3082
-	dw	@14@1822
-	dw	@14@3110
+	dw	@21@310
+	dw	@21@786
+	dw	@21@310
+	dw	@21@982
+	dw	@21@1038
+	dw	@21@786
+	dw	@21@1066
+	dw	@21@1178
+	dw	@21@1206
+	dw	@21@1234
+	dw	@21@1542
+	dw	@21@310
+	dw	@21@1262
+	dw	@21@1374
+	dw	@21@1682
+	dw	@21@1822
+	dw	@21@1934
+	dw	@21@2046
+	dw	@21@2158
+	dw	@21@2466
+	dw	@21@2494
+	dw	@21@310
+	dw	@21@2662
+	dw	@21@2718
+	dw	@21@2830
+	dw	@21@2858
+	dw	@21@2970
+	dw	@21@3026
+	dw	@21@3082
+	dw	@21@1822
+	dw	@21@3110
    ;	
    ;	void add_barrel(uint arg_0, uint arg_2)
    ;	
@@ -6897,14 +7625,14 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	    if (arg_2 & 0xF)
    ;	
 	test	word ptr [bp+8],15
-	je	short @15@86
+	je	short @22@86
    ;	
    ;	        strcpy((char *)_tmp, "barrel2.l");
    ;	
 	push	ds
-	push	offset DGROUP:s@+2533
-	jmp	short @15@254
-@15@86:
+	push	offset DGROUP:s@+1921
+	jmp	short @22@254
+@22@86:
    ;	
    ;	    else
    ;	        switch ((arg_2 + goody_count + enemy_count) & 1)
@@ -6918,30 +7646,30 @@ GAME_TEXT	segment byte public use16 'CODE'
 	add	dx,ax
 	and	dx,1
 	or	dx,dx
-	je	short @15@198
+	je	short @22@198
 	cmp	dx,1
-	je	short @15@226
-	jmp	short @15@282
-@15@198:
+	je	short @22@226
+	jmp	short @22@282
+@22@198:
    ;	
    ;	        {
    ;	        case 0: strcpy((char *)_tmp, "barrel1.l"); break;
    ;	
 	push	ds
-	push	offset DGROUP:s@+2543
-	jmp	short @15@254
-@15@226:
+	push	offset DGROUP:s@+1931
+	jmp	short @22@254
+@22@226:
    ;	
    ;	        case 1: strcpy((char *)_tmp, "barrel3.l"); break;
    ;	
 	push	ds
-	push	offset DGROUP:s@+2553
-@15@254:
+	push	offset DGROUP:s@+1941
+@22@254:
 	push	ds
 	push	offset DGROUP:__tmp
 	call	far ptr _strcpy
 	add	sp,8
-@15@282:
+@22@282:
    ;	
    ;	        }
    ;	    act = the_cast->add(_tmp, mv_barrel, do_barrel);
@@ -7011,29 +7739,29 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	    if (arg_2 & 0xF)  ++goody_count;
    ;	
 	test	word ptr [bp+8],15
-	je	short @15@338
+	je	short @22@338
 	mov	al,byte ptr DGROUP:_goody_count
 	inc	al
 	mov	byte ptr DGROUP:_goody_count,al
-@15@338:
+@22@338:
    ;	
    ;	    if (arg_2 & 0x10) ++goody_count;
    ;	
 	test	word ptr [bp+8],16
-	je	short @15@394
+	je	short @22@394
 	mov	al,byte ptr DGROUP:_goody_count
 	inc	al
 	mov	byte ptr DGROUP:_goody_count,al
-@15@394:
+@22@394:
    ;	
    ;	    if (arg_2 & 0x20) ++enemy_count;
    ;	
 	test	word ptr [bp+8],32
-	je	short @15@450
+	je	short @22@450
 	mov	al,byte ptr DGROUP:_enemy_count
 	inc	al
 	mov	byte ptr DGROUP:_enemy_count,al
-@15@450:
+@22@450:
    ;	
    ;	}
    ;	
@@ -7055,66 +7783,66 @@ GAME_TEXT	segment byte public use16 'CODE'
 	mov	bx,word ptr [bp+8]
 	dec	bx
 	cmp	bx,8
-	jbe short	@@38
-	jmp	@16@730
-@@38:
+	jbe short	@@24
+	jmp	@23@730
+@@24:
 	shl	bx,1
-	jmp	word ptr cs:@16@C658[bx]
-@16@114:
+	jmp	word ptr cs:@23@C658[bx]
+@23@114:
    ;	
    ;	    {
    ;	    case 1:
    ;	        strcpy((char *)_tmp, "pu_air.l");
    ;	
 	push	ds
-	push	offset DGROUP:s@+2563
-@16@142:
+	push	offset DGROUP:s@+1951
+@23@142:
 	push	ds
 	push	offset DGROUP:__tmp
 	call	far ptr _strcpy
-	jmp	@16@758
-@16@170:
+	jmp	@23@758
+@23@170:
    ;	
    ;	        break;
    ;	    case 2:
    ;	        strcpy((char *)_tmp, "pu_shld.l");
    ;	
 	push	ds
-	push	offset DGROUP:s@+2572
-	jmp	short @16@142
-@16@198:
+	push	offset DGROUP:s@+1960
+	jmp	short @23@142
+@23@198:
    ;	
    ;	        break;
    ;	    case 3:
    ;	        if (heavy_timer) goto skip;
    ;	
 	cmp	word ptr DGROUP:_heavy_timer,0
-	je short	@@39
-	jmp	@16@814
-@@39:
+	je short	@@25
+	jmp	@23@814
+@@25:
    ;	
    ;	        strcpy((char *)_tmp, "pu_fire.l");
    ;	
 	push	ds
-	push	offset DGROUP:s@+2582
-	jmp	short @16@142
-@16@254:
+	push	offset DGROUP:s@+1970
+	jmp	short @23@142
+@23@254:
    ;	
    ;	        break;
    ;	    case 4:
    ;	        if (top_fire) goto skip;
    ;	
 	cmp	byte ptr DGROUP:_top_fire,0
-	je short	@@40
-	jmp	@16@814
-@@40:
+	je short	@@26
+	jmp	@23@814
+@@26:
    ;	
    ;	        strcpy((char *)_tmp, "pu_top.l");
    ;	
 	push	ds
-	push	offset DGROUP:s@+2592
-	jmp	short @16@142
-@16@310:
+	push	offset DGROUP:s@+1980
+	jmp	short @23@142
+@23@310:
    ;	
    ;	        break;
    ;	    case 5:
@@ -7122,15 +7850,15 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	
 	les	bx,dword ptr DGROUP:_the_game
 	cmp	byte ptr es:[bx+8],1
-	jne short	@@41
-	jmp	@16@814
-@@41:
+	jne short	@@27
+	jmp	@23@814
+@@27:
    ;	
    ;	        {
    ;	            strcpy((char *)_tmp, "pu_1up.l");
    ;	
 	push	ds
-	push	offset DGROUP:s@+2601
+	push	offset DGROUP:s@+1989
 	push	ds
 	push	offset DGROUP:__tmp
 	call	far ptr _strcpy
@@ -7144,97 +7872,97 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	
    ;	        }
    ;	
-	jmp	short @16@786
+	jmp	short @23@786
    ;	
    ;	        else
    ;	            goto skip;
    ;	
-	jmp	@16@814
+	jmp	@23@814
    ;	
    ;	        break;
    ;	
-	jmp	short @16@786
-@16@422:
+	jmp	short @23@786
+@23@422:
    ;	
    ;	    case 6:
    ;	        strcpy((char *)_tmp, "pu_key.l");
    ;	
 	push	ds
-	push	offset DGROUP:s@+2610
-	jmp	short @16@142
-@16@450:
+	push	offset DGROUP:s@+1998
+	jmp	short @23@142
+@23@450:
    ;	
    ;	        break;
    ;	    case 7:
    ;	        if (auto_fire != 1)
    ;	
 	cmp	byte ptr DGROUP:_auto_fire,1
-	jne short	@@42
-	jmp	@16@814
-@@42:
+	jne short	@@28
+	jmp	@23@814
+@@28:
    ;	
    ;	            strcpy((char *)_tmp, "pu_auto.l");
    ;	
 	push	ds
-	push	offset DGROUP:s@+2619
-	jmp	@16@142
+	push	offset DGROUP:s@+2007
+	jmp	@23@142
    ;	
    ;	        else
    ;	            goto skip;
    ;	
-	jmp	@16@814
+	jmp	@23@814
    ;	
    ;	        break;
    ;	
-	jmp	short @16@786
-@16@562:
+	jmp	short @23@786
+@23@562:
    ;	
    ;	    case 8:
    ;	        if (jason_present) goto skip;
    ;	
 	cmp	byte ptr DGROUP:_jason_present,0
-	je short	@@43
-	jmp	@16@814
-@@43:
+	je short	@@29
+	jmp	@23@814
+@@29:
    ;	
    ;	        strcpy((char *)_tmp, "pu_jason.l");
    ;	
 	push	ds
-	push	offset DGROUP:s@+2629
-	jmp	@16@142
-@16@618:
+	push	offset DGROUP:s@+2017
+	jmp	@23@142
+@23@618:
    ;	
    ;	        break;
    ;	    case 9:
    ;	        if (jason_present != 0)
    ;	
 	cmp	byte ptr DGROUP:_jason_present,0
-	jne short	@@44
-	jmp	@16@814
-@@44:
+	jne short	@@30
+	jmp	@23@814
+@@30:
    ;	
    ;	        {
    ;	            if (jason_fire != 1)
    ;	
 	cmp	byte ptr DGROUP:_jason_fire,1
-	jne short	@@45
-	jmp	@16@814
-@@45:
+	jne short	@@31
+	jmp	@23@814
+@@31:
    ;	
    ;	            {
    ;	                strcpy((char *)_tmp, "pu_jf.l");
    ;	
 	push	ds
-	push	offset DGROUP:s@+2640
-	jmp	@16@142
+	push	offset DGROUP:s@+2028
+	jmp	@23@142
    ;	
    ;	                break;
    ;	            }
    ;	        }
    ;	        goto skip;
    ;	
-	jmp	@16@814
-@16@730:
+	jmp	@23@814
+@23@730:
    ;	
    ;	    default:
    ;	        terminate((uchar far *)"Pup not defined!", 0);
@@ -7242,11 +7970,11 @@ GAME_TEXT	segment byte public use16 'CODE'
 	push	0
 	push	0
 	push	ds
-	push	offset DGROUP:s@+2648
+	push	offset DGROUP:s@+2036
 	call	far ptr @terminate$qnuct1
-@16@758:
+@23@758:
 	add	sp,8
-@16@786:
+@23@786:
    ;	
    ;	    }
    ;	    act = the_cast->add(_tmp, 0, do_pup);
@@ -7307,8 +8035,8 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	
    ;	    return;
    ;	
-	jmp	short @16@842
-@16@814:
+	jmp	short @23@842
+@23@814:
    ;	
    ;	skip:
    ;	    add_map_item(arg_0, 0x400);
@@ -7324,23 +8052,23 @@ GAME_TEXT	segment byte public use16 'CODE'
 	mov	al,byte ptr DGROUP:_goody_count
 	add	al,255
 	mov	byte ptr DGROUP:_goody_count,al
-@16@842:
+@23@842:
    ;	
    ;	}
    ;	
 	leave	
 	ret	
 @add_map_pup$quiui	endp
-@16@C658	label	word
-	dw	@16@114
-	dw	@16@170
-	dw	@16@198
-	dw	@16@254
-	dw	@16@310
-	dw	@16@422
-	dw	@16@450
-	dw	@16@562
-	dw	@16@618
+@23@C658	label	word
+	dw	@23@114
+	dw	@23@170
+	dw	@23@198
+	dw	@23@254
+	dw	@23@310
+	dw	@23@422
+	dw	@23@450
+	dw	@23@562
+	dw	@23@618
    ;	
    ;	void hook_up_switches(void)
    ;	
@@ -7354,8 +8082,8 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	    for (i = 0; i < the_cast->count; ++i)
    ;	
 	mov	word ptr [bp-2],0
-	jmp	@17@338
-@17@58:
+	jmp	@24@338
+@24@58:
    ;	
    ;	    {
    ;	        act = the_cast->actors[i];
@@ -7373,15 +8101,15 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	
 	les	bx,dword ptr DGROUP:_act
 	test	byte ptr es:[bx+53],4
-	jne short	@@46
-	jmp	@17@310
-@@46:
+	jne short	@@32
+	jmp	@24@310
+@@32:
    ;	
    ;	            for (j = 0; j < the_cast->count; ++j)
    ;	
 	mov	word ptr [bp-4],0
-	jmp	@17@282
-@17@114:
+	jmp	@24@282
+@24@114:
    ;	
    ;	            {
    ;	                if ((the_cast->actors[j]->type & 8) &&
@@ -7395,7 +8123,7 @@ GAME_TEXT	segment byte public use16 'CODE'
 	add	bx,ax
 	les	bx,dword ptr es:[bx+2]
 	test	byte ptr es:[bx+53],8
-	je	short @17@254
+	je	short @24@254
 	mov	ax,word ptr [bp-4]
 	shl	ax,2
 	les	bx,dword ptr DGROUP:_the_cast
@@ -7404,14 +8132,14 @@ GAME_TEXT	segment byte public use16 'CODE'
 	mov	ax,word ptr es:[bx+34]
 	les	bx,dword ptr DGROUP:_act
 	cmp	ax,word ptr es:[bx+34]
-	jne	short @17@254
+	jne	short @24@254
    ;	
    ;	                {
    ;	                    if (act->target == 0)
    ;	
 	les	bx,dword ptr DGROUP:_act
 	cmp	dword ptr es:[bx+44],large 0
-	jne	short @17@226
+	jne	short @24@226
    ;	
    ;	                        act->target = the_cast->actors[j];
    ;	
@@ -7424,8 +8152,8 @@ GAME_TEXT	segment byte public use16 'CODE'
 	les	bx,dword ptr DGROUP:_act
 	mov	word ptr es:[bx+46],ax
 	mov	word ptr es:[bx+44],dx
-	jmp	short @17@254
-@17@226:
+	jmp	short @24@254
+@24@226:
    ;	
    ;	                    else
    ;	                        act->linked = the_cast->actors[j];
@@ -7439,26 +8167,26 @@ GAME_TEXT	segment byte public use16 'CODE'
 	les	bx,dword ptr DGROUP:_act
 	mov	word ptr es:[bx+50],ax
 	mov	word ptr es:[bx+48],dx
-@17@254:
+@24@254:
 	inc	word ptr [bp-4]
-@17@282:
+@24@282:
 	les	bx,dword ptr DGROUP:_the_cast
 	mov	al,byte ptr es:[bx]
 	mov	ah,0
 	cmp	ax,word ptr [bp-4]
-	jle short	@@47
-	jmp	@17@114
-@@47:
-@17@310:
+	jle short	@@33
+	jmp	@24@114
+@@33:
+@24@310:
 	inc	word ptr [bp-2]
-@17@338:
+@24@338:
 	les	bx,dword ptr DGROUP:_the_cast
 	mov	al,byte ptr es:[bx]
 	mov	ah,0
 	cmp	ax,word ptr [bp-2]
-	jle short	@@48
-	jmp	@17@58
-@@48:
+	jle short	@@34
+	jmp	@24@58
+@@34:
    ;	
    ;	                }
    ;	            }
@@ -7497,7 +8225,7 @@ GAME_TEXT	segment byte public use16 'CODE'
 	push	0
 	push	0
 	push	ds
-	push	offset DGROUP:s@+2665
+	push	offset DGROUP:s@+2053
 	push	word ptr DGROUP:_the_cast+2
 	push	word ptr DGROUP:_the_cast
 	call	far ptr @game_cast@add$qnucnvt2
@@ -7578,7 +8306,7 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	    if (arg_2 == 0xFF)
    ;	
 	cmp	word ptr [bp+8],255
-	jne	short @19@86
+	jne	short @26@86
    ;	
    ;	    {
    ;	        act = the_cast->add((uchar far *)"end_dr.l", 0, do_door);
@@ -7588,7 +8316,7 @@ GAME_TEXT	segment byte public use16 'CODE'
 	push	0
 	push	0
 	push	ds
-	push	offset DGROUP:s@+2674
+	push	offset DGROUP:s@+2062
 	push	word ptr DGROUP:_the_cast+2
 	push	word ptr DGROUP:_the_cast
 	call	far ptr @game_cast@add$qnucnvt2
@@ -7603,8 +8331,8 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	
    ;	    }
    ;	
-	jmp	short @19@114
-@19@86:
+	jmp	short @26@114
+@26@86:
    ;	
    ;	    else
    ;	        act = the_cast->add((uchar far *)"door_ud.l", 0, do_door);
@@ -7614,14 +8342,14 @@ GAME_TEXT	segment byte public use16 'CODE'
 	push	0
 	push	0
 	push	ds
-	push	offset DGROUP:s@+2683
+	push	offset DGROUP:s@+2071
 	push	word ptr DGROUP:_the_cast+2
 	push	word ptr DGROUP:_the_cast
 	call	far ptr @game_cast@add$qnucnvt2
 	add	sp,16
 	mov	word ptr DGROUP:_act+2,dx
 	mov	word ptr DGROUP:_act,ax
-@19@114:
+@26@114:
    ;	
    ;	    act->type = 0xB;
    ;	
@@ -7674,9 +8402,9 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	
 	les	bx,dword ptr DGROUP:_the_cast
 	cmp	byte ptr es:[bx],125
-	jbe short	@@49
-	jmp	@20@198
-@@49:
+	jbe short	@@35
+	jmp	@27@198
+@@35:
    ;	
    ;	    var_1 = random(2);
    ;	
@@ -7691,7 +8419,7 @@ GAME_TEXT	segment byte public use16 'CODE'
 	call	far ptr @random$qi
 	pop	cx
 	or	ax,ax
-	jne	short @20@114
+	jne	short @27@114
    ;	
    ;	        act = the_cast->add((uchar far *)"bubmd.l", 0, do_bubble);
    ;	
@@ -7700,9 +8428,9 @@ GAME_TEXT	segment byte public use16 'CODE'
 	push	0
 	push	0
 	push	ds
-	push	offset DGROUP:s@+2693
-	jmp	short @20@142
-@20@114:
+	push	offset DGROUP:s@+2081
+	jmp	short @27@142
+@27@114:
    ;	
    ;	    else
    ;	        act = the_cast->add((uchar far *)"bubsm.l", 0, do_bubble);
@@ -7712,8 +8440,8 @@ GAME_TEXT	segment byte public use16 'CODE'
 	push	0
 	push	0
 	push	ds
-	push	offset DGROUP:s@+2701
-@20@142:
+	push	offset DGROUP:s@+2089
+@27@142:
 	push	word ptr DGROUP:_the_cast+2
 	push	word ptr DGROUP:_the_cast
 	call	far ptr @game_cast@add$qnucnvt2
@@ -7754,7 +8482,7 @@ GAME_TEXT	segment byte public use16 'CODE'
 	push	word ptr DGROUP:_act
 	call	far ptr @m_actor@set_cycle$qucuc
 	add	sp,8
-@20@198:
+@27@198:
    ;	
    ;	}
    ;	
@@ -7777,60 +8505,60 @@ GAME_TEXT	segment byte public use16 'CODE'
 	mov	ah,0
 	mov	bx,ax
 	cmp	bx,5
-	ja	short @21@254
+	ja	short @28@254
 	shl	bx,1
-	jmp	word ptr cs:@21@C50[bx]
-@21@114:
+	jmp	word ptr cs:@28@C50[bx]
+@28@114:
    ;	
    ;	    {
    ;	        case 0: var_1 = 3; var_2 = 0; break;
    ;	
 	mov	byte ptr [bp-1],3
-@21@142:
+@28@142:
 	mov	byte ptr [bp-2],0
-	jmp	short @21@310
-@21@170:
+	jmp	short @28@310
+@28@170:
    ;	
    ;	        case 1: var_1 = 3; var_2 = 1; break;
    ;	
 	mov	byte ptr [bp-1],3
-	jmp	short @21@282
-@21@198:
+	jmp	short @28@282
+@28@198:
    ;	
    ;	        case 2: var_1 = 5; var_2 = 1; break;
    ;	
 	mov	byte ptr [bp-1],5
-	jmp	short @21@282
-@21@226:
+	jmp	short @28@282
+@28@226:
    ;	
    ;	        case 5: var_1 = 5; var_2 = 0; break;
    ;	
 	mov	byte ptr [bp-1],5
-	jmp	short @21@142
-@21@254:
+	jmp	short @28@142
+@28@254:
    ;	
    ;	        case 3:
    ;	        case 4:
    ;	        default: var_1 = 2; var_2 = 1; break;
    ;	
 	mov	byte ptr [bp-1],2
-@21@282:
+@28@282:
 	mov	byte ptr [bp-2],1
-@21@310:
+@28@310:
    ;	
    ;	    }
    ;	    if (arg_6 != 0)
    ;	
 	cmp	dword ptr [bp+12],large 0
-	je	short @21@366
+	je	short @28@366
    ;	
    ;	        the_game->play_sound(arg_6, 5);
    ;	
 	push	5
 	push	word ptr [bp+14]
 	push	word ptr [bp+12]
-	jmp	short @21@394
-@21@366:
+	jmp	short @28@394
+@28@366:
    ;	
    ;	    else
    ;	        the_game->play_sound(_all_explosions[arg_4][1], var_1);
@@ -7843,7 +8571,7 @@ GAME_TEXT	segment byte public use16 'CODE'
 	mov	bx,ax
 	push	word ptr DGROUP:__all_explosions[bx+6]
 	push	word ptr DGROUP:__all_explosions[bx+4]
-@21@394:
+@28@394:
 	push	word ptr DGROUP:_the_game+2
 	push	word ptr DGROUP:_the_game
 	call	far ptr @game_manager@play_sound$qnucuc
@@ -7904,7 +8632,7 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	    if (arg_0 & 1)
    ;	
 	test	word ptr [bp+6],1
-	je	short @21@478
+	je	short @28@478
    ;	
    ;	        add_bubble(arg_0, arg_2 - 3, 0);
    ;	
@@ -7916,20 +8644,20 @@ GAME_TEXT	segment byte public use16 'CODE'
 	push	cs
 	call	near ptr @add_bubble$qiii
 	add	sp,6
-@21@478:
+@28@478:
    ;	
    ;	}
    ;	
 	leave	
 	ret	
 @add_explosion$qiiucnuc	endp
-@21@C50	label	word
-	dw	@21@114
-	dw	@21@170
-	dw	@21@198
-	dw	@21@254
-	dw	@21@254
-	dw	@21@226
+@28@C50	label	word
+	dw	@28@114
+	dw	@28@170
+	dw	@28@198
+	dw	@28@254
+	dw	@28@254
+	dw	@28@226
    ;	
    ;	void add_missile(m_actor far *arg_0, uchar arg_4, int arg_6)
    ;	
@@ -7948,15 +8676,15 @@ GAME_TEXT	segment byte public use16 'CODE'
 	shr	ax,1
 	and	ax,1
 	or	ax,ax
-	jne short	@@50
-	jmp	@22@702
-@@50:
+	jne short	@@36
+	jmp	@29@702
+@@36:
    ;	
    ;	        return;
    ;	    if (arg_4 == 0x63)
    ;	
 	cmp	byte ptr [bp+10],99
-	jne	short @22@170
+	jne	short @29@170
    ;	
    ;	    {
    ;	        if (ego->on_tile(0x100) != 0)
@@ -7967,18 +8695,18 @@ GAME_TEXT	segment byte public use16 'CODE'
 	call	far ptr @m_actor@on_tile$qi
 	add	sp,6
 	or	al,al
-	jne short	@@51
-	jmp	@22@562
-@@51:
+	jne short	@@37
+	jmp	@29@562
+@@37:
    ;	
    ;	            return;
    ;	
-	jmp	@22@702
+	jmp	@29@702
    ;	
    ;	    }
    ;	
-	jmp	@22@562
-@22@170:
+	jmp	@29@562
+@29@170:
    ;	
    ;	    else
    ;	    {
@@ -7986,7 +8714,7 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	
 	les	bx,dword ptr [bp+6]
 	cmp	byte ptr es:[bx+52],1
-	jne	short @22@226
+	jne	short @29@226
    ;	
    ;	        {
    ;	            act = the_cast->add(_all_projectiles[arg_4].spr_l, 0, do_missle);
@@ -8027,8 +8755,8 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	
    ;	        }
    ;	
-	jmp	short @22@254
-@22@226:
+	jmp	short @29@254
+@29@226:
    ;	
    ;	        else
    ;	        {
@@ -8062,7 +8790,7 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	
 	les	bx,dword ptr DGROUP:_act
 	mov	word ptr es:[bx+20],1
-@22@254:
+@29@254:
    ;	
    ;	        }
    ;	        act->direction = arg_0->direction;
@@ -8075,15 +8803,15 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	        if (arg_6 == 0)
    ;	
 	cmp	word ptr [bp+12],0
-	jne	short @22@310
+	jne	short @29@310
    ;	
    ;	            var_4 = arg_0->center_y + 3;
    ;	
 	les	bx,dword ptr [bp+6]
 	mov	ax,word ptr es:[bx+10]
 	add	ax,3
-	jmp	short @22@338
-@22@310:
+	jmp	short @29@338
+@29@310:
    ;	
    ;	        else
    ;	            var_4 = arg_0->y + arg_6;
@@ -8091,7 +8819,7 @@ GAME_TEXT	segment byte public use16 'CODE'
 	les	bx,dword ptr [bp+6]
 	mov	ax,word ptr es:[bx+2]
 	add	ax,word ptr [bp+12]
-@22@338:
+@29@338:
 	mov	word ptr [bp-4],ax
    ;	
    ;	        act->counter_24 = _all_projectiles[arg_4].v2;
@@ -8144,7 +8872,7 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	        if (arg_4 == 9)
    ;	
 	cmp	byte ptr [bp+10],9
-	jne	short @22@422
+	jne	short @29@422
    ;	
    ;	        {
    ;	            act->state = 3;
@@ -8156,7 +8884,7 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	
 	les	bx,dword ptr DGROUP:_act
 	mov	word ptr es:[bx+22],-7
-@22@422:
+@29@422:
    ;	
    ;	        }
    ;	        act->target = arg_0;
@@ -8198,19 +8926,19 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	        if (arg_4 == 0x0A)
    ;	
 	cmp	byte ptr [bp+10],10
-	jne	short @22@478
+	jne	short @29@478
    ;	
    ;	            the_game->play_sound(_all_projectiles[arg_4].snd, 0x0A);
    ;	
 	push	10
-	jmp	short @22@506
-@22@478:
+	jmp	short @29@506
+@29@478:
    ;	
    ;	        else
    ;	            the_game->play_sound(_all_projectiles[arg_4].snd, 3);
    ;	
 	push	3
-@22@506:
+@29@506:
 	mov	al,byte ptr [bp+10]
 	mov	ah,0
 	imul	ax,ax,22
@@ -8221,12 +8949,12 @@ GAME_TEXT	segment byte public use16 'CODE'
 	push	word ptr DGROUP:_the_game
 	call	far ptr @game_manager@play_sound$qnucuc
 	add	sp,10
-	jmp	@22@702
+	jmp	@29@702
    ;	
    ;	        return;
    ;	
-	jmp	@22@702
-@22@562:
+	jmp	@29@702
+@29@562:
    ;	
    ;	    }
    ;	    act = the_cast->add((uchar far *)"msl_top.l", 0, do_missle);
@@ -8236,7 +8964,7 @@ GAME_TEXT	segment byte public use16 'CODE'
 	push	0
 	push	0
 	push	ds
-	push	offset DGROUP:s@+2709
+	push	offset DGROUP:s@+2097
 	push	word ptr DGROUP:_the_cast+2
 	push	word ptr DGROUP:_the_cast
 	call	far ptr @game_cast@add$qnucnvt2
@@ -8274,7 +9002,7 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	
 	les	bx,dword ptr DGROUP:_ego
 	cmp	byte ptr es:[bx+52],0
-	jne	short @22@618
+	jne	short @29@618
    ;	
    ;	        act->set_xy(ego->x + 0x0B, ego->center_y - act->height - 8);
    ;	
@@ -8287,8 +9015,8 @@ GAME_TEXT	segment byte public use16 'CODE'
 	les	bx,dword ptr DGROUP:_ego
 	mov	ax,word ptr es:[bx]
 	add	ax,11
-	jmp	short @22@646
-@22@618:
+	jmp	short @29@646
+@29@618:
    ;	
    ;	    else
    ;	        act->set_xy(ego->x + ego->width - 0x0D, ego->center_y - act->height - 8);
@@ -8306,7 +9034,7 @@ GAME_TEXT	segment byte public use16 'CODE'
 	pop	es
 	add	ax,word ptr es:[bx+16]
 	add	ax,-13
-@22@646:
+@29@646:
 	push	ax
 	push	word ptr DGROUP:_act+2
 	push	word ptr DGROUP:_act
@@ -8316,7 +9044,7 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	    top_shot_count++;
    ;	
 	inc	byte ptr DGROUP:_top_shot_count
-@22@702:
+@29@702:
    ;	
    ;	}
    ;	
@@ -8340,7 +9068,7 @@ GAME_TEXT	segment byte public use16 'CODE'
 	push	seg @mv_ego$qn7m_actornit2
 	push	offset @mv_ego$qn7m_actornit2
 	push	ds
-	push	offset DGROUP:s@+2719
+	push	offset DGROUP:s@+2107
 	push	word ptr DGROUP:_the_cast+2
 	push	word ptr DGROUP:_the_cast
 	call	far ptr @game_cast@add$qnucnvt2
@@ -8362,7 +9090,7 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	
 	les	bx,dword ptr DGROUP:_ego
 	cmp	byte ptr es:[bx+52],0
-	jne	short @23@86
+	jne	short @30@86
    ;	
    ;	        jason->set_xy(ego->x - 2, ego->y);
    ;	
@@ -8372,8 +9100,8 @@ GAME_TEXT	segment byte public use16 'CODE'
 	mov	ax,word ptr es:[bx]
 	add	ax,-2
 	push	ax
-	jmp	short @23@114
-@23@86:
+	jmp	short @30@114
+@30@86:
    ;	
    ;	    else
    ;	        jason->set_xy(ego->old_x, ego->y);
@@ -8382,7 +9110,7 @@ GAME_TEXT	segment byte public use16 'CODE'
 	push	word ptr es:[bx+2]
 	les	bx,dword ptr DGROUP:_ego
 	push	word ptr es:[bx+4]
-@23@114:
+@30@114:
 	push	word ptr DGROUP:_jason+2
 	push	word ptr DGROUP:_jason
 	call	far ptr @m_actor@set_xy$qii
@@ -8440,10 +9168,10 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	    if (jason_on == 1 && ego->state != 2)
    ;	
 	cmp	byte ptr DGROUP:_jason_on,1
-	jne	short @24@114
+	jne	short @31@114
 	les	bx,dword ptr DGROUP:_ego
 	cmp	byte ptr es:[bx+61],2
-	je	short @24@114
+	je	short @31@114
    ;	
    ;	        scroll_to(ego);
    ;	
@@ -8451,7 +9179,7 @@ GAME_TEXT	segment byte public use16 'CODE'
 	push	word ptr DGROUP:_ego
 	call	far ptr @scroll_to$qn7m_actor
 	add	sp,4
-@24@114:
+@31@114:
    ;	
    ;	    jason_on = jason_present = 0;
    ;	
@@ -8485,13 +9213,13 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	    if (jason_present != 0)
    ;	
 	cmp	byte ptr DGROUP:_jason_present,0
-	je	short @25@170
+	je	short @32@170
    ;	
    ;	    {
    ;	        the_game->play_sound_file((uchar far *)"squeek");
    ;	
 	push	ds
-	push	offset DGROUP:s@+2728
+	push	offset DGROUP:s@+2116
 	push	word ptr DGROUP:_the_game+2
 	push	word ptr DGROUP:_the_game
 	call	far ptr @game_manager@play_sound_file$qnuc
@@ -8508,7 +9236,7 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	        if (jason_on == 1)
    ;	
 	cmp	byte ptr DGROUP:_jason_on,1
-	jne	short @25@114
+	jne	short @32@114
    ;	
    ;	        {
    ;	            scroll_to(ego);
@@ -8525,8 +9253,8 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	            cur_sub = ego;
    ;	
 	mov	eax,dword ptr DGROUP:_ego
-	jmp	short @25@142
-@25@114:
+	jmp	short @32@142
+@32@114:
    ;	
    ;	        }
    ;	        else
@@ -8550,9 +9278,9 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	            cur_sub = jason;
    ;	
 	mov	eax,dword ptr DGROUP:_jason
-@25@142:
+@32@142:
 	mov	dword ptr DGROUP:_cur_sub,eax
-@25@170:
+@32@170:
    ;	
    ;	        }
    ;	    }
@@ -8611,8 +9339,8 @@ GAME_TEXT	segment byte public use16 'CODE'
 	xor	ax,ax
 	mov	word ptr [bp-8],ax
 	mov	word ptr [bp-6],ax
-	jmp	@26@310
-@26@58:
+	jmp	@33@310
+@33@58:
    ;	
    ;	    while (var_4 != var_8 || var_6 != var_A)
    ;	    {
@@ -8636,47 +9364,47 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	
 	mov	ax,word ptr [bp-2]
 	cmp	ax,word ptr [bp-6]
-	jae	short @26@114
+	jae	short @33@114
    ;	
    ;	            var_4 += 8;
    ;	
 	add	word ptr [bp-2],8
-	jmp	short @26@170
-@26@114:
+	jmp	short @33@170
+@33@114:
    ;	
    ;	        else if (var_4 > var_8)
    ;	
 	mov	ax,word ptr [bp-2]
 	cmp	ax,word ptr [bp-6]
-	jbe	short @26@170
+	jbe	short @33@170
    ;	
    ;	            var_4 -= 8;
    ;	
 	sub	word ptr [bp-2],8
-@26@170:
+@33@170:
    ;	
    ;	        if (var_6 < var_A)
    ;	
 	mov	ax,word ptr [bp-4]
 	cmp	ax,word ptr [bp-8]
-	jae	short @26@226
+	jae	short @33@226
    ;	
    ;	            var_6 += 8;
    ;	
 	add	word ptr [bp-4],8
-	jmp	short @26@282
-@26@226:
+	jmp	short @33@282
+@33@226:
    ;	
    ;	        else if (var_6 > var_A)
    ;	
 	mov	ax,word ptr [bp-4]
 	cmp	ax,word ptr [bp-8]
-	jbe	short @26@282
+	jbe	short @33@282
    ;	
    ;	            var_6 -= 8;
    ;	
 	sub	word ptr [bp-4],8
-@26@282:
+@33@282:
    ;	
    ;	        var_1 = the_map->center_on(var_4, var_6);
    ;	
@@ -8729,19 +9457,19 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	        non_displayed_page ^= 1;
    ;	
 	xor	byte ptr DGROUP:_non_displayed_page,1
-@26@310:
+@33@310:
 	mov	ax,word ptr [bp-2]
 	cmp	ax,word ptr [bp-6]
-	je short	@@52
-	jmp	@26@58
-@@52:
+	je short	@@38
+	jmp	@33@58
+@@38:
 	mov	ax,word ptr [bp-4]
 	cmp	ax,word ptr [bp-8]
-	je short	@@53
-	jmp	@26@58
-@@53:
-	jmp	@26@646
-@26@394:
+	je short	@@39
+	jmp	@33@58
+@@39:
+	jmp	@33@646
+@33@394:
    ;	
    ;	    }
    ;	    while (var_4 != var_8 || var_6 != var_A)
@@ -8764,47 +9492,47 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	
 	mov	ax,word ptr [bp-2]
 	cmp	ax,word ptr [bp-6]
-	jae	short @26@450
+	jae	short @33@450
    ;	
    ;	            var_4 += 4;
    ;	
 	add	word ptr [bp-2],4
-	jmp	short @26@506
-@26@450:
+	jmp	short @33@506
+@33@450:
    ;	
    ;	        else if (var_4 > var_8)
    ;	
 	mov	ax,word ptr [bp-2]
 	cmp	ax,word ptr [bp-6]
-	jbe	short @26@506
+	jbe	short @33@506
    ;	
    ;	            var_4 -= 4;
    ;	
 	sub	word ptr [bp-2],4
-@26@506:
+@33@506:
    ;	
    ;	        if (var_6 < var_A)
    ;	
 	mov	ax,word ptr [bp-4]
 	cmp	ax,word ptr [bp-8]
-	jae	short @26@562
+	jae	short @33@562
    ;	
    ;	            var_6++;
    ;	
 	inc	word ptr [bp-4]
-	jmp	short @26@618
-@26@562:
+	jmp	short @33@618
+@33@562:
    ;	
    ;	        else if (var_6 > var_A)
    ;	
 	mov	ax,word ptr [bp-4]
 	cmp	ax,word ptr [bp-8]
-	jbe	short @26@618
+	jbe	short @33@618
    ;	
    ;	            var_6--;
    ;	
 	dec	word ptr [bp-4]
-@26@618:
+@33@618:
    ;	
    ;	        var_1 = the_map->center_on(var_4, var_6);
    ;	
@@ -8857,17 +9585,17 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	        non_displayed_page ^= 1;
    ;	
 	xor	byte ptr DGROUP:_non_displayed_page,1
-@26@646:
+@33@646:
 	mov	ax,word ptr [bp-2]
 	cmp	ax,word ptr [bp-6]
-	je short	@@54
-	jmp	@26@394
-@@54:
+	je short	@@40
+	jmp	@33@394
+@@40:
 	mov	ax,word ptr [bp-4]
 	cmp	ax,word ptr [bp-8]
-	je short	@@55
-	jmp	@26@394
-@@55:
+	je short	@@41
+	jmp	@33@394
+@@41:
    ;	
    ;	    }
    ;	}
@@ -8887,15 +9615,15 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	    if (shot_count == 5)
    ;	
 	cmp	byte ptr DGROUP:_shot_count,5
-	jne short	@@56
-	jmp	@27@730
-@@56:
+	jne short	@@42
+	jmp	@34@730
+@@42:
    ;	
    ;	        return;
    ;	    if (jason_on != 0)
    ;	
 	cmp	byte ptr DGROUP:_jason_on,0
-	je	short @27@226
+	je	short @34@226
    ;	
    ;	    {
    ;	        shot_count++;
@@ -8905,41 +9633,41 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	        if (shot_size == 0)
    ;	
 	cmp	byte ptr DGROUP:_shot_size,0
-	jne	short @27@170
+	jne	short @34@170
    ;	
    ;	            add_missile(jason, 0, 4);
    ;	
 	push	4
 	push	0
-@27@142:
+@34@142:
 	push	word ptr DGROUP:_jason+2
 	push	word ptr DGROUP:_jason
 	push	cs
 	call	near ptr @add_missile$qn7m_actoruci
 	add	sp,8
-	jmp	@27@730
-@27@170:
+	jmp	@34@730
+@34@170:
    ;	
    ;	        else
    ;	            add_missile(jason, 1, 4);
    ;	
 	push	4
 	push	1
-	jmp	short @27@142
+	jmp	short @34@142
    ;	
    ;	        return;
    ;	
-	jmp	@27@730
-@27@226:
+	jmp	@34@730
+@34@226:
    ;	
    ;	    }
    ;	    if (ego->state == 1)
    ;	
 	les	bx,dword ptr DGROUP:_ego
 	cmp	byte ptr es:[bx+61],1
-	jne short	@@57
-	jmp	@27@730
-@@57:
+	jne short	@@43
+	jmp	@34@730
+@@43:
    ;	
    ;	        return;
    ;	    shot_count++;
@@ -8960,33 +9688,33 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	    if (heavy_timer != 0)
    ;	
 	cmp	word ptr DGROUP:_heavy_timer,0
-	je	short @27@310
+	je	short @34@310
    ;	
    ;	        heavy_timer--;
    ;	
 	dec	word ptr DGROUP:_heavy_timer
-@27@310:
+@34@310:
    ;	
    ;	    if (jason_fire != 0 && jason_present != 0 && jason->state == 0)
    ;	
 	cmp	byte ptr DGROUP:_jason_fire,0
-	je	short @27@506
+	je	short @34@506
 	cmp	byte ptr DGROUP:_jason_present,0
-	je	short @27@506
+	je	short @34@506
 	les	bx,dword ptr DGROUP:_jason
 	cmp	byte ptr es:[bx+61],0
-	jne	short @27@506
+	jne	short @34@506
    ;	
    ;	        add_missile(jason, 1 - (shot_size == 0), 0);
    ;	
 	push	0
 	cmp	byte ptr DGROUP:_shot_size,0
-	jne	short @27@450
+	jne	short @34@450
 	mov	ax,1
-	jmp	short @27@478
-@27@450:
+	jmp	short @34@478
+@34@450:
 	xor	ax,ax
-@27@478:
+@34@478:
 	mov	dl,1
 	sub	dl,al
 	push	dx
@@ -8995,14 +9723,14 @@ GAME_TEXT	segment byte public use16 'CODE'
 	push	cs
 	call	near ptr @add_missile$qn7m_actoruci
 	add	sp,8
-@27@506:
+@34@506:
    ;	
    ;	    if (top_fire == 1 && top_shot_count != 2)
    ;	
 	cmp	byte ptr DGROUP:_top_fire,1
-	jne	short @27@590
+	jne	short @34@590
 	cmp	byte ptr DGROUP:_top_shot_count,2
-	je	short @27@590
+	je	short @34@590
    ;	
    ;	        add_missile(ego, 0x63, 0);
    ;	
@@ -9013,25 +9741,25 @@ GAME_TEXT	segment byte public use16 'CODE'
 	push	cs
 	call	near ptr @add_missile$qn7m_actoruci
 	add	sp,8
-@27@590:
+@34@590:
    ;	
    ;	    if (shot_size != 0 && abs(ego->x_speed) <= 6)
    ;	
 	cmp	byte ptr DGROUP:_shot_size,0
-	je	short @27@730
+	je	short @34@730
 	les	bx,dword ptr DGROUP:_ego
 	push	word ptr es:[bx+20]
 	call	far ptr @abs$qi
 	pop	cx
 	cmp	ax,6
-	jg	short @27@730
+	jg	short @34@730
    ;	
    ;	    {
    ;	        if (ego->direction == 0)
    ;	
 	les	bx,dword ptr DGROUP:_ego
 	cmp	byte ptr es:[bx+52],0
-	jne	short @27@702
+	jne	short @34@702
    ;	
    ;	            ego->x_speed -= shot_size + 2;
    ;	
@@ -9040,8 +9768,8 @@ GAME_TEXT	segment byte public use16 'CODE'
 	add	ax,2
 	les	bx,dword ptr DGROUP:_ego
 	sub	word ptr es:[bx+20],ax
-	jmp	short @27@730
-@27@702:
+	jmp	short @34@730
+@34@702:
    ;	
    ;	        else
    ;	            ego->x_speed += shot_size + 2;
@@ -9051,7 +9779,7 @@ GAME_TEXT	segment byte public use16 'CODE'
 	add	ax,2
 	les	bx,dword ptr DGROUP:_ego
 	add	word ptr es:[bx+20],ax
-@27@730:
+@34@730:
    ;	
    ;	    }
    ;	}
@@ -9071,7 +9799,7 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	    if (jason_on != 0)
    ;	
 	cmp	byte ptr DGROUP:_jason_on,0
-	je	short @28@170
+	je	short @35@170
    ;	
    ;	        jason->new_loop(jason->direction == 1 ? (uchar far *)"prober.l"
    ;	
@@ -9080,20 +9808,20 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	
 	les	bx,dword ptr DGROUP:_jason
 	cmp	byte ptr es:[bx+52],1
-	jne	short @28@114
+	jne	short @35@114
 	mov	dx,ds
-	mov	ax,offset DGROUP:s@+2735
-	jmp	short @28@142
-@28@114:
+	mov	ax,offset DGROUP:s@+2123
+	jmp	short @35@142
+@35@114:
 	mov	dx,ds
-	mov	ax,offset DGROUP:s@+2744
-@28@142:
+	mov	ax,offset DGROUP:s@+2132
+@35@142:
 	push	dx
 	push	ax
 	push	word ptr DGROUP:_jason+2
 	push	word ptr DGROUP:_jason
-	jmp	short @28@198
-@28@170:
+	jmp	short @35@198
+@35@170:
    ;	
    ;	    else
    ;	    {
@@ -9110,10 +9838,10 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	        ego->new_loop((uchar far *)"turn.l");
    ;	
 	push	ds
-	push	offset DGROUP:s@+2753
+	push	offset DGROUP:s@+2141
 	push	word ptr DGROUP:_ego+2
 	push	word ptr DGROUP:_ego
-@28@198:
+@35@198:
 	call	far ptr @m_actor@new_loop$qnuc
 	add	sp,8
    ;	
@@ -9142,45 +9870,45 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	    if (control == 0) goto no_input;
    ;	
 	cmp	byte ptr DGROUP:_control,0
-	jne short	@@58
-	jmp	@29@2606
-@@58:
+	jne short	@@44
+	jmp	@36@2606
+@@44:
    ;	
    ;	
    ;	    if (gr_keys[1] || gr_keys[0x3B])
    ;	
 	cmp	byte ptr DGROUP:_gr_keys+1,0
-	jne	short @29@114
+	jne	short @36@114
 	cmp	byte ptr DGROUP:_gr_keys+59,0
-	je	short @29@170
-@29@114:
+	je	short @36@170
+@36@114:
    ;	
    ;	        if (!displayed_page)
    ;	
 	mov	al,byte ptr DGROUP:_displayed_page
 	mov	ah,0
 	or	ax,ax
-	jne	short @29@170
+	jne	short @36@170
    ;	
    ;	            activate_menu_bar();
    ;	
 	call	far ptr @activate_menu_bar$qv
-@29@170:
+@36@170:
    ;	
    ;	
    ;	    if (the_game->field_2B == 1)
    ;	
 	les	bx,dword ptr DGROUP:_the_game
 	cmp	byte ptr es:[bx+43],1
-	jne	short @29@450
+	jne	short @36@450
    ;	
    ;	    {
    ;	        if (auto_fire == 1 && jason_on == 0)
    ;	
 	cmp	byte ptr DGROUP:_auto_fire,1
-	jne	short @29@338
+	jne	short @36@338
 	cmp	byte ptr DGROUP:_jason_on,0
-	jne	short @29@338
+	jne	short @36@338
    ;	
    ;	        {
    ;	            if (auto_fire_count++ == 2)
@@ -9188,7 +9916,7 @@ GAME_TEXT	segment byte public use16 'CODE'
 	mov	al,byte ptr DGROUP:_auto_fire_count
 	inc	byte ptr DGROUP:_auto_fire_count
 	cmp	al,2
-	jne	short @29@506
+	jne	short @36@506
    ;	
    ;	            {
    ;	                auto_fire_count = 0;
@@ -9199,49 +9927,49 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	
 	push	cs
 	call	near ptr @ego_fire$qv
-	jmp	short @29@506
+	jmp	short @36@506
    ;	
    ;	            }
    ;	        }
    ;	
-	jmp	short @29@506
-@29@338:
+	jmp	short @36@506
+@36@338:
    ;	
    ;	        else
    ;	        {
    ;	            if (space_bar_been_up != 0)
    ;	
 	cmp	word ptr DGROUP:_space_bar_been_up,0
-	je	short @29@394
+	je	short @36@394
    ;	
    ;	                ego_fire();
    ;	
 	push	cs
 	call	near ptr @ego_fire$qv
-@29@394:
+@36@394:
    ;	
    ;	            space_bar_been_up = 0;
    ;	
 	mov	word ptr DGROUP:_space_bar_been_up,0
-	jmp	short @29@506
+	jmp	short @36@506
    ;	
    ;	        }
    ;	    }
    ;	
-	jmp	short @29@506
-@29@450:
+	jmp	short @36@506
+@36@450:
    ;	
    ;	    else
    ;	    {
    ;	        if (space_bar_been_up == 0)
    ;	
 	cmp	word ptr DGROUP:_space_bar_been_up,0
-	jne	short @29@506
+	jne	short @36@506
    ;	
    ;	            space_bar_been_up++;
    ;	
 	inc	word ptr DGROUP:_space_bar_been_up
-@29@506:
+@36@506:
    ;	
    ;	    }
    ;	
@@ -9249,19 +9977,19 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	
 	les	bx,dword ptr DGROUP:_the_game
 	cmp	byte ptr es:[bx+44],1
-	je short	@@59
-	jmp	@29@786
-@@59:
+	je short	@@45
+	jmp	@36@786
+@@45:
 	les	bx,dword ptr DGROUP:_ego
 	cmp	byte ptr es:[bx+61],0
-	jne	short @29@786
+	jne	short @36@786
    ;	
    ;	    {
    ;	        for (var_4 = 0; var_4 < teleport_count; var_4++)
    ;	
 	mov	word ptr [bp-2],0
-	jmp	short @29@674
-@29@590:
+	jmp	short @36@674
+@36@590:
    ;	
    ;	            if (cur_sub->on_pos(all_teleports[var_4][0]))
    ;	
@@ -9273,7 +10001,7 @@ GAME_TEXT	segment byte public use16 'CODE'
 	call	far ptr @m_actor@on_pos$qui
 	add	sp,6
 	or	al,al
-	je	short @29@646
+	je	short @36@646
    ;	
    ;	            {
    ;	                teleport_to(all_teleports[var_4][1]);
@@ -9286,25 +10014,25 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	
    ;	                break;
    ;	
-	jmp	short @29@702
-@29@646:
+	jmp	short @36@702
+@36@646:
 	inc	word ptr [bp-2]
-@29@674:
+@36@674:
 	mov	al,byte ptr DGROUP:_teleport_count
 	mov	ah,0
 	cmp	ax,word ptr [bp-2]
-	jg	short @29@590
-@29@702:
+	jg	short @36@590
+@36@702:
    ;	
    ;	            }
    ;	        if (jason_present == 1 && var_4 == teleport_count)
    ;	
 	cmp	byte ptr DGROUP:_jason_present,1
-	jne	short @29@786
+	jne	short @36@786
 	mov	al,byte ptr DGROUP:_teleport_count
 	mov	ah,0
 	cmp	ax,word ptr [bp-2]
-	jne	short @29@786
+	jne	short @36@786
    ;	
    ;	        {
    ;	            toggle_sub_control();
@@ -9319,7 +10047,7 @@ GAME_TEXT	segment byte public use16 'CODE'
 	push	word ptr DGROUP:_display
 	call	far ptr @vga_display@pause$qui
 	add	sp,6
-@29@786:
+@36@786:
    ;	
    ;	        }
    ;	    }
@@ -9332,26 +10060,26 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	
 	les	bx,dword ptr DGROUP:_the_game
 	cmp	byte ptr es:[bx+42],0
-	je	short @29@954
+	je	short @36@954
    ;	
    ;	    {
    ;	        if (cur_sub->direction != 0)
    ;	
 	les	bx,dword ptr DGROUP:_cur_sub
 	cmp	byte ptr es:[bx+52],0
-	je	short @29@870
+	je	short @36@870
    ;	
    ;	            turn_ego();
    ;	
 	push	cs
 	call	near ptr @turn_ego$qv
-@29@870:
+@36@870:
    ;	
    ;	        if (cur_sub->state != 1)
    ;	
 	les	bx,dword ptr DGROUP:_cur_sub
 	cmp	byte ptr es:[bx+61],1
-	je	short @29@926
+	je	short @36@926
    ;	
    ;	            cur_sub->x_speed = ego_x_speed;
    ;	
@@ -9359,7 +10087,7 @@ GAME_TEXT	segment byte public use16 'CODE'
 	mov	ah,0
 	les	bx,dword ptr DGROUP:_cur_sub
 	mov	word ptr es:[bx+20],ax
-@29@926:
+@36@926:
    ;	
    ;	        var_1 = 1;
    ;	
@@ -9367,33 +10095,33 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	
    ;	    }
    ;	
-	jmp	short @29@1234
-@29@954:
+	jmp	short @36@1234
+@36@954:
    ;	
    ;	    else if (the_game->field_29 != 0)
    ;	
 	les	bx,dword ptr DGROUP:_the_game
 	cmp	byte ptr es:[bx+41],0
-	je	short @29@1122
+	je	short @36@1122
    ;	
    ;	    {
    ;	        if (cur_sub->direction != 1)
    ;	
 	les	bx,dword ptr DGROUP:_cur_sub
 	cmp	byte ptr es:[bx+52],1
-	je	short @29@1038
+	je	short @36@1038
    ;	
    ;	            turn_ego();
    ;	
 	push	cs
 	call	near ptr @turn_ego$qv
-@29@1038:
+@36@1038:
    ;	
    ;	        if (cur_sub->state != 1)
    ;	
 	les	bx,dword ptr DGROUP:_cur_sub
 	cmp	byte ptr es:[bx+61],1
-	je	short @29@1094
+	je	short @36@1094
    ;	
    ;	            cur_sub->x_speed = -ego_x_speed;
    ;	
@@ -9402,10 +10130,10 @@ GAME_TEXT	segment byte public use16 'CODE'
 	neg	ax
 	les	bx,dword ptr DGROUP:_cur_sub
 	mov	word ptr es:[bx+20],ax
-	jmp	short @29@926
-@29@1094:
-	jmp	short @29@926
-@29@1122:
+	jmp	short @36@926
+@36@1094:
+	jmp	short @36@926
+@36@1122:
    ;	
    ;	        var_1 = 1;
    ;	    }
@@ -9415,28 +10143,28 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	
 	les	bx,dword ptr DGROUP:_cur_sub
 	cmp	word ptr es:[bx+20],0
-	je	short @29@1234
+	je	short @36@1234
    ;	
    ;	        {
    ;	            if (cur_sub->x_speed > 0)
    ;	
 	les	bx,dword ptr DGROUP:_cur_sub
 	cmp	word ptr es:[bx+20],0
-	jle	short @29@1206
+	jle	short @36@1206
    ;	
    ;	                cur_sub->x_speed--;
    ;	
 	les	bx,dword ptr DGROUP:_cur_sub
 	dec	word ptr es:[bx+20]
-	jmp	short @29@1234
-@29@1206:
+	jmp	short @36@1234
+@36@1206:
    ;	
    ;	            else
    ;	                cur_sub->x_speed++;
    ;	
 	les	bx,dword ptr DGROUP:_cur_sub
 	inc	word ptr es:[bx+20]
-@29@1234:
+@36@1234:
    ;	
    ;	        }
    ;	    }
@@ -9445,7 +10173,7 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	
 	les	bx,dword ptr DGROUP:_the_game
 	cmp	byte ptr es:[bx+40],0
-	je	short @29@1402
+	je	short @36@1402
    ;	
    ;	    {
    ;	        if (ego_y_speed > cur_sub->y_speed)
@@ -9454,14 +10182,14 @@ GAME_TEXT	segment byte public use16 'CODE'
 	mov	ah,0
 	les	bx,dword ptr DGROUP:_cur_sub
 	cmp	ax,word ptr es:[bx+22]
-	jle	short @29@1318
+	jle	short @36@1318
    ;	
    ;	            cur_sub->y_speed++;
    ;	
 	les	bx,dword ptr DGROUP:_cur_sub
 	inc	word ptr es:[bx+22]
-	jmp	short @29@1374
-@29@1318:
+	jmp	short @36@1374
+@36@1318:
    ;	
    ;	        else if (ego_y_speed < cur_sub->y_speed)
    ;	
@@ -9469,7 +10197,7 @@ GAME_TEXT	segment byte public use16 'CODE'
 	mov	ah,0
 	les	bx,dword ptr DGROUP:_cur_sub
 	cmp	ax,word ptr es:[bx+22]
-	jge	short @29@1374
+	jge	short @36@1374
    ;	
    ;	            cur_sub->y_speed = ego_y_speed;
    ;	
@@ -9477,7 +10205,7 @@ GAME_TEXT	segment byte public use16 'CODE'
 	mov	ah,0
 	les	bx,dword ptr DGROUP:_cur_sub
 	mov	word ptr es:[bx+22],ax
-@29@1374:
+@36@1374:
    ;	
    ;	        var_1 = 1;
    ;	
@@ -9485,14 +10213,14 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	
    ;	    }
    ;	
-	jmp	@29@1682
-@29@1402:
+	jmp	@36@1682
+@36@1402:
    ;	
    ;	    else if (the_game->field_27 != 0)
    ;	
 	les	bx,dword ptr DGROUP:_the_game
 	cmp	byte ptr es:[bx+39],0
-	je	short @29@1570
+	je	short @36@1570
    ;	
    ;	    {
    ;	        if (-ego_y_speed < cur_sub->y_speed)
@@ -9502,14 +10230,14 @@ GAME_TEXT	segment byte public use16 'CODE'
 	neg	ax
 	les	bx,dword ptr DGROUP:_cur_sub
 	cmp	ax,word ptr es:[bx+22]
-	jge	short @29@1486
+	jge	short @36@1486
    ;	
    ;	            cur_sub->y_speed--;
    ;	
 	les	bx,dword ptr DGROUP:_cur_sub
 	dec	word ptr es:[bx+22]
-	jmp	short @29@1374
-@29@1486:
+	jmp	short @36@1374
+@36@1486:
    ;	
    ;	        else if (-ego_y_speed > cur_sub->y_speed)
    ;	
@@ -9518,7 +10246,7 @@ GAME_TEXT	segment byte public use16 'CODE'
 	neg	ax
 	les	bx,dword ptr DGROUP:_cur_sub
 	cmp	ax,word ptr es:[bx+22]
-	jle	short @29@1542
+	jle	short @36@1542
    ;	
    ;	            cur_sub->y_speed = -ego_y_speed;
    ;	
@@ -9527,10 +10255,10 @@ GAME_TEXT	segment byte public use16 'CODE'
 	neg	ax
 	les	bx,dword ptr DGROUP:_cur_sub
 	mov	word ptr es:[bx+22],ax
-	jmp	short @29@1374
-@29@1542:
-	jmp	short @29@1374
-@29@1570:
+	jmp	short @36@1374
+@36@1542:
+	jmp	short @36@1374
+@36@1570:
    ;	
    ;	        var_1 = 1;
    ;	    }
@@ -9543,28 +10271,28 @@ GAME_TEXT	segment byte public use16 'CODE'
 	call	far ptr @abs$qi
 	pop	cx
 	cmp	ax,1
-	jle	short @29@1682
+	jle	short @36@1682
    ;	
    ;	        {
    ;	            if (cur_sub->y_speed > 0)
    ;	
 	les	bx,dword ptr DGROUP:_cur_sub
 	cmp	word ptr es:[bx+22],0
-	jle	short @29@1654
+	jle	short @36@1654
    ;	
    ;	                cur_sub->y_speed--;
    ;	
 	les	bx,dword ptr DGROUP:_cur_sub
 	dec	word ptr es:[bx+22]
-	jmp	short @29@1682
-@29@1654:
+	jmp	short @36@1682
+@36@1654:
    ;	
    ;	            else
    ;	                cur_sub->y_speed++;
    ;	
 	les	bx,dword ptr DGROUP:_cur_sub
 	inc	word ptr es:[bx+22]
-@29@1682:
+@36@1682:
    ;	
    ;	        }
    ;	    }
@@ -9573,35 +10301,35 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	
 	les	bx,dword ptr DGROUP:_ego
 	cmp	byte ptr es:[bx+61],1
-	je	short @29@1934
+	je	short @36@1934
    ;	
    ;	    {
    ;	        if (var_1 != 0)
    ;	
 	cmp	byte ptr [bp-3],0
-	je	short @29@1850
+	je	short @36@1850
    ;	
    ;	        {
    ;	            if (cur_sub->cycle_speed != 0 || cur_sub->frame == 0)
    ;	
 	les	bx,dword ptr DGROUP:_cur_sub
 	cmp	byte ptr es:[bx+58],0
-	jne	short @29@1794
+	jne	short @36@1794
 	les	bx,dword ptr DGROUP:_cur_sub
 	cmp	byte ptr es:[bx+56],0
-	jne	short @29@1934
-@29@1794:
+	jne	short @36@1934
+@36@1794:
    ;	
    ;	                cur_sub->set_cycle(0, 1);
    ;	
 	push	1
 	push	0
-	jmp	short @29@1906
+	jmp	short @36@1906
    ;	
    ;	        }
    ;	
-	jmp	short @29@1934
-@29@1850:
+	jmp	short @36@1934
+@36@1850:
    ;	
    ;	        else
    ;	        {
@@ -9609,18 +10337,18 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	
 	les	bx,dword ptr DGROUP:_cur_sub
 	cmp	byte ptr es:[bx+58],12
-	je	short @29@1934
+	je	short @36@1934
    ;	
    ;	                cur_sub->set_cycle(0xC, 1);
    ;	
 	push	1
 	push	12
-@29@1906:
+@36@1906:
 	push	word ptr DGROUP:_cur_sub+2
 	push	word ptr DGROUP:_cur_sub
 	call	far ptr @m_actor@set_cycle$qucuc
 	add	sp,8
-@29@1934:
+@36@1934:
    ;	
    ;	        }
    ;	    }
@@ -9628,15 +10356,15 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	    if (cheat_mode == 1)
    ;	
 	cmp	byte ptr DGROUP:_cheat_mode,1
-	je short	@@60
-	jmp	@29@2606
-@@60:
+	je short	@@46
+	jmp	@36@2606
+@@46:
    ;	
    ;	    {
    ;	        if (gr_keys[0x1E])
    ;	
 	cmp	byte ptr DGROUP:_gr_keys+30,0
-	je	short @29@2018
+	je	short @36@2018
    ;	
    ;	            update_air_guage(2, 0x68, 0xA7);
    ;	
@@ -9645,12 +10373,12 @@ GAME_TEXT	segment byte public use16 'CODE'
 	push	2
 	call	far ptr @update_air_guage$qiii
 	add	sp,6
-@29@2018:
+@36@2018:
    ;	
    ;	        if (gr_keys[0x1F])
    ;	
 	cmp	byte ptr DGROUP:_gr_keys+31,0
-	je	short @29@2074
+	je	short @36@2074
    ;	
    ;	            update_shld_guage(2, 0x68, 0xB3);
    ;	
@@ -9659,14 +10387,14 @@ GAME_TEXT	segment byte public use16 'CODE'
 	push	2
 	call	far ptr @update_shld_guage$qiii
 	add	sp,6
-@29@2074:
+@36@2074:
    ;	
    ;	        if (gr_keys[0x21] && shot_size != 3)
    ;	
 	cmp	byte ptr DGROUP:_gr_keys+33,0
-	je	short @29@2158
+	je	short @36@2158
 	cmp	byte ptr DGROUP:_shot_size,3
-	je	short @29@2158
+	je	short @36@2158
    ;	
    ;	        {
    ;	            shot_size = 3;
@@ -9676,20 +10404,20 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	            the_game->play_sound_file((uchar far *)"drillhi");
    ;	
 	push	ds
-	push	offset DGROUP:s@+2760
+	push	offset DGROUP:s@+2148
 	push	word ptr DGROUP:_the_game+2
 	push	word ptr DGROUP:_the_game
 	call	far ptr @game_manager@play_sound_file$qnuc
 	add	sp,8
-@29@2158:
+@36@2158:
    ;	
    ;	        }
    ;	        if (gr_keys[0x13] && auto_fire != 1)
    ;	
 	cmp	byte ptr DGROUP:_gr_keys+19,0
-	je	short @29@2242
+	je	short @36@2242
 	cmp	byte ptr DGROUP:_auto_fire,1
-	je	short @29@2242
+	je	short @36@2242
    ;	
    ;	        {
    ;	            auto_fire = 1;
@@ -9699,20 +10427,20 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	            the_game->play_sound_file((uchar far *)"drillhi");
    ;	
 	push	ds
-	push	offset DGROUP:s@+2768
+	push	offset DGROUP:s@+2156
 	push	word ptr DGROUP:_the_game+2
 	push	word ptr DGROUP:_the_game
 	call	far ptr @game_manager@play_sound_file$qnuc
 	add	sp,8
-@29@2242:
+@36@2242:
    ;	
    ;	        }
    ;	        if (gr_keys[0x24] && jason_present == 0)
    ;	
 	cmp	byte ptr DGROUP:_gr_keys+36,0
-	je	short @29@2326
+	je	short @36@2326
 	cmp	byte ptr DGROUP:_jason_present,0
-	jne	short @29@2326
+	jne	short @36@2326
    ;	
    ;	        {
    ;	            add_jason();
@@ -9723,22 +10451,22 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	            the_game->play_sound_file((uchar far *)"drillhi");
    ;	
 	push	ds
-	push	offset DGROUP:s@+2776
+	push	offset DGROUP:s@+2164
 	push	word ptr DGROUP:_the_game+2
 	push	word ptr DGROUP:_the_game
 	call	far ptr @game_manager@play_sound_file$qnuc
 	add	sp,8
-@29@2326:
+@36@2326:
    ;	
    ;	        }
    ;	        if (gr_keys[0x23] && jason_present == 1 && jason_fire != 1)
    ;	
 	cmp	byte ptr DGROUP:_gr_keys+35,0
-	je	short @29@2438
+	je	short @36@2438
 	cmp	byte ptr DGROUP:_jason_present,1
-	jne	short @29@2438
+	jne	short @36@2438
 	cmp	byte ptr DGROUP:_jason_fire,1
-	je	short @29@2438
+	je	short @36@2438
    ;	
    ;	        {
    ;	            jason_fire = 1;
@@ -9748,20 +10476,20 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	            the_game->play_sound_file((uchar far *)"drillhi");
    ;	
 	push	ds
-	push	offset DGROUP:s@+2784
+	push	offset DGROUP:s@+2172
 	push	word ptr DGROUP:_the_game+2
 	push	word ptr DGROUP:_the_game
 	call	far ptr @game_manager@play_sound_file$qnuc
 	add	sp,8
-@29@2438:
+@36@2438:
    ;	
    ;	        }
    ;	        if (gr_keys[0x16] && top_fire != 1)
    ;	
 	cmp	byte ptr DGROUP:_gr_keys+22,0
-	je	short @29@2522
+	je	short @36@2522
 	cmp	byte ptr DGROUP:_top_fire,1
-	je	short @29@2522
+	je	short @36@2522
    ;	
    ;	        {
    ;	            top_fire = 1;
@@ -9771,20 +10499,20 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	            the_game->play_sound_file((uchar far *)"drillhi");
    ;	
 	push	ds
-	push	offset DGROUP:s@+2792
+	push	offset DGROUP:s@+2180
 	push	word ptr DGROUP:_the_game+2
 	push	word ptr DGROUP:_the_game
 	call	far ptr @game_manager@play_sound_file$qnuc
 	add	sp,8
-@29@2522:
+@36@2522:
    ;	
    ;	        }
    ;	        if (gr_keys[0x22] && god_mode != 1)
    ;	
 	cmp	byte ptr DGROUP:_gr_keys+34,0
-	je	short @29@2606
+	je	short @36@2606
 	cmp	byte ptr DGROUP:_god_mode,1
-	je	short @29@2606
+	je	short @36@2606
    ;	
    ;	        {
    ;	            god_mode = 1;
@@ -9794,12 +10522,12 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	            the_game->play_sound_file((uchar far *)"drillhi");
    ;	
 	push	ds
-	push	offset DGROUP:s@+2800
+	push	offset DGROUP:s@+2188
 	push	word ptr DGROUP:_the_game+2
 	push	word ptr DGROUP:_the_game
 	call	far ptr @game_manager@play_sound_file$qnuc
 	add	sp,8
-@29@2606:
+@36@2606:
    ;	
    ;	        }
    ;	    }
@@ -9808,62 +10536,62 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	    if (debug_mode == 1)
    ;	
 	cmp	byte ptr DGROUP:_debug_mode,1
-	je short	@@61
-	jmp	@29@3166
-@@61:
+	je short	@@47
+	jmp	@36@3166
+@@47:
    ;	
    ;	    {
    ;	        if (gr_keys[0x20])
    ;	
 	cmp	byte ptr DGROUP:_gr_keys+32,0
-	je	short @29@2690
+	je	short @36@2690
    ;	
    ;	            debug++;
    ;	
 	inc	byte ptr DGROUP:_debug
-@29@2690:
+@36@2690:
    ;	
    ;	        if (gr_keys[0x19] && displayed_page == 0)
    ;	
 	cmp	byte ptr DGROUP:_gr_keys+25,0
-	je	short @29@2774
+	je	short @36@2774
 	cmp	byte ptr DGROUP:_displayed_page,0
-	jne	short @29@2774
+	jne	short @36@2774
    ;	
    ;	        {
    ;	            display->dump_pcx();
    ;	
 	push	word ptr DGROUP:_display+2
 	push	word ptr DGROUP:_display
-	call	far ptr @vga_display@dump_pcx$qve
+	call	far ptr @vga_display@dump_pcx$qv
 	add	sp,4
    ;	
-   ;	            i_inform((uchar far *)"Riptide.pcx has been written", 0, 0, 0);
+   ;	            i_inform((uchar far *)"Riptide.pcx has been written", 0, 0);
    ;	
 	push	0
 	push	0
 	push	0
 	push	ds
-	push	offset DGROUP:s@+2808
-	call	far ptr @i_inform$qnucuce
+	push	offset DGROUP:s@+2196
+	call	far ptr @i_inform$qnucuct1
 	add	sp,10
-@29@2774:
+@36@2774:
    ;	
    ;	        }
    ;	        if (gr_keys[0x2C])
    ;	
 	cmp	byte ptr DGROUP:_gr_keys+44,0
-	je	short @29@2830
+	je	short @36@2830
    ;	
    ;	            stop_room = 1;
    ;	
 	mov	byte ptr DGROUP:_stop_room,1
-@29@2830:
+@36@2830:
    ;	
    ;	        if (gr_keys[0x02])
    ;	
 	cmp	byte ptr DGROUP:_gr_keys+2,0
-	je	short @29@2886
+	je	short @36@2886
    ;	
    ;	            display->pause(0xA);
    ;	
@@ -9872,12 +10600,12 @@ GAME_TEXT	segment byte public use16 'CODE'
 	push	word ptr DGROUP:_display
 	call	far ptr @vga_display@pause$qui
 	add	sp,6
-@29@2886:
+@36@2886:
    ;	
    ;	        if (gr_keys[0x03])
    ;	
 	cmp	byte ptr DGROUP:_gr_keys+3,0
-	je	short @29@2942
+	je	short @36@2942
    ;	
    ;	            display->pause(0x1E);
    ;	
@@ -9886,12 +10614,12 @@ GAME_TEXT	segment byte public use16 'CODE'
 	push	word ptr DGROUP:_display
 	call	far ptr @vga_display@pause$qui
 	add	sp,6
-@29@2942:
+@36@2942:
    ;	
    ;	        if (gr_keys[0x3B])
    ;	
 	cmp	byte ptr DGROUP:_gr_keys+59,0
-	je	short @29@2998
+	je	short @36@2998
    ;	
    ;	            display->show_offset(0);
    ;	
@@ -9900,12 +10628,12 @@ GAME_TEXT	segment byte public use16 'CODE'
 	push	word ptr DGROUP:_display
 	call	far ptr @vga_display@show_offset$qui
 	add	sp,6
-@29@2998:
+@36@2998:
    ;	
    ;	        if (gr_keys[0x3C])
    ;	
 	cmp	byte ptr DGROUP:_gr_keys+60,0
-	je	short @29@3054
+	je	short @36@3054
    ;	
    ;	            display->show_offset(0x3E80);
    ;	
@@ -9914,12 +10642,12 @@ GAME_TEXT	segment byte public use16 'CODE'
 	push	word ptr DGROUP:_display
 	call	far ptr @vga_display@show_offset$qui
 	add	sp,6
-@29@3054:
+@36@3054:
    ;	
    ;	        if (gr_keys[0x3D])
    ;	
 	cmp	byte ptr DGROUP:_gr_keys+61,0
-	je	short @29@3110
+	je	short @36@3110
    ;	
    ;	            display->show_offset(0x7D00);
    ;	
@@ -9928,12 +10656,12 @@ GAME_TEXT	segment byte public use16 'CODE'
 	push	word ptr DGROUP:_display
 	call	far ptr @vga_display@show_offset$qui
 	add	sp,6
-@29@3110:
+@36@3110:
    ;	
    ;	        if (gr_keys[0x3E])
    ;	
 	cmp	byte ptr DGROUP:_gr_keys+62,0
-	je	short @29@3166
+	je	short @36@3166
    ;	
    ;	            display->show_offset(0xBB80);
    ;	
@@ -9942,7 +10670,7 @@ GAME_TEXT	segment byte public use16 'CODE'
 	push	word ptr DGROUP:_display
 	call	far ptr @vga_display@show_offset$qui
 	add	sp,6
-@29@3166:
+@36@3166:
    ;	
    ;	    }
    ;	}
@@ -9972,13 +10700,13 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	    if (jason_on == 0)
    ;	
 	cmp	byte ptr DGROUP:_jason_on,0
-	jne	short @30@86
+	jne	short @37@86
    ;	
    ;	    {
    ;	        ego->new_loop((uchar far *)"backsub.l");
    ;	
 	push	ds
-	push	offset DGROUP:s@+2837
+	push	offset DGROUP:s@+2225
 	push	word ptr DGROUP:_ego+2
 	push	word ptr DGROUP:_ego
 	call	far ptr @m_actor@new_loop$qnuc
@@ -9992,7 +10720,7 @@ GAME_TEXT	segment byte public use16 'CODE'
 	push	word ptr DGROUP:_ego
 	call	far ptr @m_actor@set_cycle$qucuc
 	add	sp,8
-@30@86:
+@37@86:
    ;	
    ;	    }
    ;	    cur_sub->x_speed = 0;
@@ -10013,23 +10741,23 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	
 	push	15
 	push	ds
-	push	offset DGROUP:s@+2847
+	push	offset DGROUP:s@+2235
 	push	word ptr DGROUP:_the_game+2
 	push	word ptr DGROUP:_the_game
 	call	far ptr @game_manager@play_sound$qnucuc
 	add	sp,10
-	jmp	short @30@142
-@30@114:
+	jmp	short @37@142
+@37@114:
    ;	
    ;	    while (var_6--) de_doit();
    ;	
 	push	cs
 	call	near ptr @de_doit$qv
-@30@142:
+@37@142:
 	mov	ax,word ptr [bp-6]
 	dec	word ptr [bp-6]
 	or	ax,ax
-	jne	short @30@114
+	jne	short @37@114
    ;	
    ;	    get_map_coords(arg_0, &var_2, &var_4);
    ;	
@@ -10064,13 +10792,13 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	    if (jason_on == 0)
    ;	
 	cmp	byte ptr DGROUP:_jason_on,0
-	jne	short @30@310
+	jne	short @37@310
    ;	
    ;	    {
    ;	        if (jason_present != 0 && touching(ego, jason))
    ;	
 	cmp	byte ptr DGROUP:_jason_present,0
-	je	short @30@282
+	je	short @37@282
 	push	word ptr DGROUP:_jason+2
 	push	word ptr DGROUP:_jason
 	push	word ptr DGROUP:_ego+2
@@ -10078,7 +10806,7 @@ GAME_TEXT	segment byte public use16 'CODE'
 	call	far ptr @touching$qn7m_actort1
 	add	sp,8
 	or	al,al
-	je	short @30@282
+	je	short @37@282
    ;	
    ;	            jason->set_xy(var_2, var_4);
    ;	
@@ -10088,17 +10816,17 @@ GAME_TEXT	segment byte public use16 'CODE'
 	push	word ptr DGROUP:_jason
 	call	far ptr @m_actor@set_xy$qii
 	add	sp,8
-@30@282:
+@37@282:
    ;	
    ;	        cur_sub->new_loop((uchar far *)"turn.l");
    ;	
 	push	ds
-	push	offset DGROUP:s@+2853
+	push	offset DGROUP:s@+2241
 	push	word ptr DGROUP:_cur_sub+2
 	push	word ptr DGROUP:_cur_sub
 	call	far ptr @m_actor@new_loop$qnuc
 	add	sp,8
-@30@310:
+@37@310:
    ;	
    ;	    }
    ;	    cur_sub->set_xy(var_2, var_4);
@@ -10113,49 +10841,49 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	    var_6 = 5;
    ;	
 	mov	word ptr [bp-6],5
-	jmp	short @30@366
-@30@338:
+	jmp	short @37@366
+@37@338:
    ;	
    ;	    while (var_6--) de_doit();
    ;	
 	push	cs
 	call	near ptr @de_doit$qv
-@30@366:
+@37@366:
 	mov	ax,word ptr [bp-6]
 	dec	word ptr [bp-6]
 	or	ax,ax
-	jne	short @30@338
+	jne	short @37@338
    ;	
    ;	    if (jason_on == 0)
    ;	
 	cmp	byte ptr DGROUP:_jason_on,0
-	jne	short @30@534
+	jne	short @37@534
    ;	
    ;	    {
    ;	        if (ego->direction == 0)
    ;	
 	les	bx,dword ptr DGROUP:_ego
 	cmp	byte ptr es:[bx+52],0
-	jne	short @30@478
+	jne	short @37@478
    ;	
    ;	            ego->new_loop((uchar far *)"subr.l");
    ;	
 	push	ds
-	push	offset DGROUP:s@+2860
-	jmp	short @30@506
-@30@478:
+	push	offset DGROUP:s@+2248
+	jmp	short @37@506
+@37@478:
    ;	
    ;	        else
    ;	            ego->new_loop((uchar far *)"subl.l");
    ;	
 	push	ds
-	push	offset DGROUP:s@+2867
-@30@506:
+	push	offset DGROUP:s@+2255
+@37@506:
 	push	word ptr DGROUP:_ego+2
 	push	word ptr DGROUP:_ego
 	call	far ptr @m_actor@new_loop$qnuc
 	add	sp,8
-@30@534:
+@37@534:
    ;	
    ;	    }
    ;	    cur_sub->state = 0;
@@ -10186,9 +10914,9 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	
 	les	bx,dword ptr DGROUP:_boss
 	cmp	byte ptr es:[bx+61],2
-	jne short	@@62
-	jmp	@31@702
-@@62:
+	jne short	@@48
+	jmp	@38@702
+@@48:
    ;	
    ;	        return;
    ;	    switch (cur_map)
@@ -10196,13 +10924,13 @@ GAME_TEXT	segment byte public use16 'CODE'
 	mov	al,byte ptr DGROUP:_cur_map
 	mov	ah,0
 	cmp	ax,6
-	je	short @31@198
+	je	short @38@198
 	cmp	ax,12
-	je	short @31@338
+	je	short @38@338
 	cmp	ax,21
-	je	short @31@478
-	jmp	@31@590
-@31@198:
+	je	short @38@478
+	jmp	@38@590
+@38@198:
    ;	
    ;	    {
    ;	        case 6:
@@ -10210,9 +10938,9 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	
 	les	bx,dword ptr DGROUP:_boss
 	cmp	word ptr es:[bx+20],0
-	je	short @31@282
+	je	short @38@282
 	cmp	dword ptr DGROUP:_boss,large 0
-	je	short @31@282
+	je	short @38@282
    ;	
    ;	            {
    ;	                var_2 = 0x5A - boss->health;
@@ -10232,19 +10960,19 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	
    ;	            }
    ;	
-	jmp	short @31@590
-@31@282:
+	jmp	short @38@590
+@38@282:
    ;	
    ;	            else
    ;	                var_6 = 0;
    ;	
 	mov	word ptr [bp-6],0
-	jmp	short @31@590
+	jmp	short @38@590
    ;	
    ;	            break;
    ;	
-	jmp	short @31@590
-@31@338:
+	jmp	short @38@590
+@38@338:
    ;	
    ;	        case 0xC:
    ;	            var_6 = 1;
@@ -10259,28 +10987,28 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	
 	les	bx,dword ptr DGROUP:_boss
 	cmp	word ptr es:[bx+36],4
-	jne	short @31@394
+	jne	short @38@394
    ;	
    ;	                var_2 = 0x3C - boss->field_28;
    ;	
 	les	bx,dword ptr DGROUP:_boss
 	mov	ax,60
 	sub	ax,word ptr es:[bx+40]
-	jmp	short @31@422
-@31@394:
+	jmp	short @38@422
+@38@394:
    ;	
    ;	            else
    ;	                var_2 = var_4;
    ;	
 	mov	ax,word ptr [bp-4]
-@31@422:
+@38@422:
 	mov	word ptr [bp-2],ax
-	jmp	short @31@590
+	jmp	short @38@590
    ;	
    ;	            break;
    ;	
-	jmp	short @31@590
-@31@478:
+	jmp	short @38@590
+@38@478:
    ;	
    ;	        case 0x15:
    ;	            var_6 = 1;
@@ -10291,7 +11019,7 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	
 	les	bx,dword ptr DGROUP:_boss
 	cmp	dword ptr es:[bx+44],large 0
-	je	short @31@534
+	je	short @38@534
    ;	
    ;	            {
    ;	                var_2 = 0x28 - boss->target->field_28;
@@ -10308,8 +11036,8 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	
    ;	            }
    ;	
-	jmp	short @31@590
-@31@534:
+	jmp	short @38@590
+@38@534:
    ;	
    ;	            else
    ;	            {
@@ -10323,13 +11051,13 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	                var_4 = 0x5A;
    ;	
 	mov	word ptr [bp-4],90
-	jmp	short @31@590
+	jmp	short @38@590
    ;	
    ;	            }
    ;	            break;
    ;	
-	jmp	short @31@590
-@31@590:
+	jmp	short @38@590
+@38@590:
    ;	
    ;	        default:
    ;	            break;
@@ -10339,20 +11067,20 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	    if (var_6 == 0)
    ;	
 	cmp	word ptr [bp-6],0
-	jne short	@@63
-	jmp	@31@702
-@@63:
+	jne short	@@49
+	jmp	@38@702
+@@49:
    ;	
    ;	        return;
    ;	    if (var_2 < 0)
    ;	
 	cmp	word ptr [bp-2],0
-	jge	short @31@674
+	jge	short @38@674
    ;	
    ;	        var_2 = 0;
    ;	
 	mov	word ptr [bp-2],0
-@31@674:
+@38@674:
    ;	
    ;	    display->fill_rect(0xC3, 0x87, var_4 + 0xC3, 0x8C, 0x1C, -1, non_displayed_page);
    ;	
@@ -10450,7 +11178,7 @@ GAME_TEXT	segment byte public use16 'CODE'
 	push	word ptr DGROUP:_display
 	call	far ptr @vga_display@draw_span$qiiuciui
 	add	sp,14
-@31@702:
+@38@702:
    ;	
    ;	}
    ;	
@@ -10467,7 +11195,7 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	{
    ;	    byte var_1, var_2;
    ;	
-   ;	    display->fill_rect(arg_2, arg_4, arg_2, arg_4 + 5, 0, -1, 0);
+   ;	    display->fill_rect(arg_2, arg_4, arg_2 + 0x96, arg_4 + 5, 0, -1, 0);
    ;	
 	push	0
 	push	-1
@@ -10475,7 +11203,9 @@ GAME_TEXT	segment byte public use16 'CODE'
 	mov	ax,word ptr [bp+10]
 	add	ax,5
 	push	ax
-	push	word ptr [bp+8]
+	mov	ax,word ptr [bp+8]
+	add	ax,150
+	push	ax
 	push	word ptr [bp+10]
 	push	word ptr [bp+8]
 	push	word ptr DGROUP:_display+2
@@ -10483,50 +11213,55 @@ GAME_TEXT	segment byte public use16 'CODE'
 	call	far ptr @vga_display@fill_rect$qiiiiiiuc
 	add	sp,18
    ;	
-   ;	    if (air_supply + arg_0 < 0)
+   ;	    if (air_supply + arg_0 >= 0x95)
    ;	
 	mov	ax,word ptr DGROUP:_air_supply
 	add	ax,word ptr [bp+6]
-	jge	short @32@142
+	cmp	ax,149
+	jl	short @39@86
    ;	
-   ;	    {
-   ;	        if (air_supply + arg_0 >= 0)
+   ;	        air_supply = 0x95;
+   ;	
+	mov	word ptr DGROUP:_air_supply,149
+	jmp	short @39@170
+@39@86:
+   ;	
+   ;	    else if (air_supply + arg_0 < 0)
    ;	
 	mov	ax,word ptr DGROUP:_air_supply
 	add	ax,word ptr [bp+6]
-	jl	short @32@114
+	jge	short @39@142
    ;	
-   ;	            air_supply += arg_0;
+   ;	        air_supply = 0;
+   ;	
+	mov	word ptr DGROUP:_air_supply,0
+	jmp	short @39@170
+@39@142:
+   ;	
+   ;	    else
+   ;	        air_supply += arg_0;
    ;	
 	mov	ax,word ptr [bp+6]
 	add	word ptr DGROUP:_air_supply,ax
-	jmp	short @32@142
-@32@114:
+@39@170:
    ;	
-   ;	        else
-   ;	            air_supply = 0;
-   ;	
-	mov	word ptr DGROUP:_air_supply,0
-@32@142:
-   ;	
-   ;	    }
    ;	    var_1 = air_supply < 0x32 ? 0x20 : 0x60;
    ;	
 	cmp	word ptr DGROUP:_air_supply,50
-	jge	short @32@198
+	jge	short @39@226
 	mov	al,32
-	jmp	short @32@226
-@32@198:
+	jmp	short @39@254
+@39@226:
 	mov	al,96
-@32@226:
+@39@254:
 	mov	byte ptr [bp-1],al
    ;	
    ;	    if (air_supply >= 2)
    ;	
 	cmp	word ptr DGROUP:_air_supply,2
-	jge short	@@64
-	jmp	@32@282
-@@64:
+	jge short	@@50
+	jmp	@39@310
+@@50:
    ;	
    ;	    {
    ;	        var_2 = var_1 + 8;
@@ -10621,7 +11356,7 @@ GAME_TEXT	segment byte public use16 'CODE'
 	push	word ptr DGROUP:_display
 	call	far ptr @vga_display@draw_span$qiiuciui
 	add	sp,14
-@32@282:
+@39@310:
    ;	
    ;	    }
    ;	    display->set_pix(arg_2 + 3, arg_4 + 1, 0xF);
@@ -10673,7 +11408,7 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	{
    ;	    byte var_1, var_2;
    ;	
-   ;	    display->fill_rect(arg_2, arg_4, arg_2, arg_4 + 5, 0, -1, 0);
+   ;	    display->fill_rect(arg_2, arg_4, arg_2 + 0x96, arg_4 + 5, 0, -1, 0);
    ;	
 	push	0
 	push	-1
@@ -10681,7 +11416,9 @@ GAME_TEXT	segment byte public use16 'CODE'
 	mov	ax,word ptr [bp+10]
 	add	ax,5
 	push	ax
-	push	word ptr [bp+8]
+	mov	ax,word ptr [bp+8]
+	add	ax,150
+	push	ax
 	push	word ptr [bp+10]
 	push	word ptr [bp+8]
 	push	word ptr DGROUP:_display+2
@@ -10689,50 +11426,55 @@ GAME_TEXT	segment byte public use16 'CODE'
 	call	far ptr @vga_display@fill_rect$qiiiiiiuc
 	add	sp,18
    ;	
-   ;	    if (shld_supply + arg_0 < 0)
+   ;	    if (shld_supply + arg_0 >= 0x95)
    ;	
 	mov	ax,word ptr DGROUP:_shld_supply
 	add	ax,word ptr [bp+6]
-	jge	short @33@142
+	cmp	ax,149
+	jl	short @40@86
    ;	
-   ;	    {
-   ;	        if (shld_supply + arg_0 >= 0)
+   ;	        shld_supply = 0x95;
+   ;	
+	mov	word ptr DGROUP:_shld_supply,149
+	jmp	short @40@170
+@40@86:
+   ;	
+   ;	    else if (shld_supply + arg_0 < 0)
    ;	
 	mov	ax,word ptr DGROUP:_shld_supply
 	add	ax,word ptr [bp+6]
-	jl	short @33@114
+	jge	short @40@142
    ;	
-   ;	            shld_supply += arg_0;
+   ;	        shld_supply = 0;
+   ;	
+	mov	word ptr DGROUP:_shld_supply,0
+	jmp	short @40@170
+@40@142:
+   ;	
+   ;	    else
+   ;	        shld_supply += arg_0;
    ;	
 	mov	ax,word ptr [bp+6]
 	add	word ptr DGROUP:_shld_supply,ax
-	jmp	short @33@142
-@33@114:
+@40@170:
    ;	
-   ;	        else
-   ;	            shld_supply = 0;
-   ;	
-	mov	word ptr DGROUP:_shld_supply,0
-@33@142:
-   ;	
-   ;	    }
    ;	    var_1 = shld_supply < 0x32 ? 0x20 : 0x91;
    ;	
 	cmp	word ptr DGROUP:_shld_supply,50
-	jge	short @33@198
+	jge	short @40@226
 	mov	al,32
-	jmp	short @33@226
-@33@198:
+	jmp	short @40@254
+@40@226:
 	mov	al,145
-@33@226:
+@40@254:
 	mov	byte ptr [bp-1],al
    ;	
    ;	    if (shld_supply >= 2)
    ;	
 	cmp	word ptr DGROUP:_shld_supply,2
-	jge short	@@65
-	jmp	@33@282
-@@65:
+	jge short	@@51
+	jmp	@40@310
+@@51:
    ;	
    ;	    {
    ;	        var_2 = var_1 + 8;
@@ -10827,7 +11569,7 @@ GAME_TEXT	segment byte public use16 'CODE'
 	push	word ptr DGROUP:_display
 	call	far ptr @vga_display@draw_span$qiiuciui
 	add	sp,14
-@33@282:
+@40@310:
    ;	
    ;	    }
    ;	    display->set_pix(arg_2 + 3, arg_4 + 1, 0xF);
@@ -10907,17 +11649,17 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	    if (jason_present != 0)
    ;	
 	cmp	byte ptr DGROUP:_jason_present,0
-	jne short	@@66
-	jmp	@34@282
-@@66:
+	jne short	@@52
+	jmp	@41@282
+@@52:
    ;	
    ;	    {
    ;	        if (var_2 > 1)
    ;	
 	cmp	word ptr [bp-2],1
-	jg short	@@67
-	jmp	@34@282
-@@67:
+	jg short	@@53
+	jmp	@41@282
+@@53:
    ;	
    ;	        {
    ;	            var_2 = jason_power / 3 - 1;
@@ -10933,12 +11675,12 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	            if (var_2 > 8) var_4 = 0x64; else var_4 = 0x23;
    ;	
 	cmp	word ptr [bp-2],8
-	jle	short @34@142
+	jle	short @41@142
 	mov	word ptr [bp-4],100
-	jmp	short @34@170
-@34@142:
+	jmp	short @41@170
+@41@142:
 	mov	word ptr [bp-4],35
-@34@170:
+@41@170:
    ;	
    ;	            var_6 = var_4 - 3;
    ;	
@@ -10997,8 +11739,8 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	            for (var_A = 0; var_A < 6; var_A++)
    ;	
 	mov	word ptr [bp-10],0
-	jmp	short @34@254
-@34@198:
+	jmp	short @41@254
+@41@198:
    ;	
    ;	            {
    ;	                display->set_pix(0x0C, var_A + 0xA7, (uchar)var_6);
@@ -11043,10 +11785,10 @@ GAME_TEXT	segment byte public use16 'CODE'
 	call	far ptr @vga_display@set_pix$qiiuc
 	add	sp,10
 	inc	word ptr [bp-10]
-@34@254:
+@41@254:
 	cmp	word ptr [bp-10],6
-	jl	short @34@198
-@34@282:
+	jl	short @41@198
+@41@282:
    ;	
    ;	            }
    ;	        }
@@ -11102,7 +11844,7 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	    if (got_key != 0)
    ;	
 	cmp	byte ptr DGROUP:_got_key,0
-	je	short @35@86
+	je	short @42@86
    ;	
    ;	        show_loop((uchar far *)"key.l", 0xEA, 0x95, 0, 0);
    ;	
@@ -11111,10 +11853,10 @@ GAME_TEXT	segment byte public use16 'CODE'
 	push	149
 	push	234
 	push	ds
-	push	offset DGROUP:s@+2874
+	push	offset DGROUP:s@+2262
 	call	far ptr @show_loop$qnuciiucui
 	add	sp,12
-@35@86:
+@42@86:
    ;	
    ;	    display->copy_bits(0xEA, 0x95, 0xF4, 0xA1, 0xEA, 0x95,
    ;	
@@ -11161,8 +11903,8 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	    for (var_6 = 0; var_6 < gun_count; var_6++)
    ;	
 	mov	word ptr [bp-10],0
-	jmp	@36@366
-@36@58:
+	jmp	@43@366
+@43@58:
    ;	
    ;	    {
    ;	        var_2 = gun_pieces_xy[var_6 * 2];
@@ -11185,49 +11927,49 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	
 	mov	bx,word ptr [bp-10]
 	cmp	bx,3
-	ja	short @36@282
+	ja	short @43@282
 	shl	bx,1
-	jmp	word ptr cs:@36@C178[bx]
-@36@170:
+	jmp	word ptr cs:@43@C178[bx]
+@43@170:
    ;	
    ;	        {
    ;	            case 0: s2 = (uchar far *)"gun_1.l"; break;
    ;	
 	mov	word ptr [bp-2],ds
-	mov	word ptr [bp-4],offset DGROUP:s@+2880
-	jmp	short @36@310
-@36@198:
+	mov	word ptr [bp-4],offset DGROUP:s@+2268
+	jmp	short @43@310
+@43@198:
    ;	
    ;	            case 1: s2 = (uchar far *)"gun_2.l"; break;
    ;	
 	mov	word ptr [bp-2],ds
-	mov	word ptr [bp-4],offset DGROUP:s@+2888
-	jmp	short @36@310
-@36@226:
+	mov	word ptr [bp-4],offset DGROUP:s@+2276
+	jmp	short @43@310
+@43@226:
    ;	
    ;	            case 2: s2 = (uchar far *)"gun_3.l"; break;
    ;	
 	mov	word ptr [bp-2],ds
-	mov	word ptr [bp-4],offset DGROUP:s@+2896
-	jmp	short @36@310
-@36@254:
+	mov	word ptr [bp-4],offset DGROUP:s@+2284
+	jmp	short @43@310
+@43@254:
    ;	
    ;	            case 3: s2 = (uchar far *)"gun_4.l"; break;
    ;	
 	mov	word ptr [bp-2],ds
-	mov	word ptr [bp-4],offset DGROUP:s@+2904
-	jmp	short @36@310
-@36@282:
+	mov	word ptr [bp-4],offset DGROUP:s@+2292
+	jmp	short @43@310
+@43@282:
    ;	
    ;	            default: terminate((uchar far *)"Error updating gun.", 0); break;
    ;	
 	push	0
 	push	0
 	push	ds
-	push	offset DGROUP:s@+2912
+	push	offset DGROUP:s@+2300
 	call	far ptr @terminate$qnuct1
 	add	sp,8
-@36@310:
+@43@310:
    ;	
    ;	        }
    ;	        var_E = (loop_res far *)the_game->get_loop(s2);
@@ -11269,7 +12011,7 @@ GAME_TEXT	segment byte public use16 'CODE'
 	push	word ptr [bp-14]
 	push	word ptr DGROUP:_display+2
 	push	word ptr DGROUP:_display
-	call	far ptr @vga_display@put_bits_masked$qve
+	call	far ptr @vga_display@put_bits_masked$qiiiinucuiuiuc
 	add	sp,22
    ;	
    ;	        display->copy_bits(var_2, var_4,
@@ -11303,13 +12045,13 @@ GAME_TEXT	segment byte public use16 'CODE'
 	call	far ptr @vga_display@copy_bits$qiiiiiiuiuiuiui
 	add	sp,24
 	inc	word ptr [bp-10]
-@36@366:
+@43@366:
 	mov	al,byte ptr DGROUP:_gun_count
 	mov	ah,0
 	cmp	ax,word ptr [bp-10]
-	jle short	@@68
-	jmp	@36@58
-@@68:
+	jle short	@@54
+	jmp	@43@58
+@@54:
    ;	
    ;	    }
    ;	    display->field_07 = 0;
@@ -11322,11 +12064,11 @@ GAME_TEXT	segment byte public use16 'CODE'
 	leave	
 	ret	
 @update_gun$qv	endp
-@36@C178	label	word
-	dw	@36@170
-	dw	@36@198
-	dw	@36@226
-	dw	@36@254
+@43@C178	label	word
+	dw	@43@170
+	dw	@43@198
+	dw	@43@226
+	dw	@43@254
    ;	
    ;	void activate_menu_bar(void)
    ;	
@@ -11348,14 +12090,14 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	    if (game_in_progress != 0)
    ;	
 	cmp	byte ptr DGROUP:_game_in_progress,0
-	je	short @37@86
+	je	short @44@86
    ;	
    ;	    {
    ;	        the_menu_bar->toggle_item((uchar far *)s1, (uchar far *)"Run Benchmark", 1);
    ;	
 	push	1
 	push	ds
-	push	offset DGROUP:s@+2932
+	push	offset DGROUP:s@+2320
 	push	ds
 	push	offset DGROUP:_s1
 	push	word ptr DGROUP:_the_menu_bar+2
@@ -11367,9 +12109,9 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	
 	push	1
 	push	ds
-	push	offset DGROUP:s@+2951
+	push	offset DGROUP:s@+2339
 	push	ds
-	push	offset DGROUP:s@+2946
+	push	offset DGROUP:s@+2334
 	push	word ptr DGROUP:_the_menu_bar+2
 	push	word ptr DGROUP:_the_menu_bar
 	call	far ptr @menu_bar@toggle_item$qnuct1uc
@@ -11384,8 +12126,8 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	
    ;	    }
    ;	
-	jmp	short @37@114
-@37@86:
+	jmp	short @44@114
+@44@86:
    ;	
    ;	    else
    ;	    {
@@ -11393,9 +12135,9 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	
 	push	0
 	push	ds
-	push	offset DGROUP:s@+2964
+	push	offset DGROUP:s@+2352
 	push	ds
-	push	offset DGROUP:s@+2958
+	push	offset DGROUP:s@+2346
 	push	word ptr DGROUP:_the_menu_bar+2
 	push	word ptr DGROUP:_the_menu_bar
 	call	far ptr @menu_bar@toggle_item$qnuct1uc
@@ -11405,14 +12147,14 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	
 	push	0
 	push	ds
-	push	offset DGROUP:s@+2983
+	push	offset DGROUP:s@+2371
 	push	ds
-	push	offset DGROUP:s@+2978
+	push	offset DGROUP:s@+2366
 	push	word ptr DGROUP:_the_menu_bar+2
 	push	word ptr DGROUP:_the_menu_bar
 	call	far ptr @menu_bar@toggle_item$qnuct1uc
 	add	sp,14
-@37@114:
+@44@114:
    ;	
    ;	    }
    ;	    the_menu_bar->draw();
@@ -11427,7 +12169,7 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	    if (debug_mode == 1)
    ;	
 	cmp	byte ptr DGROUP:_debug_mode,1
-	jne	short @37@170
+	jne	short @44@170
    ;	
    ;	    {
    ;	        ltoa((long)farcoreleft(), _tmp2, 0x0A);
@@ -11461,7 +12203,7 @@ GAME_TEXT	segment byte public use16 'CODE'
 	push	word ptr DGROUP:_display
 	call	far ptr @vga_display@print_at_xy$qiinucuc
 	add	sp,14
-@37@170:
+@44@170:
    ;	
    ;	    }
    ;	    mouse->show();
@@ -11470,12 +12212,12 @@ GAME_TEXT	segment byte public use16 'CODE'
 	push	word ptr DGROUP:_mouse
 	call	far ptr @ms_mouse@show$qv
 	add	sp,4
-@37@198:
+@44@198:
    ;	
    ;	    while (gr_keys[1] != 0)
    ;	
 	cmp	byte ptr DGROUP:_gr_keys+1,0
-	jne	short @37@198
+	jne	short @44@198
    ;	
    ;	        ;
    ;	    _resume = 0;
@@ -11486,23 +12228,23 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	
 	les	bx,dword ptr DGROUP:_the_menu_bar
 	mov	word ptr es:[bx+22],1
-	jmp	short @37@282
-@37@254:
+	jmp	short @44@282
+@44@254:
    ;	
    ;	    while (!gr_keys[1] && !_resume)
    ;	        i_poll_interface();
    ;	
 	call	far ptr @i_poll_interface$qv
-@37@282:
+@44@282:
 	mov	al,byte ptr DGROUP:_gr_keys+1
 	mov	ah,0
 	or	ax,ax
-	jne	short @37@338
+	jne	short @44@338
 	mov	al,byte ptr DGROUP:__resume
 	mov	ah,0
 	or	ax,ax
-	je	short @37@254
-@37@338:
+	je	short @44@254
+@44@338:
    ;	
    ;	    mouse->hide();
    ;	
@@ -11519,21 +12261,21 @@ GAME_TEXT	segment byte public use16 'CODE'
 	mov	bx,word ptr es:[bx]
 	call	dword ptr [bx+4]
 	add	sp,4
-@37@366:
+@44@366:
    ;	
    ;	    while (gr_keys[1] != 0)
    ;	
 	cmp	byte ptr DGROUP:_gr_keys+1,0
-	jne	short @37@366
+	jne	short @44@366
    ;	
    ;	        ;
    ;	    if (game_in_progress != 0 && the_game->field_1C == 1)
    ;	
 	cmp	byte ptr DGROUP:_game_in_progress,0
-	je	short @37@478
+	je	short @44@478
 	les	bx,dword ptr DGROUP:_the_game
 	cmp	byte ptr es:[bx+28],1
-	jne	short @37@478
+	jne	short @44@478
    ;	
    ;	        the_game->continue_song();
    ;	
@@ -11541,7 +12283,7 @@ GAME_TEXT	segment byte public use16 'CODE'
 	push	word ptr DGROUP:_the_game
 	call	far ptr @game_manager@continue_song$qv
 	add	sp,4
-@37@478:
+@44@478:
    ;	
    ;	}
    ;	
@@ -11563,9 +12305,9 @@ GAME_TEXT	segment byte public use16 'CODE'
 	mov	al,byte ptr DGROUP:_air_count
 	inc	byte ptr DGROUP:_air_count
 	cmp	al,byte ptr DGROUP:_air_speed
-	je short	@@69
-	jmp	@38@450
-@@69:
+	je short	@@55
+	jmp	@45@450
+@@55:
    ;	
    ;	    {
    ;	        update_air_guage(-3, 0x68, 0xA7);
@@ -11584,7 +12326,7 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	        if (air_supply < 40)
    ;	
 	cmp	word ptr DGROUP:_air_supply,40
-	jge	short @38@170
+	jge	short @45@170
    ;	
    ;	        {
    ;	            if (!the_game->field_0A)
@@ -11593,7 +12335,7 @@ GAME_TEXT	segment byte public use16 'CODE'
 	mov	al,byte ptr es:[bx+10]
 	mov	ah,0
 	or	ax,ax
-	jne	short @38@254
+	jne	short @45@254
    ;	
    ;	            {
    ;	                the_game->field_0A++;
@@ -11605,7 +12347,7 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	
 	push	15
 	push	ds
-	push	offset DGROUP:s@+2990
+	push	offset DGROUP:s@+2378
 	push	word ptr DGROUP:_the_game+2
 	push	word ptr DGROUP:_the_game
 	call	far ptr @game_manager@play_sound$qnucuc
@@ -11617,33 +12359,33 @@ GAME_TEXT	segment byte public use16 'CODE'
 	push	cs
 	call	near ptr @post_message$quc
 	pop	cx
-	jmp	short @38@254
+	jmp	short @45@254
    ;	
    ;	            }
    ;	        }
    ;	
-	jmp	short @38@254
-@38@170:
+	jmp	short @45@254
+@45@170:
    ;	
    ;	        else if (the_game->field_0A != 0 && air_supply > 40)
    ;	
 	les	bx,dword ptr DGROUP:_the_game
 	cmp	byte ptr es:[bx+10],0
-	je	short @38@254
+	je	short @45@254
 	cmp	word ptr DGROUP:_air_supply,40
-	jle	short @38@254
+	jle	short @45@254
    ;	
    ;	            the_game->field_0A = 0;
    ;	
 	les	bx,dword ptr DGROUP:_the_game
 	mov	byte ptr es:[bx+10],0
-@38@254:
+@45@254:
    ;	
    ;	
    ;	        if (shld_supply < 40)
    ;	
 	cmp	word ptr DGROUP:_shld_supply,40
-	jge	short @38@366
+	jge	short @45@366
    ;	
    ;	        {
    ;	            if (!the_game->field_0B)
@@ -11652,7 +12394,7 @@ GAME_TEXT	segment byte public use16 'CODE'
 	mov	al,byte ptr es:[bx+11]
 	mov	ah,0
 	or	ax,ax
-	jne	short @38@450
+	jne	short @45@450
    ;	
    ;	            {
    ;	                the_game->field_0B++;
@@ -11664,7 +12406,7 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	
 	push	15
 	push	ds
-	push	offset DGROUP:s@+2995
+	push	offset DGROUP:s@+2383
 	push	word ptr DGROUP:_the_game+2
 	push	word ptr DGROUP:_the_game
 	call	far ptr @game_manager@play_sound$qnucuc
@@ -11676,27 +12418,27 @@ GAME_TEXT	segment byte public use16 'CODE'
 	push	cs
 	call	near ptr @post_message$quc
 	pop	cx
-	jmp	short @38@450
+	jmp	short @45@450
    ;	
    ;	            }
    ;	        }
    ;	
-	jmp	short @38@450
-@38@366:
+	jmp	short @45@450
+@45@366:
    ;	
    ;	        else if (the_game->field_0B != 0 && shld_supply > 40)
    ;	
 	les	bx,dword ptr DGROUP:_the_game
 	cmp	byte ptr es:[bx+11],0
-	je	short @38@450
+	je	short @45@450
 	cmp	word ptr DGROUP:_shld_supply,40
-	jle	short @38@450
+	jle	short @45@450
    ;	
    ;	            the_game->field_0B = 0;
    ;	
 	les	bx,dword ptr DGROUP:_the_game
 	mov	byte ptr es:[bx+11],0
-@38@450:
+@45@450:
    ;	
    ;	    }
    ;	
@@ -11704,18 +12446,18 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	
 	les	bx,dword ptr DGROUP:_ego
 	cmp	byte ptr es:[bx+61],2
-	jne	short @38@506
-	jmp	short @38@590
-@38@506:
+	jne	short @45@506
+	jmp	short @45@590
+@45@506:
    ;	
    ;	        kill_ego(0, 0);
    ;	    else if (air_supply == 0 || shld_supply == 0)
    ;	
 	cmp	word ptr DGROUP:_air_supply,0
-	je	short @38@562
+	je	short @45@562
 	cmp	word ptr DGROUP:_shld_supply,0
-	jne	short @38@618
-@38@562:
+	jne	short @45@618
+@45@562:
    ;	
    ;	    {
    ;	        death_type = 0;
@@ -11724,22 +12466,22 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	
    ;	        kill_ego(0, 0);
    ;	
-@38@590:
+@45@590:
 	push	0
 	push	0
 	push	cs
 	call	near ptr @kill_ego$qii
 	add	sp,4
-@38@618:
+@45@618:
    ;	
    ;	    }
    ;	
    ;	    if (jason_present == 0)
    ;	
 	cmp	byte ptr DGROUP:_jason_present,0
-	jne short	@@70
-	jmp	@38@1122
-@@70:
+	jne short	@@56
+	jmp	@45@1122
+@@56:
    ;	
    ;	        return;
    ;	
@@ -11748,9 +12490,9 @@ GAME_TEXT	segment byte public use16 'CODE'
 	mov	al,byte ptr DGROUP:_jason_count
 	inc	byte ptr DGROUP:_jason_count
 	cmp	al,20
-	je short	@@71
-	jmp	@38@1122
-@@71:
+	je short	@@57
+	jmp	@45@1122
+@@57:
    ;	
    ;	    {
    ;	        jason_count = 0;
@@ -11787,19 +12529,19 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	        if (var_2 > 0x1E) goto drain;
    ;	
 	cmp	word ptr [bp-2],30
-	ja	short @38@730
+	ja	short @45@730
    ;	
    ;	        if (var_4 <= 0x0A) goto recharge;
    ;	
 	cmp	word ptr [bp-4],10
-	jbe	short @38@1010
-@38@730:
+	jbe	short @45@1010
+@45@730:
    ;	
    ;	drain:
    ;	        if (jason_power < 40)
    ;	
 	cmp	byte ptr DGROUP:_jason_power,40
-	jae	short @38@842
+	jae	short @45@842
    ;	
    ;	        {
    ;	            if (!the_game->field_0C)
@@ -11808,7 +12550,7 @@ GAME_TEXT	segment byte public use16 'CODE'
 	mov	al,byte ptr es:[bx+12]
 	mov	ah,0
 	or	ax,ax
-	jne	short @38@898
+	jne	short @45@898
    ;	
    ;	            {
    ;	                the_game->field_0C++;
@@ -11820,7 +12562,7 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	
 	push	15
 	push	ds
-	push	offset DGROUP:s@+3000
+	push	offset DGROUP:s@+2388
 	push	word ptr DGROUP:_the_game+2
 	push	word ptr DGROUP:_the_game
 	call	far ptr @game_manager@play_sound$qnucuc
@@ -11832,64 +12574,64 @@ GAME_TEXT	segment byte public use16 'CODE'
 	push	cs
 	call	near ptr @post_message$quc
 	pop	cx
-	jmp	short @38@898
+	jmp	short @45@898
    ;	
    ;	            }
    ;	        }
    ;	
-	jmp	short @38@898
-@38@842:
+	jmp	short @45@898
+@45@842:
    ;	
    ;	        else if (the_game->field_0C != 0)
    ;	
 	les	bx,dword ptr DGROUP:_the_game
 	cmp	byte ptr es:[bx+12],0
-	je	short @38@898
+	je	short @45@898
    ;	
    ;	            the_game->field_0C = 0;
    ;	
 	les	bx,dword ptr DGROUP:_the_game
 	mov	byte ptr es:[bx+12],0
-@38@898:
+@45@898:
    ;	
    ;	        if (jason_power != 0)
    ;	
 	cmp	byte ptr DGROUP:_jason_power,0
-	je	short @38@954
+	je	short @45@954
    ;	
    ;	            jason_power -= 2;
    ;	
 	mov	al,byte ptr DGROUP:_jason_power
 	add	al,254
-	jmp	short @38@1094
-@38@954:
+	jmp	short @45@1094
+@45@954:
    ;	
    ;	        else
    ;	            kill_jason();
    ;	
 	push	cs
 	call	near ptr @kill_jason$qv
-	jmp	short @38@1122
+	jmp	short @45@1122
    ;	
    ;	        goto end;
    ;	
-	jmp	short @38@1122
-@38@1010:
+	jmp	short @45@1122
+@45@1010:
    ;	
    ;	recharge:
    ;	        if (var_2 <= 0x1E && var_4 <= 0x0A)
    ;	
 	cmp	word ptr [bp-2],30
-	ja	short @38@1122
+	ja	short @45@1122
 	cmp	word ptr [bp-4],10
-	ja	short @38@1122
+	ja	short @45@1122
    ;	
    ;	            jason_power = maximum_jason_power;
    ;	
 	mov	al,byte ptr DGROUP:_maximum_jason_power
-@38@1094:
+@45@1094:
 	mov	byte ptr DGROUP:_jason_power,al
-@38@1122:
+@45@1122:
    ;	
    ;	end:
    ;	        ;
@@ -12042,12 +12784,12 @@ GAME_TEXT	segment byte public use16 'CODE'
 	push	320
 	mov	al,byte ptr DGROUP:_non_displayed_page
 	cmp	al,byte ptr DGROUP:_displayed_page
-	je	short @40@86
+	je	short @47@86
 	mov	ax,1
-	jmp	short @40@114
-@40@86:
+	jmp	short @47@114
+@47@86:
 	xor	ax,ax
-@40@114:
+@47@114:
 	shl	ax,1
 	mov	bx,ax
 	push	word ptr DGROUP:_page_offsets[bx]
@@ -12118,7 +12860,7 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	    the_game->load_loop((uchar far *)"bubsm.l");
    ;	
 	push	ds
-	push	offset DGROUP:s@+3005
+	push	offset DGROUP:s@+2393
 	push	word ptr DGROUP:_the_game+2
 	push	word ptr DGROUP:_the_game
 	call	far ptr @game_manager@load_loop$qnuc
@@ -12127,7 +12869,7 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	    the_game->load_loop((uchar far *)"bubmd.l");
    ;	
 	push	ds
-	push	offset DGROUP:s@+3013
+	push	offset DGROUP:s@+2401
 	push	word ptr DGROUP:_the_game+2
 	push	word ptr DGROUP:_the_game
 	call	far ptr @game_manager@load_loop$qnuc
@@ -12136,7 +12878,7 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	    the_game->load_loop((uchar far *)"subr.l");
    ;	
 	push	ds
-	push	offset DGROUP:s@+3021
+	push	offset DGROUP:s@+2409
 	push	word ptr DGROUP:_the_game+2
 	push	word ptr DGROUP:_the_game
 	call	far ptr @game_manager@load_loop$qnuc
@@ -12145,7 +12887,7 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	    the_game->load_loop((uchar far *)"subl.l");
    ;	
 	push	ds
-	push	offset DGROUP:s@+3028
+	push	offset DGROUP:s@+2416
 	push	word ptr DGROUP:_the_game+2
 	push	word ptr DGROUP:_the_game
 	call	far ptr @game_manager@load_loop$qnuc
@@ -12154,7 +12896,7 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	    the_game->load_loop((uchar far *)"turn.l");
    ;	
 	push	ds
-	push	offset DGROUP:s@+3035
+	push	offset DGROUP:s@+2423
 	push	word ptr DGROUP:_the_game+2
 	push	word ptr DGROUP:_the_game
 	call	far ptr @game_manager@load_loop$qnuc
@@ -12163,7 +12905,7 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	    the_game->load_loop((uchar far *)"msl_str.l");
    ;	
 	push	ds
-	push	offset DGROUP:s@+3042
+	push	offset DGROUP:s@+2430
 	push	word ptr DGROUP:_the_game+2
 	push	word ptr DGROUP:_the_game
 	call	far ptr @game_manager@load_loop$qnuc
@@ -12172,7 +12914,7 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	    the_game->load_loop((uchar far *)"msl_sm.l");
    ;	
 	push	ds
-	push	offset DGROUP:s@+3052
+	push	offset DGROUP:s@+2440
 	push	word ptr DGROUP:_the_game+2
 	push	word ptr DGROUP:_the_game
 	call	far ptr @game_manager@load_loop$qnuc
@@ -12181,7 +12923,7 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	    the_game->load_loop((uchar far *)"msl_tpl.l");
    ;	
 	push	ds
-	push	offset DGROUP:s@+3061
+	push	offset DGROUP:s@+2449
 	push	word ptr DGROUP:_the_game+2
 	push	word ptr DGROUP:_the_game
 	call	far ptr @game_manager@load_loop$qnuc
@@ -12190,7 +12932,7 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	    the_game->load_loop((uchar far *)"msl_tpr.l");
    ;	
 	push	ds
-	push	offset DGROUP:s@+3071
+	push	offset DGROUP:s@+2459
 	push	word ptr DGROUP:_the_game+2
 	push	word ptr DGROUP:_the_game
 	call	far ptr @game_manager@load_loop$qnuc
@@ -12199,7 +12941,7 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	    the_game->load_loop((uchar far *)"msl_rkr.l");
    ;	
 	push	ds
-	push	offset DGROUP:s@+3081
+	push	offset DGROUP:s@+2469
 	push	word ptr DGROUP:_the_game+2
 	push	word ptr DGROUP:_the_game
 	call	far ptr @game_manager@load_loop$qnuc
@@ -12208,7 +12950,7 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	    the_game->load_loop((uchar far *)"msl_rkl.l");
    ;	
 	push	ds
-	push	offset DGROUP:s@+3091
+	push	offset DGROUP:s@+2479
 	push	word ptr DGROUP:_the_game+2
 	push	word ptr DGROUP:_the_game
 	call	far ptr @game_manager@load_loop$qnuc
@@ -12217,7 +12959,7 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	    the_game->load_loop((uchar far *)"msl_top.l");
    ;	
 	push	ds
-	push	offset DGROUP:s@+3101
+	push	offset DGROUP:s@+2489
 	push	word ptr DGROUP:_the_game+2
 	push	word ptr DGROUP:_the_game
 	call	far ptr @game_manager@load_loop$qnuc
@@ -12226,7 +12968,7 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	    the_game->load_loop((uchar far *)"msl_pea.l");
    ;	
 	push	ds
-	push	offset DGROUP:s@+3111
+	push	offset DGROUP:s@+2499
 	push	word ptr DGROUP:_the_game+2
 	push	word ptr DGROUP:_the_game
 	call	far ptr @game_manager@load_loop$qnuc
@@ -12235,7 +12977,7 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	    the_game->load_loop((uchar far *)"msl_spt.l");
    ;	
 	push	ds
-	push	offset DGROUP:s@+3121
+	push	offset DGROUP:s@+2509
 	push	word ptr DGROUP:_the_game+2
 	push	word ptr DGROUP:_the_game
 	call	far ptr @game_manager@load_loop$qnuc
@@ -12244,7 +12986,7 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	    the_game->load_loop((uchar far *)"msl_red.l");
    ;	
 	push	ds
-	push	offset DGROUP:s@+3131
+	push	offset DGROUP:s@+2519
 	push	word ptr DGROUP:_the_game+2
 	push	word ptr DGROUP:_the_game
 	call	far ptr @game_manager@load_loop$qnuc
@@ -12253,7 +12995,7 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	    the_game->load_loop((uchar far *)"msl_arwl.l");
    ;	
 	push	ds
-	push	offset DGROUP:s@+3141
+	push	offset DGROUP:s@+2529
 	push	word ptr DGROUP:_the_game+2
 	push	word ptr DGROUP:_the_game
 	call	far ptr @game_manager@load_loop$qnuc
@@ -12262,7 +13004,7 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	    the_game->load_loop((uchar far *)"msl_arwr.l");
    ;	
 	push	ds
-	push	offset DGROUP:s@+3152
+	push	offset DGROUP:s@+2540
 	push	word ptr DGROUP:_the_game+2
 	push	word ptr DGROUP:_the_game
 	call	far ptr @game_manager@load_loop$qnuc
@@ -12271,7 +13013,7 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	    the_game->load_loop((uchar far *)"msl_bg2l.l");
    ;	
 	push	ds
-	push	offset DGROUP:s@+3163
+	push	offset DGROUP:s@+2551
 	push	word ptr DGROUP:_the_game+2
 	push	word ptr DGROUP:_the_game
 	call	far ptr @game_manager@load_loop$qnuc
@@ -12280,7 +13022,7 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	    the_game->load_loop((uchar far *)"msl_bg2r.l");
    ;	
 	push	ds
-	push	offset DGROUP:s@+3174
+	push	offset DGROUP:s@+2562
 	push	word ptr DGROUP:_the_game+2
 	push	word ptr DGROUP:_the_game
 	call	far ptr @game_manager@load_loop$qnuc
@@ -12289,7 +13031,7 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	    the_game->load_loop((uchar far *)"shpbmb.l");
    ;	
 	push	ds
-	push	offset DGROUP:s@+3185
+	push	offset DGROUP:s@+2573
 	push	word ptr DGROUP:_the_game+2
 	push	word ptr DGROUP:_the_game
 	call	far ptr @game_manager@load_loop$qnuc
@@ -12298,7 +13040,7 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	    the_game->load_loop((uchar far *)"fireball.l");
    ;	
 	push	ds
-	push	offset DGROUP:s@+3194
+	push	offset DGROUP:s@+2582
 	push	word ptr DGROUP:_the_game+2
 	push	word ptr DGROUP:_the_game
 	call	far ptr @game_manager@load_loop$qnuc
@@ -12307,7 +13049,7 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	    the_game->load_loop((uchar far *)"explg.l");
    ;	
 	push	ds
-	push	offset DGROUP:s@+3205
+	push	offset DGROUP:s@+2593
 	push	word ptr DGROUP:_the_game+2
 	push	word ptr DGROUP:_the_game
 	call	far ptr @game_manager@load_loop$qnuc
@@ -12316,7 +13058,7 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	    the_game->load_loop((uchar far *)"expmd.l");
    ;	
 	push	ds
-	push	offset DGROUP:s@+3213
+	push	offset DGROUP:s@+2601
 	push	word ptr DGROUP:_the_game+2
 	push	word ptr DGROUP:_the_game
 	call	far ptr @game_manager@load_loop$qnuc
@@ -12325,7 +13067,7 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	    the_game->load_loop((uchar far *)"expsm.l");
    ;	
 	push	ds
-	push	offset DGROUP:s@+3221
+	push	offset DGROUP:s@+2609
 	push	word ptr DGROUP:_the_game+2
 	push	word ptr DGROUP:_the_game
 	call	far ptr @game_manager@load_loop$qnuc
@@ -12334,7 +13076,7 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	    the_game->load_loop((uchar far *)"splat.l");
    ;	
 	push	ds
-	push	offset DGROUP:s@+3229
+	push	offset DGROUP:s@+2617
 	push	word ptr DGROUP:_the_game+2
 	push	word ptr DGROUP:_the_game
 	call	far ptr @game_manager@load_loop$qnuc
@@ -12343,7 +13085,7 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	    the_game->load_loop((uchar far *)"prober.l");
    ;	
 	push	ds
-	push	offset DGROUP:s@+3237
+	push	offset DGROUP:s@+2625
 	push	word ptr DGROUP:_the_game+2
 	push	word ptr DGROUP:_the_game
 	call	far ptr @game_manager@load_loop$qnuc
@@ -12352,7 +13094,7 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	    the_game->load_loop((uchar far *)"probel.l");
    ;	
 	push	ds
-	push	offset DGROUP:s@+3246
+	push	offset DGROUP:s@+2634
 	push	word ptr DGROUP:_the_game+2
 	push	word ptr DGROUP:_the_game
 	call	far ptr @game_manager@load_loop$qnuc
@@ -12361,7 +13103,7 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	    the_game->load_loop((uchar far *)"fish1l.l");
    ;	
 	push	ds
-	push	offset DGROUP:s@+3255
+	push	offset DGROUP:s@+2643
 	push	word ptr DGROUP:_the_game+2
 	push	word ptr DGROUP:_the_game
 	call	far ptr @game_manager@load_loop$qnuc
@@ -12370,7 +13112,7 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	    the_game->load_loop((uchar far *)"fish1r.l");
    ;	
 	push	ds
-	push	offset DGROUP:s@+3264
+	push	offset DGROUP:s@+2652
 	push	word ptr DGROUP:_the_game+2
 	push	word ptr DGROUP:_the_game
 	call	far ptr @game_manager@load_loop$qnuc
@@ -12379,7 +13121,7 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	    the_game->load_loop((uchar far *)"fish2l.l");
    ;	
 	push	ds
-	push	offset DGROUP:s@+3273
+	push	offset DGROUP:s@+2661
 	push	word ptr DGROUP:_the_game+2
 	push	word ptr DGROUP:_the_game
 	call	far ptr @game_manager@load_loop$qnuc
@@ -12388,7 +13130,7 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	    the_game->load_loop((uchar far *)"fish2r.l");
    ;	
 	push	ds
-	push	offset DGROUP:s@+3282
+	push	offset DGROUP:s@+2670
 	push	word ptr DGROUP:_the_game+2
 	push	word ptr DGROUP:_the_game
 	call	far ptr @game_manager@load_loop$qnuc
@@ -12397,7 +13139,7 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	    the_game->load_loop((uchar far *)"scr_100.l");
    ;	
 	push	ds
-	push	offset DGROUP:s@+3291
+	push	offset DGROUP:s@+2679
 	push	word ptr DGROUP:_the_game+2
 	push	word ptr DGROUP:_the_game
 	call	far ptr @game_manager@load_loop$qnuc
@@ -12406,7 +13148,7 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	    the_game->load_loop((uchar far *)"scr_500.l");
    ;	
 	push	ds
-	push	offset DGROUP:s@+3301
+	push	offset DGROUP:s@+2689
 	push	word ptr DGROUP:_the_game+2
 	push	word ptr DGROUP:_the_game
 	call	far ptr @game_manager@load_loop$qnuc
@@ -12415,7 +13157,7 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	    the_game->load_loop((uchar far *)"scr_1000.l");
    ;	
 	push	ds
-	push	offset DGROUP:s@+3311
+	push	offset DGROUP:s@+2699
 	push	word ptr DGROUP:_the_game+2
 	push	word ptr DGROUP:_the_game
 	call	far ptr @game_manager@load_loop$qnuc
@@ -12424,7 +13166,7 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	    the_game->load_loop((uchar far *)"scr_2000.l");
    ;	
 	push	ds
-	push	offset DGROUP:s@+3322
+	push	offset DGROUP:s@+2710
 	push	word ptr DGROUP:_the_game+2
 	push	word ptr DGROUP:_the_game
 	call	far ptr @game_manager@load_loop$qnuc
@@ -12433,7 +13175,7 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	    the_game->load_loop((uchar far *)"scr_3000.l");
    ;	
 	push	ds
-	push	offset DGROUP:s@+3333
+	push	offset DGROUP:s@+2721
 	push	word ptr DGROUP:_the_game+2
 	push	word ptr DGROUP:_the_game
 	call	far ptr @game_manager@load_loop$qnuc
@@ -12442,7 +13184,7 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	    the_game->load_loop((uchar far *)"scr_4000.l");
    ;	
 	push	ds
-	push	offset DGROUP:s@+3344
+	push	offset DGROUP:s@+2732
 	push	word ptr DGROUP:_the_game+2
 	push	word ptr DGROUP:_the_game
 	call	far ptr @game_manager@load_loop$qnuc
@@ -12451,7 +13193,7 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	    the_game->load_loop((uchar far *)"coin.l");
    ;	
 	push	ds
-	push	offset DGROUP:s@+3355
+	push	offset DGROUP:s@+2743
 	push	word ptr DGROUP:_the_game+2
 	push	word ptr DGROUP:_the_game
 	call	far ptr @game_manager@load_loop$qnuc
@@ -12460,7 +13202,7 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	    the_game->load_loop((uchar far *)"bonus1.l");
    ;	
 	push	ds
-	push	offset DGROUP:s@+3362
+	push	offset DGROUP:s@+2750
 	push	word ptr DGROUP:_the_game+2
 	push	word ptr DGROUP:_the_game
 	call	far ptr @game_manager@load_loop$qnuc
@@ -12469,7 +13211,7 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	    the_game->load_loop((uchar far *)"bonus2.l");
    ;	
 	push	ds
-	push	offset DGROUP:s@+3371
+	push	offset DGROUP:s@+2759
 	push	word ptr DGROUP:_the_game+2
 	push	word ptr DGROUP:_the_game
 	call	far ptr @game_manager@load_loop$qnuc
@@ -12478,7 +13220,7 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	    the_game->load_loop((uchar far *)"tulipl.l");
    ;	
 	push	ds
-	push	offset DGROUP:s@+3380
+	push	offset DGROUP:s@+2768
 	push	word ptr DGROUP:_the_game+2
 	push	word ptr DGROUP:_the_game
 	call	far ptr @game_manager@load_loop$qnuc
@@ -12487,7 +13229,7 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	    the_game->load_loop((uchar far *)"tulipr.l");
    ;	
 	push	ds
-	push	offset DGROUP:s@+3389
+	push	offset DGROUP:s@+2777
 	push	word ptr DGROUP:_the_game+2
 	push	word ptr DGROUP:_the_game
 	call	far ptr @game_manager@load_loop$qnuc
@@ -12496,7 +13238,7 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	    the_game->load_loop((uchar far *)"tulip.l");
    ;	
 	push	ds
-	push	offset DGROUP:s@+3398
+	push	offset DGROUP:s@+2786
 	push	word ptr DGROUP:_the_game+2
 	push	word ptr DGROUP:_the_game
 	call	far ptr @game_manager@load_loop$qnuc
@@ -12505,7 +13247,7 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	    the_game->load_loop((uchar far *)"serp_r.l");
    ;	
 	push	ds
-	push	offset DGROUP:s@+3406
+	push	offset DGROUP:s@+2794
 	push	word ptr DGROUP:_the_game+2
 	push	word ptr DGROUP:_the_game
 	call	far ptr @game_manager@load_loop$qnuc
@@ -12514,7 +13256,7 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	    the_game->load_loop((uchar far *)"serp_l.l");
    ;	
 	push	ds
-	push	offset DGROUP:s@+3415
+	push	offset DGROUP:s@+2803
 	push	word ptr DGROUP:_the_game+2
 	push	word ptr DGROUP:_the_game
 	call	far ptr @game_manager@load_loop$qnuc
@@ -12523,7 +13265,7 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	    the_game->load_loop((uchar far *)"msl_bigl.l");
    ;	
 	push	ds
-	push	offset DGROUP:s@+3424
+	push	offset DGROUP:s@+2812
 	push	word ptr DGROUP:_the_game+2
 	push	word ptr DGROUP:_the_game
 	call	far ptr @game_manager@load_loop$qnuc
@@ -12532,7 +13274,7 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	    the_game->load_loop((uchar far *)"msl_bigr.l");
    ;	
 	push	ds
-	push	offset DGROUP:s@+3435
+	push	offset DGROUP:s@+2823
 	push	word ptr DGROUP:_the_game+2
 	push	word ptr DGROUP:_the_game
 	call	far ptr @game_manager@load_loop$qnuc
@@ -12541,7 +13283,7 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	    the_game->load_loop((uchar far *)"msl_hbl.l");
    ;	
 	push	ds
-	push	offset DGROUP:s@+3446
+	push	offset DGROUP:s@+2834
 	push	word ptr DGROUP:_the_game+2
 	push	word ptr DGROUP:_the_game
 	call	far ptr @game_manager@load_loop$qnuc
@@ -12550,7 +13292,7 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	    the_game->load_loop((uchar far *)"msl_hbr.l");
    ;	
 	push	ds
-	push	offset DGROUP:s@+3456
+	push	offset DGROUP:s@+2844
 	push	word ptr DGROUP:_the_game+2
 	push	word ptr DGROUP:_the_game
 	call	far ptr @game_manager@load_loop$qnuc
@@ -12559,7 +13301,7 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	    the_game->load_loop((uchar far *)"firbalup.l");
    ;	
 	push	ds
-	push	offset DGROUP:s@+3466
+	push	offset DGROUP:s@+2854
 	push	word ptr DGROUP:_the_game+2
 	push	word ptr DGROUP:_the_game
 	call	far ptr @game_manager@load_loop$qnuc
@@ -12568,7 +13310,7 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	    the_game->load_loop((uchar far *)"firbaldn.l");
    ;	
 	push	ds
-	push	offset DGROUP:s@+3477
+	push	offset DGROUP:s@+2865
 	push	word ptr DGROUP:_the_game+2
 	push	word ptr DGROUP:_the_game
 	call	far ptr @game_manager@load_loop$qnuc
@@ -12577,7 +13319,7 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	    the_game->load_loop((uchar far *)"pu_air.l");
    ;	
 	push	ds
-	push	offset DGROUP:s@+3488
+	push	offset DGROUP:s@+2876
 	push	word ptr DGROUP:_the_game+2
 	push	word ptr DGROUP:_the_game
 	call	far ptr @game_manager@load_loop$qnuc
@@ -12586,7 +13328,7 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	    the_game->load_loop((uchar far *)"pu_fire.l");
    ;	
 	push	ds
-	push	offset DGROUP:s@+3497
+	push	offset DGROUP:s@+2885
 	push	word ptr DGROUP:_the_game+2
 	push	word ptr DGROUP:_the_game
 	call	far ptr @game_manager@load_loop$qnuc
@@ -12595,7 +13337,7 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	    the_game->load_loop((uchar far *)"pu_shld.l");
    ;	
 	push	ds
-	push	offset DGROUP:s@+3507
+	push	offset DGROUP:s@+2895
 	push	word ptr DGROUP:_the_game+2
 	push	word ptr DGROUP:_the_game
 	call	far ptr @game_manager@load_loop$qnuc
@@ -12604,7 +13346,7 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	    the_game->load_loop((uchar far *)"pu_jwl1.l");
    ;	
 	push	ds
-	push	offset DGROUP:s@+3517
+	push	offset DGROUP:s@+2905
 	push	word ptr DGROUP:_the_game+2
 	push	word ptr DGROUP:_the_game
 	call	far ptr @game_manager@load_loop$qnuc
@@ -12613,7 +13355,7 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	    the_game->load_loop((uchar far *)"pu_1up.l");
    ;	
 	push	ds
-	push	offset DGROUP:s@+3527
+	push	offset DGROUP:s@+2915
 	push	word ptr DGROUP:_the_game+2
 	push	word ptr DGROUP:_the_game
 	call	far ptr @game_manager@load_loop$qnuc
@@ -12622,7 +13364,7 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	    the_game->load_loop((uchar far *)"pu_auto.l");
    ;	
 	push	ds
-	push	offset DGROUP:s@+3536
+	push	offset DGROUP:s@+2924
 	push	word ptr DGROUP:_the_game+2
 	push	word ptr DGROUP:_the_game
 	call	far ptr @game_manager@load_loop$qnuc
@@ -12631,7 +13373,7 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	    the_game->load_loop((uchar far *)"pu_key.l");
    ;	
 	push	ds
-	push	offset DGROUP:s@+3546
+	push	offset DGROUP:s@+2934
 	push	word ptr DGROUP:_the_game+2
 	push	word ptr DGROUP:_the_game
 	call	far ptr @game_manager@load_loop$qnuc
@@ -12640,7 +13382,7 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	    the_game->load_loop((uchar far *)"pu_top.l");
    ;	
 	push	ds
-	push	offset DGROUP:s@+3555
+	push	offset DGROUP:s@+2943
 	push	word ptr DGROUP:_the_game+2
 	push	word ptr DGROUP:_the_game
 	call	far ptr @game_manager@load_loop$qnuc
@@ -12649,7 +13391,7 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	    the_game->load_loop((uchar far *)"pu_jason.l");
    ;	
 	push	ds
-	push	offset DGROUP:s@+3564
+	push	offset DGROUP:s@+2952
 	push	word ptr DGROUP:_the_game+2
 	push	word ptr DGROUP:_the_game
 	call	far ptr @game_manager@load_loop$qnuc
@@ -12658,7 +13400,7 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	    the_game->load_loop((uchar far *)"pu_jf.l");
    ;	
 	push	ds
-	push	offset DGROUP:s@+3575
+	push	offset DGROUP:s@+2963
 	push	word ptr DGROUP:_the_game+2
 	push	word ptr DGROUP:_the_game
 	call	far ptr @game_manager@load_loop$qnuc
@@ -12667,7 +13409,7 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	    the_game->load_loop((uchar far *)"gem.l");
    ;	
 	push	ds
-	push	offset DGROUP:s@+3583
+	push	offset DGROUP:s@+2971
 	push	word ptr DGROUP:_the_game+2
 	push	word ptr DGROUP:_the_game
 	call	far ptr @game_manager@load_loop$qnuc
@@ -12676,7 +13418,7 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	    the_game->load_loop((uchar far *)"spikes_u.l");
    ;	
 	push	ds
-	push	offset DGROUP:s@+3589
+	push	offset DGROUP:s@+2977
 	push	word ptr DGROUP:_the_game+2
 	push	word ptr DGROUP:_the_game
 	call	far ptr @game_manager@load_loop$qnuc
@@ -12685,7 +13427,7 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	    the_game->load_loop((uchar far *)"spikes_d.l");
    ;	
 	push	ds
-	push	offset DGROUP:s@+3600
+	push	offset DGROUP:s@+2988
 	push	word ptr DGROUP:_the_game+2
 	push	word ptr DGROUP:_the_game
 	call	far ptr @game_manager@load_loop$qnuc
@@ -12694,7 +13436,7 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	    the_game->load_loop((uchar far *)"shutl_l.l");
    ;	
 	push	ds
-	push	offset DGROUP:s@+3611
+	push	offset DGROUP:s@+2999
 	push	word ptr DGROUP:_the_game+2
 	push	word ptr DGROUP:_the_game
 	call	far ptr @game_manager@load_loop$qnuc
@@ -12703,7 +13445,7 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	    the_game->load_loop((uchar far *)"shutl_r.l");
    ;	
 	push	ds
-	push	offset DGROUP:s@+3621
+	push	offset DGROUP:s@+3009
 	push	word ptr DGROUP:_the_game+2
 	push	word ptr DGROUP:_the_game
 	call	far ptr @game_manager@load_loop$qnuc
@@ -12712,7 +13454,7 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	    the_game->load_loop((uchar far *)"mreal.l");
    ;	
 	push	ds
-	push	offset DGROUP:s@+3631
+	push	offset DGROUP:s@+3019
 	push	word ptr DGROUP:_the_game+2
 	push	word ptr DGROUP:_the_game
 	call	far ptr @game_manager@load_loop$qnuc
@@ -12721,7 +13463,7 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	    the_game->load_loop((uchar far *)"freemine.l");
    ;	
 	push	ds
-	push	offset DGROUP:s@+3639
+	push	offset DGROUP:s@+3027
 	push	word ptr DGROUP:_the_game+2
 	push	word ptr DGROUP:_the_game
 	call	far ptr @game_manager@load_loop$qnuc
@@ -12730,7 +13472,7 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	    the_game->load_loop((uchar far *)"tent_out.l");
    ;	
 	push	ds
-	push	offset DGROUP:s@+3650
+	push	offset DGROUP:s@+3038
 	push	word ptr DGROUP:_the_game+2
 	push	word ptr DGROUP:_the_game
 	call	far ptr @game_manager@load_loop$qnuc
@@ -12739,7 +13481,7 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	    the_game->load_loop((uchar far *)"tent_in.l");
    ;	
 	push	ds
-	push	offset DGROUP:s@+3661
+	push	offset DGROUP:s@+3049
 	push	word ptr DGROUP:_the_game+2
 	push	word ptr DGROUP:_the_game
 	call	far ptr @game_manager@load_loop$qnuc
@@ -12748,7 +13490,7 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	    the_game->load_loop((uchar far *)"mine.l");
    ;	
 	push	ds
-	push	offset DGROUP:s@+3671
+	push	offset DGROUP:s@+3059
 	push	word ptr DGROUP:_the_game+2
 	push	word ptr DGROUP:_the_game
 	call	far ptr @game_manager@load_loop$qnuc
@@ -12757,7 +13499,7 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	    the_game->load_loop((uchar far *)"barrel1.l");
    ;	
 	push	ds
-	push	offset DGROUP:s@+3678
+	push	offset DGROUP:s@+3066
 	push	word ptr DGROUP:_the_game+2
 	push	word ptr DGROUP:_the_game
 	call	far ptr @game_manager@load_loop$qnuc
@@ -12766,7 +13508,7 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	    the_game->load_loop((uchar far *)"barrel2.l");
    ;	
 	push	ds
-	push	offset DGROUP:s@+3688
+	push	offset DGROUP:s@+3076
 	push	word ptr DGROUP:_the_game+2
 	push	word ptr DGROUP:_the_game
 	call	far ptr @game_manager@load_loop$qnuc
@@ -12775,7 +13517,7 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	    the_game->load_loop((uchar far *)"barrel3.l");
    ;	
 	push	ds
-	push	offset DGROUP:s@+3698
+	push	offset DGROUP:s@+3086
 	push	word ptr DGROUP:_the_game+2
 	push	word ptr DGROUP:_the_game
 	call	far ptr @game_manager@load_loop$qnuc
@@ -12784,7 +13526,7 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	    the_game->load_loop((uchar far *)"pod1.l");
    ;	
 	push	ds
-	push	offset DGROUP:s@+3708
+	push	offset DGROUP:s@+3096
 	push	word ptr DGROUP:_the_game+2
 	push	word ptr DGROUP:_the_game
 	call	far ptr @game_manager@load_loop$qnuc
@@ -12793,7 +13535,7 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	    the_game->load_loop((uchar far *)"pod2.l");
    ;	
 	push	ds
-	push	offset DGROUP:s@+3715
+	push	offset DGROUP:s@+3103
 	push	word ptr DGROUP:_the_game+2
 	push	word ptr DGROUP:_the_game
 	call	far ptr @game_manager@load_loop$qnuc
@@ -12802,7 +13544,7 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	    the_game->load_loop((uchar far *)"piranar.l");
    ;	
 	push	ds
-	push	offset DGROUP:s@+3722
+	push	offset DGROUP:s@+3110
 	push	word ptr DGROUP:_the_game+2
 	push	word ptr DGROUP:_the_game
 	call	far ptr @game_manager@load_loop$qnuc
@@ -12811,7 +13553,7 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	    the_game->load_loop((uchar far *)"piranal.l");
    ;	
 	push	ds
-	push	offset DGROUP:s@+3732
+	push	offset DGROUP:s@+3120
 	push	word ptr DGROUP:_the_game+2
 	push	word ptr DGROUP:_the_game
 	call	far ptr @game_manager@load_loop$qnuc
@@ -12820,7 +13562,7 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	    the_game->load_loop((uchar far *)"jelly.l");
    ;	
 	push	ds
-	push	offset DGROUP:s@+3742
+	push	offset DGROUP:s@+3130
 	push	word ptr DGROUP:_the_game+2
 	push	word ptr DGROUP:_the_game
 	call	far ptr @game_manager@load_loop$qnuc
@@ -12829,7 +13571,7 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	    the_game->load_loop((uchar far *)"backsub.l");
    ;	
 	push	ds
-	push	offset DGROUP:s@+3750
+	push	offset DGROUP:s@+3138
 	push	word ptr DGROUP:_the_game+2
 	push	word ptr DGROUP:_the_game
 	call	far ptr @game_manager@load_loop$qnuc
@@ -12838,7 +13580,7 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	    the_game->load_loop((uchar far *)"end_dr.l");
    ;	
 	push	ds
-	push	offset DGROUP:s@+3760
+	push	offset DGROUP:s@+3148
 	push	word ptr DGROUP:_the_game+2
 	push	word ptr DGROUP:_the_game
 	call	far ptr @game_manager@load_loop$qnuc
@@ -12847,7 +13589,7 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	    the_game->load_loop((uchar far *)"door_ud.l");
    ;	
 	push	ds
-	push	offset DGROUP:s@+3769
+	push	offset DGROUP:s@+3157
 	push	word ptr DGROUP:_the_game+2
 	push	word ptr DGROUP:_the_game
 	call	far ptr @game_manager@load_loop$qnuc
@@ -12856,7 +13598,7 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	    the_game->load_loop((uchar far *)"duct_l.l");
    ;	
 	push	ds
-	push	offset DGROUP:s@+3779
+	push	offset DGROUP:s@+3167
 	push	word ptr DGROUP:_the_game+2
 	push	word ptr DGROUP:_the_game
 	call	far ptr @game_manager@load_loop$qnuc
@@ -12865,7 +13607,7 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	    the_game->load_loop((uchar far *)"duct_r.l");
    ;	
 	push	ds
-	push	offset DGROUP:s@+3788
+	push	offset DGROUP:s@+3176
 	push	word ptr DGROUP:_the_game+2
 	push	word ptr DGROUP:_the_game
 	call	far ptr @game_manager@load_loop$qnuc
@@ -12874,7 +13616,7 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	    the_game->load_loop((uchar far *)"duct_u.l");
    ;	
 	push	ds
-	push	offset DGROUP:s@+3797
+	push	offset DGROUP:s@+3185
 	push	word ptr DGROUP:_the_game+2
 	push	word ptr DGROUP:_the_game
 	call	far ptr @game_manager@load_loop$qnuc
@@ -12883,7 +13625,7 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	    the_game->load_loop((uchar far *)"duct_d.l");
    ;	
 	push	ds
-	push	offset DGROUP:s@+3806
+	push	offset DGROUP:s@+3194
 	push	word ptr DGROUP:_the_game+2
 	push	word ptr DGROUP:_the_game
 	call	far ptr @game_manager@load_loop$qnuc
@@ -12892,7 +13634,7 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	    the_game->load_loop((uchar far *)"block.l");
    ;	
 	push	ds
-	push	offset DGROUP:s@+3815
+	push	offset DGROUP:s@+3203
 	push	word ptr DGROUP:_the_game+2
 	push	word ptr DGROUP:_the_game
 	call	far ptr @game_manager@load_loop$qnuc
@@ -12901,7 +13643,7 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	    the_game->load_loop((uchar far *)"block2.l");
    ;	
 	push	ds
-	push	offset DGROUP:s@+3823
+	push	offset DGROUP:s@+3211
 	push	word ptr DGROUP:_the_game+2
 	push	word ptr DGROUP:_the_game
 	call	far ptr @game_manager@load_loop$qnuc
@@ -12910,7 +13652,7 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	    the_game->load_loop((uchar far *)"switch.l");
    ;	
 	push	ds
-	push	offset DGROUP:s@+3832
+	push	offset DGROUP:s@+3220
 	push	word ptr DGROUP:_the_game+2
 	push	word ptr DGROUP:_the_game
 	call	far ptr @game_manager@load_loop$qnuc
@@ -12919,7 +13661,7 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	    the_game->load_loop((uchar far *)"zap_ud.l");
    ;	
 	push	ds
-	push	offset DGROUP:s@+3841
+	push	offset DGROUP:s@+3229
 	push	word ptr DGROUP:_the_game+2
 	push	word ptr DGROUP:_the_game
 	call	far ptr @game_manager@load_loop$qnuc
@@ -12928,7 +13670,7 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	    the_game->load_loop((uchar far *)"weed1.l");
    ;	
 	push	ds
-	push	offset DGROUP:s@+3850
+	push	offset DGROUP:s@+3238
 	push	word ptr DGROUP:_the_game+2
 	push	word ptr DGROUP:_the_game
 	call	far ptr @game_manager@load_loop$qnuc
@@ -12937,7 +13679,7 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	    the_game->load_loop((uchar far *)"chest.l");
    ;	
 	push	ds
-	push	offset DGROUP:s@+3858
+	push	offset DGROUP:s@+3246
 	push	word ptr DGROUP:_the_game+2
 	push	word ptr DGROUP:_the_game
 	call	far ptr @game_manager@load_loop$qnuc
@@ -12946,7 +13688,7 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	    the_game->load_loop((uchar far *)"face_r.l");
    ;	
 	push	ds
-	push	offset DGROUP:s@+3866
+	push	offset DGROUP:s@+3254
 	push	word ptr DGROUP:_the_game+2
 	push	word ptr DGROUP:_the_game
 	call	far ptr @game_manager@load_loop$qnuc
@@ -12955,7 +13697,7 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	    the_game->load_loop((uchar far *)"face_l.l");
    ;	
 	push	ds
-	push	offset DGROUP:s@+3875
+	push	offset DGROUP:s@+3263
 	push	word ptr DGROUP:_the_game+2
 	push	word ptr DGROUP:_the_game
 	call	far ptr @game_manager@load_loop$qnuc
@@ -12964,7 +13706,7 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	    the_game->load_loop((uchar far *)"crab.l");
    ;	
 	push	ds
-	push	offset DGROUP:s@+3884
+	push	offset DGROUP:s@+3272
 	push	word ptr DGROUP:_the_game+2
 	push	word ptr DGROUP:_the_game
 	call	far ptr @game_manager@load_loop$qnuc
@@ -12973,7 +13715,7 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	    the_game->load_loop((uchar far *)"crabdie.l");
    ;	
 	push	ds
-	push	offset DGROUP:s@+3891
+	push	offset DGROUP:s@+3279
 	push	word ptr DGROUP:_the_game+2
 	push	word ptr DGROUP:_the_game
 	call	far ptr @game_manager@load_loop$qnuc
@@ -12982,7 +13724,7 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	    the_game->load_loop((uchar far *)"serpdie.l");
    ;	
 	push	ds
-	push	offset DGROUP:s@+3901
+	push	offset DGROUP:s@+3289
 	push	word ptr DGROUP:_the_game+2
 	push	word ptr DGROUP:_the_game
 	call	far ptr @game_manager@load_loop$qnuc
@@ -12991,7 +13733,7 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	    the_game->load_loop((uchar far *)"probspin.l");
    ;	
 	push	ds
-	push	offset DGROUP:s@+3911
+	push	offset DGROUP:s@+3299
 	push	word ptr DGROUP:_the_game+2
 	push	word ptr DGROUP:_the_game
 	call	far ptr @game_manager@load_loop$qnuc
@@ -13000,7 +13742,7 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	    the_game->load_loop((uchar far *)"piece_1.l");
    ;	
 	push	ds
-	push	offset DGROUP:s@+3922
+	push	offset DGROUP:s@+3310
 	push	word ptr DGROUP:_the_game+2
 	push	word ptr DGROUP:_the_game
 	call	far ptr @game_manager@load_loop$qnuc
@@ -13009,7 +13751,7 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	    the_game->load_loop((uchar far *)"piece_2.l");
    ;	
 	push	ds
-	push	offset DGROUP:s@+3932
+	push	offset DGROUP:s@+3320
 	push	word ptr DGROUP:_the_game+2
 	push	word ptr DGROUP:_the_game
 	call	far ptr @game_manager@load_loop$qnuc
@@ -13018,7 +13760,7 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	    the_game->load_loop((uchar far *)"piece_3.l");
    ;	
 	push	ds
-	push	offset DGROUP:s@+3942
+	push	offset DGROUP:s@+3330
 	push	word ptr DGROUP:_the_game+2
 	push	word ptr DGROUP:_the_game
 	call	far ptr @game_manager@load_loop$qnuc
@@ -13027,7 +13769,7 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	    the_game->load_loop((uchar far *)"piece_4.l");
    ;	
 	push	ds
-	push	offset DGROUP:s@+3952
+	push	offset DGROUP:s@+3340
 	push	word ptr DGROUP:_the_game+2
 	push	word ptr DGROUP:_the_game
 	call	far ptr @game_manager@load_loop$qnuc
@@ -13036,7 +13778,7 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	    the_game->load_loop((uchar far *)"gun_1.l");
    ;	
 	push	ds
-	push	offset DGROUP:s@+3962
+	push	offset DGROUP:s@+3350
 	push	word ptr DGROUP:_the_game+2
 	push	word ptr DGROUP:_the_game
 	call	far ptr @game_manager@load_loop$qnuc
@@ -13045,7 +13787,7 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	    the_game->load_loop((uchar far *)"gun_2.l");
    ;	
 	push	ds
-	push	offset DGROUP:s@+3970
+	push	offset DGROUP:s@+3358
 	push	word ptr DGROUP:_the_game+2
 	push	word ptr DGROUP:_the_game
 	call	far ptr @game_manager@load_loop$qnuc
@@ -13054,7 +13796,7 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	    the_game->load_loop((uchar far *)"gun_3.l");
    ;	
 	push	ds
-	push	offset DGROUP:s@+3978
+	push	offset DGROUP:s@+3366
 	push	word ptr DGROUP:_the_game+2
 	push	word ptr DGROUP:_the_game
 	call	far ptr @game_manager@load_loop$qnuc
@@ -13063,7 +13805,7 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	    the_game->load_loop((uchar far *)"gun_4.l");
    ;	
 	push	ds
-	push	offset DGROUP:s@+3986
+	push	offset DGROUP:s@+3374
 	push	word ptr DGROUP:_the_game+2
 	push	word ptr DGROUP:_the_game
 	call	far ptr @game_manager@load_loop$qnuc
@@ -13072,7 +13814,7 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	    the_game->load_loop((uchar far *)"statue.l");
    ;	
 	push	ds
-	push	offset DGROUP:s@+3994
+	push	offset DGROUP:s@+3382
 	push	word ptr DGROUP:_the_game+2
 	push	word ptr DGROUP:_the_game
 	call	far ptr @game_manager@load_loop$qnuc
@@ -13081,7 +13823,7 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	    the_game->load_loop((uchar far *)"fire_pit.l");
    ;	
 	push	ds
-	push	offset DGROUP:s@+4003
+	push	offset DGROUP:s@+3391
 	push	word ptr DGROUP:_the_game+2
 	push	word ptr DGROUP:_the_game
 	call	far ptr @game_manager@load_loop$qnuc
@@ -13090,7 +13832,7 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	    the_game->load_loop((uchar far *)"clam.l");
    ;	
 	push	ds
-	push	offset DGROUP:s@+4014
+	push	offset DGROUP:s@+3402
 	push	word ptr DGROUP:_the_game+2
 	push	word ptr DGROUP:_the_game
 	call	far ptr @game_manager@load_loop$qnuc
@@ -13099,7 +13841,7 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	    the_game->load_loop((uchar far *)"cannonr.l");
    ;	
 	push	ds
-	push	offset DGROUP:s@+4021
+	push	offset DGROUP:s@+3409
 	push	word ptr DGROUP:_the_game+2
 	push	word ptr DGROUP:_the_game
 	call	far ptr @game_manager@load_loop$qnuc
@@ -13108,7 +13850,7 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	    the_game->load_loop((uchar far *)"cannonl.l");
    ;	
 	push	ds
-	push	offset DGROUP:s@+4031
+	push	offset DGROUP:s@+3419
 	push	word ptr DGROUP:_the_game+2
 	push	word ptr DGROUP:_the_game
 	call	far ptr @game_manager@load_loop$qnuc
@@ -13117,7 +13859,7 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	    the_game->load_loop((uchar far *)"shipr.l");
    ;	
 	push	ds
-	push	offset DGROUP:s@+4041
+	push	offset DGROUP:s@+3429
 	push	word ptr DGROUP:_the_game+2
 	push	word ptr DGROUP:_the_game
 	call	far ptr @game_manager@load_loop$qnuc
@@ -13126,7 +13868,7 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	    the_game->load_loop((uchar far *)"shipl.l");
    ;	
 	push	ds
-	push	offset DGROUP:s@+4049
+	push	offset DGROUP:s@+3437
 	push	word ptr DGROUP:_the_game+2
 	push	word ptr DGROUP:_the_game
 	call	far ptr @game_manager@load_loop$qnuc
@@ -13135,7 +13877,7 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	    the_game->load_loop((uchar far *)"mouse.l");
    ;	
 	push	ds
-	push	offset DGROUP:s@+4057
+	push	offset DGROUP:s@+3445
 	push	word ptr DGROUP:_the_game+2
 	push	word ptr DGROUP:_the_game
 	call	far ptr @game_manager@load_loop$qnuc
@@ -13144,7 +13886,7 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	    the_game->load_loop((uchar far *)"key.l");
    ;	
 	push	ds
-	push	offset DGROUP:s@+4065
+	push	offset DGROUP:s@+3453
 	push	word ptr DGROUP:_the_game+2
 	push	word ptr DGROUP:_the_game
 	call	far ptr @game_manager@load_loop$qnuc
@@ -13153,7 +13895,7 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	    the_game->load_loop((uchar far *)"pat1.l");
    ;	
 	push	ds
-	push	offset DGROUP:s@+4071
+	push	offset DGROUP:s@+3459
 	push	word ptr DGROUP:_the_game+2
 	push	word ptr DGROUP:_the_game
 	call	far ptr @game_manager@load_loop$qnuc
@@ -13163,7 +13905,7 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	
 	push	0
 	push	ds
-	push	offset DGROUP:s@+4078
+	push	offset DGROUP:s@+3466
 	push	word ptr DGROUP:_the_game+2
 	push	word ptr DGROUP:_the_game
 	call	far ptr @game_manager@define_sound$qnucuc
@@ -13173,7 +13915,7 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	
 	push	0
 	push	ds
-	push	offset DGROUP:s@+4084
+	push	offset DGROUP:s@+3472
 	push	word ptr DGROUP:_the_game+2
 	push	word ptr DGROUP:_the_game
 	call	far ptr @game_manager@define_sound$qnucuc
@@ -13183,7 +13925,7 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	
 	push	0
 	push	ds
-	push	offset DGROUP:s@+4090
+	push	offset DGROUP:s@+3478
 	push	word ptr DGROUP:_the_game+2
 	push	word ptr DGROUP:_the_game
 	call	far ptr @game_manager@define_sound$qnucuc
@@ -13193,7 +13935,7 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	
 	push	0
 	push	ds
-	push	offset DGROUP:s@+4095
+	push	offset DGROUP:s@+3483
 	push	word ptr DGROUP:_the_game+2
 	push	word ptr DGROUP:_the_game
 	call	far ptr @game_manager@define_sound$qnucuc
@@ -13203,7 +13945,7 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	
 	push	0
 	push	ds
-	push	offset DGROUP:s@+4100
+	push	offset DGROUP:s@+3488
 	push	word ptr DGROUP:_the_game+2
 	push	word ptr DGROUP:_the_game
 	call	far ptr @game_manager@define_sound$qnucuc
@@ -13213,7 +13955,7 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	
 	push	0
 	push	ds
-	push	offset DGROUP:s@+4107
+	push	offset DGROUP:s@+3495
 	push	word ptr DGROUP:_the_game+2
 	push	word ptr DGROUP:_the_game
 	call	far ptr @game_manager@define_sound$qnucuc
@@ -13223,7 +13965,7 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	
 	push	0
 	push	ds
-	push	offset DGROUP:s@+4116
+	push	offset DGROUP:s@+3504
 	push	word ptr DGROUP:_the_game+2
 	push	word ptr DGROUP:_the_game
 	call	far ptr @game_manager@define_sound$qnucuc
@@ -13233,7 +13975,7 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	
 	push	0
 	push	ds
-	push	offset DGROUP:s@+4123
+	push	offset DGROUP:s@+3511
 	push	word ptr DGROUP:_the_game+2
 	push	word ptr DGROUP:_the_game
 	call	far ptr @game_manager@define_sound$qnucuc
@@ -13243,7 +13985,7 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	
 	push	0
 	push	ds
-	push	offset DGROUP:s@+4128
+	push	offset DGROUP:s@+3516
 	push	word ptr DGROUP:_the_game+2
 	push	word ptr DGROUP:_the_game
 	call	far ptr @game_manager@define_sound$qnucuc
@@ -13253,7 +13995,7 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	
 	push	0
 	push	ds
-	push	offset DGROUP:s@+4136
+	push	offset DGROUP:s@+3524
 	push	word ptr DGROUP:_the_game+2
 	push	word ptr DGROUP:_the_game
 	call	far ptr @game_manager@define_sound$qnucuc
@@ -13263,7 +14005,7 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	
 	push	0
 	push	ds
-	push	offset DGROUP:s@+4140
+	push	offset DGROUP:s@+3528
 	push	word ptr DGROUP:_the_game+2
 	push	word ptr DGROUP:_the_game
 	call	far ptr @game_manager@define_sound$qnucuc
@@ -13273,7 +14015,7 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	
 	push	0
 	push	ds
-	push	offset DGROUP:s@+4144
+	push	offset DGROUP:s@+3532
 	push	word ptr DGROUP:_the_game+2
 	push	word ptr DGROUP:_the_game
 	call	far ptr @game_manager@define_sound$qnucuc
@@ -13283,7 +14025,7 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	
 	push	0
 	push	ds
-	push	offset DGROUP:s@+4149
+	push	offset DGROUP:s@+3537
 	push	word ptr DGROUP:_the_game+2
 	push	word ptr DGROUP:_the_game
 	call	far ptr @game_manager@define_sound$qnucuc
@@ -13293,7 +14035,7 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	
 	push	1
 	push	ds
-	push	offset DGROUP:s@+4154
+	push	offset DGROUP:s@+3542
 	push	word ptr DGROUP:_the_game+2
 	push	word ptr DGROUP:_the_game
 	call	far ptr @game_manager@define_sound$qnucuc
@@ -13303,7 +14045,7 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	
 	push	0
 	push	ds
-	push	offset DGROUP:s@+4160
+	push	offset DGROUP:s@+3548
 	push	word ptr DGROUP:_the_game+2
 	push	word ptr DGROUP:_the_game
 	call	far ptr @game_manager@define_sound$qnucuc
@@ -13313,7 +14055,7 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	
 	push	0
 	push	ds
-	push	offset DGROUP:s@+4165
+	push	offset DGROUP:s@+3553
 	push	word ptr DGROUP:_the_game+2
 	push	word ptr DGROUP:_the_game
 	call	far ptr @game_manager@define_sound$qnucuc
@@ -13323,7 +14065,7 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	
 	push	0
 	push	ds
-	push	offset DGROUP:s@+4171
+	push	offset DGROUP:s@+3559
 	push	word ptr DGROUP:_the_game+2
 	push	word ptr DGROUP:_the_game
 	call	far ptr @game_manager@define_sound$qnucuc
@@ -13333,7 +14075,7 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	
 	push	0
 	push	ds
-	push	offset DGROUP:s@+4177
+	push	offset DGROUP:s@+3565
 	push	word ptr DGROUP:_the_game+2
 	push	word ptr DGROUP:_the_game
 	call	far ptr @game_manager@define_sound$qnucuc
@@ -13350,7 +14092,7 @@ GAME_TEXT	segment byte public use16 'CODE'
 	assume	cs:GAME_TEXT
 @show_high_scores$quc	proc	far
 	enter	16,0
-@43@30:
+@50@30:
    ;	
    ;	{
    ;	    button far *block, far *var_C;
@@ -13378,7 +14120,7 @@ GAME_TEXT	segment byte public use16 'CODE'
 	push	0
 	push	0
 	push	ds
-	push	offset DGROUP:s@+4183
+	push	offset DGROUP:s@+3571
 	push	word ptr DGROUP:_display+2
 	push	word ptr DGROUP:_display
 	call	far ptr @vga_display@show_pcx$qnucucuii
@@ -13404,8 +14146,8 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	    var_2 = 0;
    ;	
 	mov	word ptr [bp-12],0
-	jmp	@43@254
-@43@58:
+	jmp	@50@254
+@50@58:
    ;	
    ;	    goto row_check;
    ;	row_body:
@@ -13421,7 +14163,7 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	    if (var_2 == 0)
    ;	
 	cmp	word ptr [bp-12],0
-	jne	short @43@114
+	jne	short @50@114
    ;	
    ;	        i_set_text(0x40, 2, 0x1C, 0x9E);
    ;	
@@ -13429,19 +14171,19 @@ GAME_TEXT	segment byte public use16 'CODE'
 	push	28
 	push	2
 	push	64
-	jmp	short @43@198
-@43@114:
+	jmp	short @50@198
+@50@114:
    ;	
    ;	    else if (arg_0 != 0 && arg_0 == var_2 + 1)
    ;	
 	cmp	byte ptr [bp+6],0
-	je	short @43@226
+	je	short @50@226
 	mov	al,byte ptr [bp+6]
 	mov	ah,0
 	mov	dx,word ptr [bp-12]
 	inc	dx
 	cmp	ax,dx
-	jne	short @43@226
+	jne	short @50@226
    ;	
    ;	        i_set_text(0x30, 2, 0x18, 0x1D);
    ;	
@@ -13449,10 +14191,10 @@ GAME_TEXT	segment byte public use16 'CODE'
 	push	24
 	push	2
 	push	48
-@43@198:
+@50@198:
 	call	far ptr @i_set_text$qucucucuc
 	add	sp,8
-@43@226:
+@50@226:
    ;	
    ;	    itoa(var_2 + 1, _tmp, 0x0A);
    ;	
@@ -13557,15 +14299,15 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	    var_2++;
    ;	
 	inc	word ptr [bp-12]
-@43@254:
+@50@254:
    ;	
    ;	row_check:
    ;	    if (var_2 < 0x0A)
    ;	
 	cmp	word ptr [bp-12],10
-	jge short	@@72
-	jmp	@43@58
-@@72:
+	jge short	@@58
+	jmp	@50@58
+@@58:
    ;	
    ;	        goto row_body;
    ;	    i_set_text(0x30, 2, 0x18, 0x1D);
@@ -13580,7 +14322,7 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	    strcpy(_tmp, "Your Score");
    ;	
 	push	ds
-	push	offset DGROUP:s@+4195
+	push	offset DGROUP:s@+3583
 	push	ds
 	push	offset DGROUP:__tmp
 	call	far ptr _strcpy
@@ -13632,7 +14374,7 @@ GAME_TEXT	segment byte public use16 'CODE'
 	push	0
 	push	0
 	push	ds
-	push	offset DGROUP:s@+4206
+	push	offset DGROUP:s@+3594
 	push	0
 	push	0
 	call	far ptr @button@$bctr$qnucnvuc
@@ -13646,7 +14388,7 @@ GAME_TEXT	segment byte public use16 'CODE'
 	push	0
 	push	0
 	push	ds
-	push	offset DGROUP:s@+4212
+	push	offset DGROUP:s@+3600
 	push	0
 	push	0
 	call	far ptr @button@$bctr$qnucnvuc
@@ -13712,13 +14454,13 @@ GAME_TEXT	segment byte public use16 'CODE'
 	push	word ptr DGROUP:_mouse
 	call	far ptr @ms_mouse@show$qv
 	add	sp,4
-@43@310:
+@50@310:
    ;	
    ;	    while (de_button())
    ;	
 	call	far ptr @de_button$qv
 	or	al,al
-	jne	short @43@310
+	jne	short @50@310
    ;	
    ;	        ;
    ;	    var_2 = 0x438;
@@ -13728,8 +14470,8 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	    var_7 = 1;
    ;	
 	mov	byte ptr [bp-9],1
-	jmp	@43@646
-@43@366:
+	jmp	@50@646
+@50@366:
    ;	
    ;	    while ((int)var_C->poll() == 0)
    ;	    {
@@ -13737,11 +14479,11 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	
 	call	dword ptr DGROUP:_i_external_left
 	or	al,al
-	jne	short @43@422
+	jne	short @50@422
 	call	dword ptr DGROUP:_i_external_right
 	or	al,al
-	je	short @43@506
-@43@422:
+	je	short @50@506
+@50@422:
    ;	
    ;	        {
    ;	            display->pause(0x0A);
@@ -13768,17 +14510,17 @@ GAME_TEXT	segment byte public use16 'CODE'
 	push	word ptr ss:[bx]
 	call	far ptr @button@mouse_to_me$qv
 	add	sp,4
-@43@450:
+@50@450:
    ;	
    ;	            while ((*i_external_left)() || (*i_external_right)())
    ;	
 	call	dword ptr DGROUP:_i_external_left
 	or	al,al
-	jne	short @43@450
+	jne	short @50@450
 	call	dword ptr DGROUP:_i_external_right
 	or	al,al
-	jne	short @43@450
-@43@506:
+	jne	short @50@450
+@50@506:
    ;	
    ;	                ;
    ;	        }
@@ -13791,7 +14533,7 @@ GAME_TEXT	segment byte public use16 'CODE'
 	call	dword ptr [bx+8]
 	add	sp,4
 	or	al,al
-	je	short @43@618
+	je	short @50@618
    ;	
    ;	        {
    ;	            if ((int)i_yes_cancel((uchar far *)"Are you sure you want to\n"
@@ -13801,11 +14543,11 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	
 	push	0
 	push	ds
-	push	offset DGROUP:s@+4215
+	push	offset DGROUP:s@+3603
 	call	far ptr @i_yes_cancel$qnucuc
 	add	sp,6
 	or	al,al
-	jne	short @43@590
+	jne	short @50@590
    ;	
    ;	            {
    ;	                init_scores_file();
@@ -13837,15 +14579,15 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	
    ;	                goto restart;
    ;	
-	jmp	@43@30
-@43@590:
+	jmp	@50@30
+@50@590:
    ;	
    ;	            }
    ;	            block->field_20 = 0;
    ;	
 	les	bx,dword ptr [bp-4]
 	mov	word ptr es:[bx+32],0
-@43@618:
+@50@618:
    ;	
    ;	        }
    ;	        display->pause(1);
@@ -13861,8 +14603,8 @@ GAME_TEXT	segment byte public use16 'CODE'
 	mov	ax,word ptr [bp-12]
 	dec	word ptr [bp-12]
 	or	ax,ax
-	je	short @43@674
-@43@646:
+	je	short @50@674
+@50@646:
 	push	word ptr [bp-6]
 	push	word ptr [bp-8]
 	les	bx,dword ptr [bp-8]
@@ -13870,10 +14612,10 @@ GAME_TEXT	segment byte public use16 'CODE'
 	call	dword ptr [bx+8]
 	add	sp,4
 	or	al,al
-	jne short	@@73
-	jmp	@43@366
-@@73:
-@43@674:
+	jne short	@@59
+	jmp	@50@366
+@@59:
+@50@674:
    ;	
    ;	            break;
    ;	    }
@@ -13941,7 +14683,7 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	    the_game->play_song((uchar far *)"title.cmf");
    ;	
 	push	ds
-	push	offset DGROUP:s@+4263
+	push	offset DGROUP:s@+3651
 	push	word ptr DGROUP:_the_game+2
 	push	word ptr DGROUP:_the_game
 	call	far ptr @game_manager@play_song$qnuc
@@ -13960,7 +14702,7 @@ GAME_TEXT	segment byte public use16 'CODE'
 	push	0
 	push	0
 	push	ds
-	push	offset DGROUP:s@+4273
+	push	offset DGROUP:s@+3661
 	push	word ptr DGROUP:_display+2
 	push	word ptr DGROUP:_display
 	call	far ptr @vga_display@show_pcx$qnucucuii
@@ -13986,88 +14728,88 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	
 	les	bx,dword ptr DGROUP:_the_game
 	cmp	byte ptr es:[bx+6],0
-	jne	short @44@86
+	jne	short @51@86
    ;	
    ;	        the_game->play_sound_file((uchar far *)"title");
    ;	
 	push	ds
-	push	offset DGROUP:s@+4285
-	jmp	short @44@114
-@44@86:
+	push	offset DGROUP:s@+3673
+	jmp	short @51@114
+@51@86:
    ;	
    ;	    else
    ;	        the_game->play_sound_file((uchar far *)"pup2");
    ;	
 	push	ds
-	push	offset DGROUP:s@+4291
-@44@114:
+	push	offset DGROUP:s@+3679
+@51@114:
 	push	word ptr DGROUP:_the_game+2
 	push	word ptr DGROUP:_the_game
 	call	far ptr @game_manager@play_sound_file$qnuc
 	add	sp,8
    ;	
-   ;	    if (saw_title_screen != 0)
+   ;	    if (saw_title_screen == 0)
    ;	
 	cmp	byte ptr DGROUP:_saw_title_screen,0
-	je short	@@74
-	jmp	@44@478
-@@74:
+	je short	@@60
+	jmp	@51@478
+@@60:
    ;	
-   ;	        return;
-   ;	    saw_title_screen++;
+   ;	    {
+   ;	        saw_title_screen++;
    ;	
 	inc	byte ptr DGROUP:_saw_title_screen
-	jmp	short @44@226
-@44@198:
+	jmp	short @51@226
+@51@198:
    ;	
-   ;	    while (the_game->field_2B != 0)
-   ;	        the_game->doit();
+   ;	        while (the_game->field_2B != 0)
+   ;	            the_game->doit();
    ;	
 	push	word ptr DGROUP:_the_game+2
 	push	word ptr DGROUP:_the_game
 	call	far ptr @game_manager@doit$qv
 	add	sp,4
-@44@226:
+@51@226:
 	les	bx,dword ptr DGROUP:_the_game
 	cmp	byte ptr es:[bx+43],0
-	jne	short @44@198
+	jne	short @51@198
    ;	
-   ;	    var_2 = 0x12C;
+   ;	        var_2 = 0x12C;
    ;	
 	mov	word ptr [bp-2],300
-	jmp	short @44@422
-@44@282:
+	jmp	short @51@422
+@51@282:
    ;	
-   ;	    while (the_game->field_2B == 0 && var_2-- != 0)
-   ;	    {
-   ;	        if (!god_mode && gr_keys[0x22] && gr_keys[0x38])
+   ;	        while (the_game->field_2B == 0 && var_2-- != 0)
+   ;	        {
+   ;	            if (!god_mode && gr_keys[0x22] && gr_keys[0x38])
    ;	
 	mov	al,byte ptr DGROUP:_god_mode
 	mov	ah,0
 	or	ax,ax
-	jne	short @44@394
+	jne	short @51@394
 	cmp	byte ptr DGROUP:_gr_keys+34,0
-	je	short @44@394
+	je	short @51@394
 	cmp	byte ptr DGROUP:_gr_keys+56,0
-	je	short @44@394
+	je	short @51@394
    ;	
-   ;	        {
-   ;	            the_game->play_sound_file((uchar far *)"sum");
+   ;	            {
+   ;	                the_game->play_sound_file((uchar far *)"sum");
    ;	
 	push	ds
-	push	offset DGROUP:s@+4296
+	push	offset DGROUP:s@+3684
 	push	word ptr DGROUP:_the_game+2
 	push	word ptr DGROUP:_the_game
 	call	far ptr @game_manager@play_sound_file$qnuc
 	add	sp,8
    ;	
-   ;	            god_mode = 1;
+   ;	                god_mode = 1;
    ;	
 	mov	byte ptr DGROUP:_god_mode,1
-@44@394:
+@51@394:
    ;	
-   ;	        }
-   ;	        display->pause(1);
+   ;	            }
+   ;	            display->pause(1);
    ;	
 	push	1
 	push	word ptr DGROUP:_display+2
@@ -14075,23 +14817,29 @@ GAME_TEXT	segment byte public use16 'CODE'
 	call	far ptr @vga_display@pause$qui
 	add	sp,6
    ;	
-   ;	        the_game->doit();
+   ;	            the_game->doit();
    ;	
 	push	word ptr DGROUP:_the_game+2
 	push	word ptr DGROUP:_the_game
 	call	far ptr @game_manager@doit$qv
 	add	sp,4
-@44@422:
+@51@422:
 	les	bx,dword ptr DGROUP:_the_game
 	cmp	byte ptr es:[bx+43],0
-	jne	short @44@478
+	jne	short @51@478
 	mov	ax,word ptr [bp-2]
 	dec	word ptr [bp-2]
 	or	ax,ax
-	jne	short @44@282
-@44@478:
+	jne	short @51@282
+@51@478:
    ;	
+   ;	        }
    ;	    }
+   ;	    activate_menu_bar();
+   ;	
+	push	cs
+	call	near ptr @activate_menu_bar$qv
+   ;	
    ;	}
    ;	
 	leave	
@@ -14142,7 +14890,7 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	    the_game->play_song((uchar far *)"stats.cmf");
    ;	
 	push	ds
-	push	offset DGROUP:s@+4300
+	push	offset DGROUP:s@+3688
 	push	word ptr DGROUP:_the_game+2
 	push	word ptr DGROUP:_the_game
 	call	far ptr @game_manager@play_song$qnuc
@@ -14152,7 +14900,7 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	
 	push	0
 	push	ds
-	push	offset DGROUP:s@+4310
+	push	offset DGROUP:s@+3698
 	push	word ptr DGROUP:_the_game+2
 	push	word ptr DGROUP:_the_game
 	call	far ptr @game_manager@define_sound$qnucuc
@@ -14162,7 +14910,7 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	
 	push	0
 	push	ds
-	push	offset DGROUP:s@+4314
+	push	offset DGROUP:s@+3702
 	push	word ptr DGROUP:_the_game+2
 	push	word ptr DGROUP:_the_game
 	call	far ptr @game_manager@define_sound$qnucuc
@@ -14231,12 +14979,12 @@ GAME_TEXT	segment byte public use16 'CODE'
 	mov	al,byte ptr DGROUP:_enemy_count
 	mov	ah,0
 	or	ax,ax
-	je	short @45@86
+	je	short @52@86
 	mov	al,byte ptr DGROUP:_goody_count
 	mov	ah,0
 	or	ax,ax
-	jne	short @45@114
-@45@86:
+	jne	short @52@114
+@52@86:
    ;	
    ;	        terminate((uchar far *)"Attempt to divide by zero in show_stats",
    ;	
@@ -14246,10 +14994,10 @@ GAME_TEXT	segment byte public use16 'CODE'
 	push	0
 	push	0
 	push	ds
-	push	offset DGROUP:s@+4318
+	push	offset DGROUP:s@+3706
 	call	far ptr @terminate$qnuct1
 	add	sp,8
-@45@114:
+@52@114:
    ;	
    ;	    var_10 = (int)(goodies_found / (float)goody_count * 100.0);
    ;	
@@ -14262,7 +15010,7 @@ GAME_TEXT	segment byte public use16 'CODE'
 	mov	word ptr [bp-40],ax
 	fild	word ptr [bp-40]
 	fdiv	
-	fmul	dword ptr DGROUP:s@+4358
+	fmul	dword ptr DGROUP:s@+3746
 	call	far ptr F_FTOL@
 	mov	word ptr [bp-24],ax
    ;	
@@ -14277,7 +15025,7 @@ GAME_TEXT	segment byte public use16 'CODE'
 	mov	word ptr [bp-40],ax
 	fild	word ptr [bp-40]
 	fdiv	
-	fmul	dword ptr DGROUP:s@+4358
+	fmul	dword ptr DGROUP:s@+3746
 	call	far ptr F_FTOL@
 	mov	word ptr [bp-38],ax
    ;	
@@ -14299,21 +15047,21 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	    if (dest == 0)
    ;	
 	cmp	dword ptr [bp-4],large 0
-	jne	short @45@170
+	jne	short @52@170
    ;	
    ;	        no_heap((uchar far *)"show stats");
    ;	
 	push	ds
-	push	offset DGROUP:s@+4362
+	push	offset DGROUP:s@+3750
 	call	far ptr @no_heap$qnuc
 	add	sp,4
-@45@170:
+@52@170:
    ;	
-   ;	    memcpy(dest, _palette, 0x300);
+   ;	    memcpy(dest, palette, 0x300);
    ;	
 	push	768
 	push	ds
-	push	offset DGROUP:__palette
+	push	offset DGROUP:_palette
 	push	word ptr [bp-2]
 	push	word ptr [bp-4]
 	call	far ptr _memcpy
@@ -14325,7 +15073,7 @@ GAME_TEXT	segment byte public use16 'CODE'
 	push	0
 	push	0
 	push	ds
-	push	offset DGROUP:s@+4373
+	push	offset DGROUP:s@+3761
 	push	word ptr DGROUP:_display+2
 	push	word ptr DGROUP:_display
 	call	far ptr @vga_display@show_pcx$qnucucuii
@@ -14346,7 +15094,7 @@ GAME_TEXT	segment byte public use16 'CODE'
 	push	word ptr [bp-28]
 	push	word ptr [bp-26]
 	push	ds
-	push	offset DGROUP:s@+4385
+	push	offset DGROUP:s@+3773
 	call	far ptr @show_loop$qnuciiucui
 	add	sp,12
    ;	
@@ -14379,7 +15127,7 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	    strcpy((char *)_tmp, "Enemies destroyed : ");
    ;	
 	push	ds
-	push	offset DGROUP:s@+4392
+	push	offset DGROUP:s@+3780
 	push	ds
 	push	offset DGROUP:__tmp
 	call	far ptr _strcpy
@@ -14403,7 +15151,7 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	    strcat((char *)_tmp, "%");
    ;	
 	push	ds
-	push	offset DGROUP:s@+4413
+	push	offset DGROUP:s@+3801
 	push	ds
 	push	offset DGROUP:__tmp
 	call	far ptr _strcat
@@ -14426,7 +15174,7 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	    strcpy((char *)_tmp, "Goodies\t\t  : ");
    ;	
 	push	ds
-	push	offset DGROUP:s@+4415
+	push	offset DGROUP:s@+3803
 	push	ds
 	push	offset DGROUP:__tmp
 	call	far ptr _strcpy
@@ -14450,7 +15198,7 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	    strcat((char *)_tmp, "%");
    ;	
 	push	ds
-	push	offset DGROUP:s@+4429
+	push	offset DGROUP:s@+3817
 	push	ds
 	push	offset DGROUP:__tmp
 	call	far ptr _strcat
@@ -14474,7 +15222,7 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	
 	push	0
 	push	ds
-	push	offset DGROUP:s@+4431
+	push	offset DGROUP:s@+3819
 	push	word ptr [bp-16]
 	push	word ptr [bp-14]
 	push	word ptr DGROUP:_display+2
@@ -14486,7 +15234,7 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	
 	push	0
 	push	ds
-	push	offset DGROUP:s@+4446
+	push	offset DGROUP:s@+3834
 	push	word ptr [bp-20]
 	push	word ptr [bp-18]
 	push	word ptr DGROUP:_display+2
@@ -14523,8 +15271,8 @@ GAME_TEXT	segment byte public use16 'CODE'
 	add	sp,12
 	mov	word ptr [bp-6],dx
 	mov	word ptr [bp-8],ax
-	jmp	@45@226
-@45@198:
+	jmp	@52@226
+@52@198:
    ;	
    ;	    while (air_supply != 0 && !the_game->field_2B)
    ;	    {
@@ -14539,7 +15287,7 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	
 	push	15
 	push	ds
-	push	offset DGROUP:s@+4462
+	push	offset DGROUP:s@+3850
 	push	word ptr DGROUP:_the_game+2
 	push	word ptr DGROUP:_the_game
 	call	far ptr @game_manager@play_sound$qnucuc
@@ -14611,17 +15359,17 @@ GAME_TEXT	segment byte public use16 'CODE'
 	push	word ptr DGROUP:_display
 	call	far ptr @vga_display@print_at_xy$qiinucuc
 	add	sp,14
-@45@226:
+@52@226:
 	cmp	word ptr DGROUP:_air_supply,0
-	je	short @45@282
+	je	short @52@282
 	les	bx,dword ptr DGROUP:_the_game
 	mov	al,byte ptr es:[bx+43]
 	mov	ah,0
 	or	ax,ax
-	jne short	@@75
-	jmp	@45@198
-@@75:
-@45@282:
+	jne short	@@61
+	jmp	@52@198
+@@61:
+@52@282:
    ;	
    ;	    }
    ;	    air_supply = 0;
@@ -14748,8 +15496,8 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	    var_1E = 0;
    ;	
 	mov	word ptr [bp-36],0
-	jmp	@45@338
-@45@310:
+	jmp	@52@338
+@52@310:
    ;	
    ;	    while (shld_supply != 0 && !the_game->field_2B)
    ;	    {
@@ -14764,7 +15512,7 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	
 	push	15
 	push	ds
-	push	offset DGROUP:s@+4466
+	push	offset DGROUP:s@+3854
 	push	word ptr DGROUP:_the_game+2
 	push	word ptr DGROUP:_the_game
 	call	far ptr @game_manager@play_sound$qnucuc
@@ -14836,17 +15584,17 @@ GAME_TEXT	segment byte public use16 'CODE'
 	push	word ptr DGROUP:_display
 	call	far ptr @vga_display@print_at_xy$qiinucuc
 	add	sp,14
-@45@338:
+@52@338:
 	cmp	word ptr DGROUP:_shld_supply,0
-	je	short @45@394
+	je	short @52@394
 	les	bx,dword ptr DGROUP:_the_game
 	mov	al,byte ptr es:[bx+43]
 	mov	ah,0
 	or	ax,ax
-	jne short	@@76
-	jmp	@45@310
-@@76:
-@45@394:
+	jne short	@@62
+	jmp	@52@310
+@@62:
+@52@394:
    ;	
    ;	    }
    ;	    shld_supply = 0;
@@ -14944,12 +15692,12 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	
 	push	15
 	push	ds
-	push	offset DGROUP:s@+4470
+	push	offset DGROUP:s@+3858
 	push	word ptr DGROUP:_the_game+2
 	push	word ptr DGROUP:_the_game
 	call	far ptr @game_manager@play_sound$qnucuc
 	add	sp,10
-@45@422:
+@52@422:
    ;	
    ;	    while (the_game->voc_playing())
    ;	
@@ -14958,7 +15706,7 @@ GAME_TEXT	segment byte public use16 'CODE'
 	call	far ptr @game_manager@voc_playing$qv
 	add	sp,4
 	or	al,al
-	jne	short @45@422
+	jne	short @52@422
    ;	
    ;	        ;
    ;	    wait_for_user();
@@ -14985,19 +15733,19 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	    the_game->remove_sound((uchar far *)"add");
    ;	
 	push	ds
-	push	offset DGROUP:s@+4474
+	push	offset DGROUP:s@+3862
 	push	word ptr DGROUP:_the_game+2
 	push	word ptr DGROUP:_the_game
-	call	far ptr @game_manager@remove_sound$qve
+	call	far ptr @game_manager@remove_sound$qnuc
 	add	sp,8
    ;	
    ;	    the_game->remove_sound((uchar far *)"sum");
    ;	
 	push	ds
-	push	offset DGROUP:s@+4478
+	push	offset DGROUP:s@+3866
 	push	word ptr DGROUP:_the_game+2
 	push	word ptr DGROUP:_the_game
-	call	far ptr @game_manager@remove_sound$qve
+	call	far ptr @game_manager@remove_sound$qnuc
 	add	sp,8
    ;	
    ;	    i_set_text(0x30, 2, 0x18, 0x1D);
@@ -15016,13 +15764,13 @@ GAME_TEXT	segment byte public use16 'CODE'
 	call	far ptr @game_manager@reset_sound$qv
 	add	sp,4
    ;	
-   ;	    memcpy(_palette, dest, 0x300);
+   ;	    memcpy(palette, dest, 0x300);
    ;	
 	push	768
 	push	word ptr [bp-2]
 	push	word ptr [bp-4]
 	push	ds
-	push	offset DGROUP:__palette
+	push	offset DGROUP:_palette
 	call	far ptr _memcpy
 	add	sp,10
    ;	
@@ -15104,7 +15852,7 @@ GAME_TEXT	segment byte public use16 'CODE'
 	push	50
 	push	80
 	push	ds
-	push	offset DGROUP:s@+4482
+	push	offset DGROUP:s@+3870
 	call	far ptr @show_loop$qnuciiucui
 	add	sp,12
    ;	
@@ -15153,7 +15901,7 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	
 	push	13
 	push	ds
-	push	offset DGROUP:s@+4492
+	push	offset DGROUP:s@+3880
 	push	word ptr DGROUP:_the_game+2
 	push	word ptr DGROUP:_the_game
 	call	far ptr @game_manager@play_sound$qnucuc
@@ -15169,8 +15917,8 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	    var_4 = 0x3E80;
    ;	
 	mov	word ptr [bp-2],16000
-	jmp	short @46@86
-@46@58:
+	jmp	short @53@86
+@53@58:
    ;	
    ;	    while (var_4 >= 0)
    ;	    {
@@ -15185,9 +15933,9 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	        var_4 -= 0x280;
    ;	
 	sub	word ptr [bp-2],640
-@46@86:
+@53@86:
 	cmp	word ptr [bp-2],0
-	jge	short @46@58
+	jge	short @53@58
    ;	
    ;	    }
    ;	    display->copy_page(1, 0);
@@ -15220,7 +15968,7 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	
 	push	14
 	push	ds
-	push	offset DGROUP:s@+4498
+	push	offset DGROUP:s@+3886
 	push	word ptr DGROUP:_the_game+2
 	push	word ptr DGROUP:_the_game
 	call	far ptr @game_manager@play_sound$qnucuc
@@ -15256,20 +16004,20 @@ GAME_TEXT	segment byte public use16 'CODE'
 	push	word ptr DGROUP:_display
 	call	far ptr @vga_display@show_offset$qui
 	add	sp,6
-@46@142:
+@53@142:
    ;	
    ;	    while (de_button() == 0)
    ;	
 	call	far ptr @de_button$qv
 	or	al,al
-	je	short @46@142
+	je	short @53@142
    ;	
    ;	        ;
    ;	    the_game->play_sound((uchar far *)"fire2", 0x0F);
    ;	
 	push	15
 	push	ds
-	push	offset DGROUP:s@+4503
+	push	offset DGROUP:s@+3891
 	push	word ptr DGROUP:_the_game+2
 	push	word ptr DGROUP:_the_game
 	call	far ptr @game_manager@play_sound$qnucuc
@@ -15278,8 +16026,8 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	    var_4 = 0x3E80;
    ;	
 	mov	word ptr [bp-2],16000
-	jmp	short @46@226
-@46@198:
+	jmp	short @53@226
+@53@198:
    ;	
    ;	    while (var_4 >= 0)
    ;	    {
@@ -15294,9 +16042,9 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	        var_4 -= 0x280;
    ;	
 	sub	word ptr [bp-2],640
-@46@226:
+@53@226:
 	cmp	word ptr [bp-2],0
-	jge	short @46@198
+	jge	short @53@198
    ;	
    ;	    }
    ;	    display->copy_page(1, 2);
@@ -15307,7 +16055,7 @@ GAME_TEXT	segment byte public use16 'CODE'
 	push	word ptr DGROUP:_display
 	call	far ptr @vga_display@copy_page$qucuc
 	add	sp,8
-@46@282:
+@53@282:
    ;	
    ;	    while (the_game->voc_playing())
    ;	
@@ -15316,7 +16064,7 @@ GAME_TEXT	segment byte public use16 'CODE'
 	call	far ptr @game_manager@voc_playing$qv
 	add	sp,4
 	or	al,al
-	jne	short @46@282
+	jne	short @53@282
    ;	
    ;	        ;
    ;	    the_game->reset_sound();
@@ -15365,7 +16113,7 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	    if (var_6 == 0)
    ;	
 	cmp	dword ptr [bp-4],large 0
-	jne	short @47@142
+	jne	short @54@142
    ;	
    ;	    {
    ;	        var_6 = (loop_res far *)the_game->load_loop(s2);
@@ -15382,17 +16130,17 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	        if (var_6 == 0)
    ;	
 	cmp	dword ptr [bp-4],large 0
-	jne	short @47@114
+	jne	short @54@114
    ;	
    ;	            terminate((uchar far *)"Loop does not exist.", s2);
    ;	
 	push	word ptr [bp+8]
 	push	word ptr [bp+6]
 	push	ds
-	push	offset DGROUP:s@+4509
+	push	offset DGROUP:s@+3897
 	call	far ptr @terminate$qnuct1
 	add	sp,8
-@47@114:
+@54@114:
    ;	
    ;	        var_1 = 1;
    ;	
@@ -15400,14 +16148,14 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	
    ;	    }
    ;	
-	jmp	short @47@170
-@47@142:
+	jmp	short @54@170
+@54@142:
    ;	
    ;	    else
    ;	        var_1 = 0;
    ;	
 	mov	byte ptr [bp-5],0
-@47@170:
+@54@170:
    ;	
    ;	    display->put_bits_masked(arg_4, arg_6,
    ;	
@@ -15449,13 +16197,13 @@ GAME_TEXT	segment byte public use16 'CODE'
 	push	word ptr [bp+10]
 	push	word ptr DGROUP:_display+2
 	push	word ptr DGROUP:_display
-	call	far ptr @vga_display@put_bits_masked$qve
+	call	far ptr @vga_display@put_bits_masked$qiiiinucuiuiuc
 	add	sp,22
    ;	
    ;	    if (var_1)
    ;	
 	cmp	byte ptr [bp-5],0
-	je	short @47@226
+	je	short @54@226
    ;	
    ;	        the_game->remove_loop(s2);
    ;	
@@ -15465,7 +16213,7 @@ GAME_TEXT	segment byte public use16 'CODE'
 	push	word ptr DGROUP:_the_game
 	call	far ptr @game_manager@remove_loop$qnuc
 	add	sp,8
-@47@226:
+@54@226:
    ;	
    ;	    display->field_07 = 0;
    ;	
@@ -15512,8 +16260,8 @@ GAME_TEXT	segment byte public use16 'CODE'
 @wait_for_user$qv	proc	far
 	push	bp
 	mov	bp,sp
-	jmp	short @49@86
-@49@58:
+	jmp	short @56@86
+@56@58:
    ;	
    ;	{
    ;	    while (the_game->field_2B || mouse->field_00 ||
@@ -15524,19 +16272,19 @@ GAME_TEXT	segment byte public use16 'CODE'
 	push	word ptr DGROUP:_the_game
 	call	far ptr @game_manager@doit$qv
 	add	sp,4
-@49@86:
+@56@86:
 	les	bx,dword ptr DGROUP:_the_game
 	cmp	byte ptr es:[bx+43],0
-	jne	short @49@58
+	jne	short @56@58
 	les	bx,dword ptr DGROUP:_mouse
 	cmp	byte ptr es:[bx],0
-	jne	short @49@58
+	jne	short @56@58
 	cmp	byte ptr DGROUP:_gr_keys+57,0
-	jne	short @49@58
+	jne	short @56@58
 	cmp	byte ptr DGROUP:_gr_keys+28,0
-	jne	short @49@58
-	jmp	short @49@254
-@49@226:
+	jne	short @56@58
+	jmp	short @56@254
+@56@226:
    ;	
    ;	    while (!the_game->field_2B && !mouse->field_00 &&
    ;	           !gr_keys[0x39] && !gr_keys[0x1C])
@@ -15546,27 +16294,27 @@ GAME_TEXT	segment byte public use16 'CODE'
 	push	word ptr DGROUP:_the_game
 	call	far ptr @game_manager@doit$qv
 	add	sp,4
-@49@254:
+@56@254:
 	les	bx,dword ptr DGROUP:_the_game
 	mov	al,byte ptr es:[bx+43]
 	mov	ah,0
 	or	ax,ax
-	jne	short @49@422
+	jne	short @56@422
 	les	bx,dword ptr DGROUP:_mouse
 	mov	al,byte ptr es:[bx]
 	mov	ah,0
 	or	ax,ax
-	jne	short @49@422
+	jne	short @56@422
 	mov	al,byte ptr DGROUP:_gr_keys+57
 	mov	ah,0
 	or	ax,ax
-	jne	short @49@422
+	jne	short @56@422
 	mov	al,byte ptr DGROUP:_gr_keys+28
 	mov	ah,0
 	or	ax,ax
-	je	short @49@226
-	jmp	short @49@422
-@49@394:
+	je	short @56@226
+	jmp	short @56@422
+@56@394:
    ;	
    ;	    while (the_game->field_2B || mouse->field_00 ||
    ;	           gr_keys[0x39] || gr_keys[0x1C])
@@ -15576,17 +16324,17 @@ GAME_TEXT	segment byte public use16 'CODE'
 	push	word ptr DGROUP:_the_game
 	call	far ptr @game_manager@doit$qv
 	add	sp,4
-@49@422:
+@56@422:
 	les	bx,dword ptr DGROUP:_the_game
 	cmp	byte ptr es:[bx+43],0
-	jne	short @49@394
+	jne	short @56@394
 	les	bx,dword ptr DGROUP:_mouse
 	cmp	byte ptr es:[bx],0
-	jne	short @49@394
+	jne	short @56@394
 	cmp	byte ptr DGROUP:_gr_keys+57,0
-	jne	short @49@394
+	jne	short @56@394
 	cmp	byte ptr DGROUP:_gr_keys+28,0
-	jne	short @49@394
+	jne	short @56@394
    ;	
    ;	}
    ;	
@@ -15617,13 +16365,13 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	    for (i = 0; i < argc; i++) {
    ;	
 	mov	word ptr [bp-2],0
-	jmp	@50@254
-@50@58:
+	jmp	@57@254
+@57@58:
    ;	
    ;	        if (strcmp((char *)argv[i], "-mandich") == 0)
    ;	
 	push	ds
-	push	offset DGROUP:s@+4530
+	push	offset DGROUP:s@+3918
 	mov	ax,word ptr [bp-2]
 	shl	ax,2
 	les	bx,dword ptr [bp+8]
@@ -15633,17 +16381,17 @@ GAME_TEXT	segment byte public use16 'CODE'
 	call	far ptr _strcmp
 	add	sp,8
 	or	ax,ax
-	jne	short @50@114
+	jne	short @57@114
    ;	
    ;	            debug_mode = 1;
    ;	
 	mov	byte ptr DGROUP:_debug_mode,1
-@50@114:
+@57@114:
    ;	
    ;	        if (strcmp((char *)argv[i], "-pcsound") == 0)
    ;	
 	push	ds
-	push	offset DGROUP:s@+4539
+	push	offset DGROUP:s@+3927
 	mov	ax,word ptr [bp-2]
 	shl	ax,2
 	les	bx,dword ptr [bp+8]
@@ -15653,17 +16401,17 @@ GAME_TEXT	segment byte public use16 'CODE'
 	call	far ptr _strcmp
 	add	sp,8
 	or	ax,ax
-	jne	short @50@170
+	jne	short @57@170
    ;	
    ;	            force_pc_sound = 1;
    ;	
 	mov	byte ptr DGROUP:_force_pc_sound,1
-@50@170:
+@57@170:
    ;	
    ;	        if (strcmp((char *)argv[i], "-start") == 0)
    ;	
 	push	ds
-	push	offset DGROUP:s@+4548
+	push	offset DGROUP:s@+3936
 	mov	ax,word ptr [bp-2]
 	shl	ax,2
 	les	bx,dword ptr [bp+8]
@@ -15673,7 +16421,7 @@ GAME_TEXT	segment byte public use16 'CODE'
 	call	far ptr _strcmp
 	add	sp,8
 	or	ax,ax
-	jne	short @50@226
+	jne	short @57@226
    ;	
    ;	            zoom_to_map = atoi(argv[i + 1]) - 1;
    ;	
@@ -15688,14 +16436,14 @@ GAME_TEXT	segment byte public use16 'CODE'
 	add	sp,4
 	add	al,255
 	mov	byte ptr DGROUP:_zoom_to_map,al
-@50@226:
+@57@226:
 	inc	word ptr [bp-2]
-@50@254:
+@57@254:
 	mov	ax,word ptr [bp-2]
 	cmp	ax,word ptr [bp+6]
-	jge short	@@77
-	jmp	@50@58
-@@77:
+	jge short	@@63
+	jmp	@57@58
+@@63:
    ;	
    ;	    }
    ;	}
@@ -15739,13 +16487,13 @@ GAME_TEXT	segment byte public use16 'CODE'
    ;	    return a < 0 ? -a : a;
    ;	
 	cmp	word ptr [bp+6],0
-	jge	short @52@86
+	jge	short @59@86
 	mov	ax,word ptr [bp+6]
 	neg	ax
-	jmp	short @52@114
-@52@86:
+	jmp	short @59@114
+@59@86:
 	mov	ax,word ptr [bp+6]
-@52@114:
+@59@114:
    ;	
    ;	}
    ;	
@@ -15781,16 +16529,16 @@ GAME_TEXT	segment byte public use16 'CODE'
 	push	bp
 	mov	bp,sp
 	cmp	dword ptr [bp+6],large 0
-	je	short @54@142
+	je	short @61@142
 	les	bx,dword ptr [bp+6]
 	mov	word ptr es:[bx],offset @@gui_item@
 	test	word ptr [bp+10],1
-	je	short @54@142
+	je	short @61@142
 	push	word ptr [bp+8]
 	push	word ptr [bp+6]
 	call	far ptr @$bdele$qnv
 	add	sp,4
-@54@142:
+@61@142:
 	pop	bp
 	ret	
 @gui_item@$bdtr$qv	endp
@@ -15822,7 +16570,7 @@ GAME_TEXT	segment byte public use16 'CODE'
 	push	bp
 	mov	bp,sp
 	cmp	dword ptr [bp+6],large 0
-	je	short @57@142
+	je	short @64@142
 	les	bx,dword ptr [bp+6]
 	mov	word ptr es:[bx],offset @@button@
 	push	0
@@ -15832,12 +16580,12 @@ GAME_TEXT	segment byte public use16 'CODE'
 	call	near ptr @gui_item@$bdtr$qv
 	add	sp,6
 	test	word ptr [bp+10],1
-	je	short @57@142
+	je	short @64@142
 	push	word ptr [bp+8]
 	push	word ptr [bp+6]
 	call	far ptr @$bdele$qnv
 	add	sp,4
-@57@142:
+@64@142:
 	pop	bp
 	ret	
 @button@$bdtr$qv	endp
@@ -15846,7 +16594,7 @@ _DATA	segment word public use16 'DATA'
 @button@	segment	virtual
 @@button@	label	byte
 	dd	@button@draw$qv
-	dd	@button@erase$qv
+	dd	@gui_item@erase$qv
 	dd	@button@poll$qv
 @button@	ends
 _DATA	ends
@@ -15855,7 +16603,6 @@ _DATA	segment word public use16 'DATA'
 @@gui_item@	label	byte
 	dd	@gui_item@draw$qv
 	dd	@gui_item@erase$qv
-	dd	@gui_item@poll$qv
 	?debug	C E9
 	?debug	C FA00000000
 @gui_item@	ends
@@ -15894,199 +16641,33 @@ s@	label	byte
 	db	0
 	db	'rb'
 	db	0
-	db	'1-1.m'
+	db	'bs1_bdl.l'
 	db	0
-	db	'1.cmf'
+	db	'bs2_bod.l'
 	db	0
-	db	'1'
+	db	'otiseyes.l'
 	db	0
-	db	'Shallow Sea'
+	db	'bs2_tnl2.l'
 	db	0
-	db	'1-2.m'
+	db	'bs2_tnr2.l'
 	db	0
-	db	'2.cmf'
+	db	'bs2_tnl1.l'
 	db	0
-	db	'UR2GD'
+	db	'bs2_tnr1.l'
 	db	0
-	db	'Micro Menace'
+	db	'bs3_bdl.l'
 	db	0
-	db	'1-3.m'
+	db	'bs3_arr.l'
 	db	0
-	db	'3.cmf'
+	db	'bs3_arl.l'
 	db	0
-	db	'URGR8'
+	db	'bs3_prpr.l'
 	db	0
-	db	'Tulip Tango'
+	db	'bs3_prpl.l'
 	db	0
-	db	'1-4.m'
+	db	'bs3_facr.l'
 	db	0
-	db	'1.cmf'
-	db	0
-	db	'4GOOD'
-	db	0
-	db	'Red Tide'
-	db	0
-	db	'1-5.m'
-	db	0
-	db	'2.cmf'
-	db	0
-	db	'2MUCH4U'
-	db	0
-	db	'Fathoms of Teeth'
-	db	0
-	db	'1-6.m'
-	db	0
-	db	'3.cmf'
-	db	0
-	db	'ACE'
-	db	0
-	db	'Think Tank'
-	db	0
-	db	'bs1.m'
-	db	0
-	db	'5.cmf'
-	db	0
-	db	'BS1'
-	db	0
-	db	'Oscar'
-	db	39
-	db	's Lair'
-	db	0
-	db	'2-1.m'
-	db	0
-	db	'oxygen.cmf'
-	db	0
-	db	'DNUNDR'
-	db	0
-	db	'Atlantis'
-	db	0
-	db	'2-2.m'
-	db	0
-	db	'4.cmf'
-	db	0
-	db	'OUT2GTU'
-	db	0
-	db	'Aqua Tremendom'
-	db	0
-	db	'2-3.m'
-	db	0
-	db	'bossa.cmf'
-	db	0
-	db	'AIC'
-	db	0
-	db	'Spawning Waters'
-	db	0
-	db	'2-4.m'
-	db	0
-	db	'1.cmf'
-	db	0
-	db	'HANG10'
-	db	0
-	db	'JASON Quest'
-	db	0
-	db	'2-5.m'
-	db	0
-	db	'weerd.cmf'
-	db	0
-	db	'RUN4IT'
-	db	0
-	db	'Frantic Attack'
-	db	0
-	db	'bs2.m'
-	db	0
-	db	'chaos.cmf'
-	db	0
-	db	'BS2'
-	db	0
-	db	'Enter Otis'
-	db	0
-	db	'3-1.m'
-	db	0
-	db	'1.cmf'
-	db	0
-	db	'GETIT'
-	db	0
-	db	'Sea Escape'
-	db	0
-	db	'3-2.m'
-	db	0
-	db	'oxygen.cmf'
-	db	0
-	db	'URINDE'
-	db	0
-	db	'Deep Enigma'
-	db	0
-	db	'3-3.m'
-	db	0
-	db	'4.cmf'
-	db	0
-	db	'SOS'
-	db	0
-	db	'Sink or Swim'
-	db	0
-	db	'3-4.m'
-	db	0
-	db	'3.cmf'
-	db	0
-	db	'RUN2ME'
-	db	0
-	db	'Marathon'
-	db	0
-	db	'3-5.m'
-	db	0
-	db	'chaos.cmf'
-	db	0
-	db	'512TR'
-	db	0
-	db	'Lab Rynth'
-	db	0
-	db	'3-6.m'
-	db	0
-	db	'turn.cmf'
-	db	0
-	db	'2B4UDY'
-	db	0
-	db	'Abyss of Peril'
-	db	0
-	db	'3-7.m'
-	db	0
-	db	'2.cmf'
-	db	0
-	db	'HOH'
-	db	0
-	db	'Halls of Hell'
-	db	0
-	db	'3-8.m'
-	db	0
-	db	'oxygen.cmf'
-	db	0
-	db	'RIP'
-	db	0
-	db	'Mysterious Maze'
-	db	0
-	db	'bs3.m'
-	db	0
-	db	'5.cmf'
-	db	0
-	db	'BS3'
-	db	0
-	db	'Confrontation'
-	db	0
-	db	'sec1.m'
-	db	0
-	db	'4.cmf'
-	db	0
-	db	'SEC1'
-	db	0
-	db	'Outpost Enigma'
-	db	0
-	db	'sec2.m'
-	db	0
-	db	'weerd.cmf'
-	db	0
-	db	'SEC2'
-	db	0
-	db	'??????'
+	db	'bs3_facl.l'
 	db	0
 	db	'p_frame.pcx'
 	db	0
@@ -16838,12 +17419,9 @@ GAME_TEXT	segment byte public use16 'CODE'
 GAME_TEXT	ends
 	extrn	F_FTOL@:far
 	public	@toggle_sub_control$qv
-	public	@score_at$qiii
-	public	_all_maps
-	extrn	@bs3_start_up$qv:far
-	extrn	@bs2_start_up$qv:far
-	extrn	@bs1_start_up$qv:far
-	public	_all_secrets
+	public	@bs3_start_up$qv
+	public	@bs2_start_up$qv
+	public	@bs1_start_up$qv
 	extrn	__setenvp__:far
 	extrn	__setargv__:far
 	extrn	@cb_quit$qv:far
@@ -16851,13 +17429,12 @@ GAME_TEXT	ends
 	extrn	@save_new_score$qulnucuc:far
 	extrn	@is_record$qul:far
 	extrn	@i_get_string$qnuct1:far
-	extrn	@i_inform$qnucuce:far
+	extrn	@i_inform$qnucuct1:far
 	extrn	@i_poll_interface$qv:far
 	extrn	@i_set_text$qucucucuc:far
 	extrn	@i_init_interface$qnvt1t1t1t1:far
 	extrn	@load_scores_in$qv:far
 	extrn	@no_heap$qnuc:far
-	extrn	__palette:byte
 	extrn	__src:byte
 	extrn	_itoa:far
 	extrn	@i_yes_cancel$qnucuc:far
@@ -16870,8 +17447,8 @@ GAME_TEXT	ends
 	extrn	_forcepal:far
 	extrn	@pause$qui:far
 	extrn	@terminate$qnuct1:far
-	extrn	@_set_exit_routine$qnqv$v:far
-	extrn	@_gr_start_kbd_grab$qv:far
+	extrn	_set_exit_routine:far
+	extrn	_gr_start_kbd_grab:far
 	extrn	@touching$qn7m_actort1:far
 	public	@scroll_to$qn7m_actor
 	extrn	@do_probe$qn7m_actor:far
@@ -16907,6 +17484,15 @@ GAME_TEXT	ends
 	extrn	@do_fish$qn7m_actor:far
 	extrn	@do_zapper$qn7m_actor:far
 	extrn	@do_mine1$qn7m_actor:far
+	extrn	@do_bs3_face$qn7m_actor:far
+	extrn	@do_bs3_prop$qn7m_actor:far
+	extrn	@do_bs3a$qn7m_actor:far
+	extrn	@do_bs3$qn7m_actor:far
+	extrn	@do_bs2_eyes$qn7m_actor:far
+	extrn	@do_bs2tn$qn7m_actor:far
+	extrn	@do_bs2$qn7m_actor:far
+	extrn	@do_bs1$qn7m_actor:far
+	extrn	@mv_bs2tn$qn7m_actornit2:far
 	extrn	@mv_std$qn7m_actornit2:far
 	extrn	@do_pod$qn7m_actor:far
 	extrn	@do_coin$qn7m_actor:far
@@ -16953,11 +17539,15 @@ GAME_TEXT	ends
 	public	@update_air_guage$qiii
 	public	@update_shld_guage$qiii
 	public	@clear_message$qv
+	extrn	_byte_2D3FB:byte
+	extrn	_byte_2D3F8:byte
+	extrn	_byte_2D3F6:byte
+	extrn	_byte_2D3F3:byte
 	public	@de_button$qv
-	extrn	@de_down$qv:far
-	extrn	@de_up$qv:far
-	extrn	@de_right$qv:far
-	extrn	@de_left$qv:far
+	public	@de_down$qv
+	public	@de_up$qv
+	public	@de_right$qv
+	public	@de_left$qv
 	public	@parse_options$qinnuc
 	public	@end_game$qv
 	public	@end_room$qv
@@ -17018,6 +17608,7 @@ GAME_TEXT	ends
 	extrn	_got_key:byte
 	extrn	_goody_count:byte
 	extrn	_enemy_count:byte
+	public	@score_at$qiii
 	extrn	_goodies_found:byte
 	extrn	_enemies_killed:byte
 	extrn	_heavy_timer:word
@@ -17063,25 +17654,25 @@ GAME_TEXT	ends
 	extrn	_the_menu_bar:dword
 	extrn	_mouse:dword
 	extrn	_display:dword
+	extrn	_all_secrets:byte
+	extrn	_all_maps:word
 	extrn	_the_cast:dword
 	extrn	_the_game:dword
 	extrn	@button@mouse_to_me$qv:far
 	extrn	@button@poll$qv:far
-	extrn	@button@erase$qv:far
 	extrn	@button@draw$qv:far
 	public	@button@$bdtr$qv
 	extrn	@button@$bctr$qnucnvuc:far
 	extrn	@menu_bar@toggle_item$qnuct1uc:far
-	extrn	@gui_item@poll$qv:far
 	public	@gui_item@erase$qv
 	public	@gui_item@draw$qv
 	public	@gui_item@$bdtr$qv
 	extrn	@ms_mouse@hide$qv:far
 	extrn	@ms_mouse@show$qv:far
 	extrn	@ms_mouse@set_cursor$qnucii:far
-	extrn	@vga_display@dump_pcx$qve:far
+	extrn	@vga_display@dump_pcx$qv:far
 	extrn	@vga_display@show_pcx$qnucucuii:far
-	extrn	@vga_display@put_bits_masked$qve:far
+	extrn	@vga_display@put_bits_masked$qiiiinucuiuiuc:far
 	extrn	@vga_display@put_bits$qiiiinucuiui:far
 	extrn	@vga_display@copy_bits$qiiiiiiuiuiuiui:far
 	extrn	@vga_display@get_bits$qiiii:far
@@ -17103,10 +17694,9 @@ GAME_TEXT	ends
 	extrn	@tilemap@purge_tiles$qv:far
 	extrn	@tilemap@center_on$quiui:far
 	extrn	@tilemap@update$qui:far
-	extrn	@tilemap@new_map$qve:far
+	extrn	@tilemap@new_map$qnucii:far
 	extrn	@tilemap@set_viewport$qiiii:far
 	extrn	@tilemap@$bctr$qnucii:far
-	extrn	@game_manager@define_sound$qnucuc:far
 	extrn	@game_manager@remove_loop$qnuc:far
 	extrn	@game_manager@get_loop$qnuc:far
 	extrn	@game_manager@load_loop$qnuc:far
@@ -17117,7 +17707,8 @@ GAME_TEXT	ends
 	extrn	@game_manager@reset_sound$qv:far
 	extrn	@game_manager@play_sound$qnucuc:far
 	extrn	@game_manager@play_sound_file$qnuc:far
-	extrn	@game_manager@remove_sound$qve:far
+	extrn	@game_manager@define_sound$qnucuc:far
+	extrn	@game_manager@remove_sound$qnuc:far
 	extrn	@game_manager@reset_player$quc:far
 	extrn	@game_manager@joy_update$qv:far
 	extrn	@game_manager@clear_flags$qv:far

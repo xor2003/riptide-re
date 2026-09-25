@@ -15,17 +15,20 @@ $comm	macro	name,dist,size,count
 	endif
 	?debug	V 300h
 	?debug	S "actor.cpp"
-	?debug	C E9EB8C375D096163746F722E637070
-	?debug	C E9EB8C375D09726970746964652E68
+	?debug	C E95A4B395D096163746F722E637070
+	?debug	C E95A4B395D09726970746964652E68
 	?debug	C E9253FD45C12443A5C494E434C5544455C737464696F2E68
 	?debug	C E9263FD45C12443A5C494E434C5544455C5F646566732E68
 	?debug	C E9263FD45C13443A5C494E434C5544455C5F6E66696C652E68
 	?debug	C E9263FD45C12443A5C494E434C5544455C5F6E756C6C2E68
 	?debug	C E9263FD45C13443A5C494E434C5544455C737472696E672E68
+	?debug	C E9253FD45C0F443A5C494E434C5544455C696F2E68
+	?debug	C E9253FD45C12443A5C494E434C5544455C66636E746C2E68
 	?debug	C E9253FD45C10443A5C494E434C5544455C646F732E68
 	?debug	C E9253FD45C12443A5C494E434C5544455C636F6E696F2E68
 	?debug	C E9253FD45C12443A5C494E434C5544455C616C6C6F632E68
 	?debug	C E9263FD45C11443A5C494E434C5544455C74696D652E68
+	?debug	C E9253FD45C10443A5C494E434C5544455C6469722E68
 ACTOR_TEXT	segment byte public use16 'CODE'
 ACTOR_TEXT	ends
 DGROUP	group	_DATA,_BSS
@@ -2271,13 +2274,13 @@ ACTOR_TEXT	segment byte public use16 'CODE'
 @@13:
    ;	
    ;	        return;
-   ;	    if (flag_0 != 1)
+   ;	    if (flag_0 == 1)
    ;	
 	les	bx,dword ptr [bp+6]
 	mov	al,byte ptr es:[bx+82]
 	and	ax,1
 	cmp	ax,1
-	je short	@@14
+	jne short	@@14
 	jmp	@18@226
 @@14:
    ;	
@@ -2520,6 +2523,629 @@ ACTOR_TEXT	segment byte public use16 'CODE'
 	leave	
 	ret	
 @m_actor@tile_collision$qiii	endp
+   ;	
+   ;	void game_cast::update(uchar arg4)
+   ;	
+	assume	cs:ACTOR_TEXT
+@game_cast@update$quc	proc	far
+	enter	12,0
+   ;	
+   ;	{
+   ;	    int var_2, var_4, var_6, var_8, var_A, var_C;
+   ;	    if (arg4 == 0) {
+   ;	
+	cmp	byte ptr [bp+10],0
+	jne	short @20@170
+   ;	
+   ;	        ego->erase();
+   ;	
+	push	word ptr DGROUP:_ego+2
+	push	word ptr DGROUP:_ego
+	push	cs
+	call	near ptr @m_actor@erase$qv
+	add	sp,4
+   ;	
+   ;	        var_2 = 0;
+   ;	
+	mov	word ptr [bp-2],0
+	jmp	short @20@114
+@20@86:
+   ;	
+   ;	        while (var_2 < ed_list_size)
+   ;	            ed_list[var_2++]->erase();
+   ;	
+	mov	bx,word ptr [bp-2]
+	inc	word ptr [bp-2]
+	shl	bx,2
+	push	word ptr DGROUP:_ed_list[bx+2]
+	push	word ptr DGROUP:_ed_list[bx]
+	push	cs
+	call	near ptr @m_actor@erase$qv
+	add	sp,4
+@20@114:
+	mov	al,byte ptr DGROUP:_ed_list_size
+	mov	ah,0
+	cmp	ax,word ptr [bp-2]
+	jg	short @20@86
+   ;	
+   ;	    } else {
+   ;	
+	jmp	short @20@254
+@20@170:
+   ;	
+   ;	        var_2 = 0;
+   ;	
+	mov	word ptr [bp-2],0
+	jmp	short @20@226
+@20@198:
+   ;	
+   ;	        while (var_2 < ed_list_size) {
+   ;	            ed_list[var_2]->new_sprite = 0;
+   ;	
+	mov	bx,word ptr [bp-2]
+	shl	bx,2
+	les	bx,dword ptr DGROUP:_ed_list[bx]
+	and	byte ptr es:[bx+82],239
+   ;	
+   ;	            ed_list[var_2]->no_erase = 0;
+   ;	
+	mov	bx,word ptr [bp-2]
+	shl	bx,2
+	les	bx,dword ptr DGROUP:_ed_list[bx]
+	and	byte ptr es:[bx+82],251
+   ;	
+   ;	            var_2++;
+   ;	
+	inc	word ptr [bp-2]
+@20@226:
+	mov	al,byte ptr DGROUP:_ed_list_size
+	mov	ah,0
+	cmp	ax,word ptr [bp-2]
+	jg	short @20@198
+@20@254:
+   ;	
+   ;	        }
+   ;	    }
+   ;	    ed_list_size = 0;
+   ;	
+	mov	byte ptr DGROUP:_ed_list_size,0
+   ;	
+   ;	    var_2 = 0;
+   ;	
+	mov	word ptr [bp-2],0
+	jmp	short @20@366
+@20@282:
+   ;	
+   ;	    while (var_2 < count) {
+   ;	        if (actors[var_2]->flag_0 == 1)
+   ;	
+	mov	ax,word ptr [bp-2]
+	shl	ax,2
+	les	bx,dword ptr [bp+6]
+	add	bx,ax
+	les	bx,dword ptr es:[bx+2]
+	mov	al,byte ptr es:[bx+82]
+	and	ax,1
+	cmp	ax,1
+	jne	short @20@338
+   ;	
+   ;	            remove(var_2);
+   ;	
+	mov	al,byte ptr [bp-2]
+	push	ax
+	push	word ptr [bp+8]
+	push	word ptr [bp+6]
+	push	cs
+	call	near ptr @game_cast@remove$quc
+	add	sp,6
+@20@338:
+   ;	
+   ;	        var_2++;
+   ;	
+	inc	word ptr [bp-2]
+@20@366:
+	les	bx,dword ptr [bp+6]
+	mov	al,byte ptr es:[bx]
+	mov	ah,0
+	cmp	ax,word ptr [bp-2]
+	jg	short @20@282
+   ;	
+   ;	    }
+   ;	    var_6 = count & 0xF;
+   ;	
+	les	bx,dword ptr [bp+6]
+	mov	al,byte ptr es:[bx]
+	mov	ah,0
+	and	ax,15
+	mov	word ptr [bp-6],ax
+   ;	
+   ;	    var_8 = count >> 4;
+   ;	
+	les	bx,dword ptr [bp+6]
+	mov	al,byte ptr es:[bx]
+	mov	ah,0
+	sar	ax,4
+	mov	word ptr [bp-8],ax
+   ;	
+   ;	    var_A = var_8 << 4;
+   ;	
+	mov	ax,word ptr [bp-8]
+	shl	ax,4
+	mov	word ptr [bp-10],ax
+   ;	
+   ;	    var_C = var_A + var_6;
+   ;	
+	mov	ax,word ptr [bp-10]
+	add	ax,word ptr [bp-6]
+	mov	word ptr [bp-12],ax
+   ;	
+   ;	    var_4 = 0;
+   ;	
+	mov	word ptr [bp-4],0
+	jmp	@20@450
+@20@422:
+   ;	
+   ;	    while (var_4 < var_8) {
+   ;	        var_2 = var_4 << 4;
+   ;	
+	mov	ax,word ptr [bp-4]
+	shl	ax,4
+	mov	word ptr [bp-2],ax
+   ;	
+   ;	        actors[var_2 + 0]->cycle(); actors[var_2 + 0]->move();
+   ;	
+	mov	ax,word ptr [bp-2]
+	shl	ax,2
+	les	bx,dword ptr [bp+6]
+	add	bx,ax
+	push	word ptr es:[bx+4]
+	push	word ptr es:[bx+2]
+	push	cs
+	call	near ptr @m_actor@cycle$qv
+	add	sp,4
+	mov	ax,word ptr [bp-2]
+	shl	ax,2
+	les	bx,dword ptr [bp+6]
+	add	bx,ax
+	push	word ptr es:[bx+4]
+	push	word ptr es:[bx+2]
+	push	cs
+	call	near ptr @m_actor@move$qv
+	add	sp,4
+   ;	
+   ;	        actors[var_2 + 1]->cycle(); actors[var_2 + 1]->move();
+   ;	
+	mov	ax,word ptr [bp-2]
+	inc	ax
+	shl	ax,2
+	les	bx,dword ptr [bp+6]
+	add	bx,ax
+	push	word ptr es:[bx+4]
+	push	word ptr es:[bx+2]
+	push	cs
+	call	near ptr @m_actor@cycle$qv
+	add	sp,4
+	mov	ax,word ptr [bp-2]
+	inc	ax
+	shl	ax,2
+	les	bx,dword ptr [bp+6]
+	add	bx,ax
+	push	word ptr es:[bx+4]
+	push	word ptr es:[bx+2]
+	push	cs
+	call	near ptr @m_actor@move$qv
+	add	sp,4
+   ;	
+   ;	        actors[var_2 + 2]->cycle(); actors[var_2 + 2]->move();
+   ;	
+	mov	ax,word ptr [bp-2]
+	add	ax,2
+	shl	ax,2
+	les	bx,dword ptr [bp+6]
+	add	bx,ax
+	push	word ptr es:[bx+4]
+	push	word ptr es:[bx+2]
+	push	cs
+	call	near ptr @m_actor@cycle$qv
+	add	sp,4
+	mov	ax,word ptr [bp-2]
+	add	ax,2
+	shl	ax,2
+	les	bx,dword ptr [bp+6]
+	add	bx,ax
+	push	word ptr es:[bx+4]
+	push	word ptr es:[bx+2]
+	push	cs
+	call	near ptr @m_actor@move$qv
+	add	sp,4
+   ;	
+   ;	        actors[var_2 + 3]->cycle(); actors[var_2 + 3]->move();
+   ;	
+	mov	ax,word ptr [bp-2]
+	add	ax,3
+	shl	ax,2
+	les	bx,dword ptr [bp+6]
+	add	bx,ax
+	push	word ptr es:[bx+4]
+	push	word ptr es:[bx+2]
+	push	cs
+	call	near ptr @m_actor@cycle$qv
+	add	sp,4
+	mov	ax,word ptr [bp-2]
+	add	ax,3
+	shl	ax,2
+	les	bx,dword ptr [bp+6]
+	add	bx,ax
+	push	word ptr es:[bx+4]
+	push	word ptr es:[bx+2]
+	push	cs
+	call	near ptr @m_actor@move$qv
+	add	sp,4
+   ;	
+   ;	        actors[var_2 + 4]->cycle(); actors[var_2 + 4]->move();
+   ;	
+	mov	ax,word ptr [bp-2]
+	add	ax,4
+	shl	ax,2
+	les	bx,dword ptr [bp+6]
+	add	bx,ax
+	push	word ptr es:[bx+4]
+	push	word ptr es:[bx+2]
+	push	cs
+	call	near ptr @m_actor@cycle$qv
+	add	sp,4
+	mov	ax,word ptr [bp-2]
+	add	ax,4
+	shl	ax,2
+	les	bx,dword ptr [bp+6]
+	add	bx,ax
+	push	word ptr es:[bx+4]
+	push	word ptr es:[bx+2]
+	push	cs
+	call	near ptr @m_actor@move$qv
+	add	sp,4
+   ;	
+   ;	        actors[var_2 + 5]->cycle(); actors[var_2 + 5]->move();
+   ;	
+	mov	ax,word ptr [bp-2]
+	add	ax,5
+	shl	ax,2
+	les	bx,dword ptr [bp+6]
+	add	bx,ax
+	push	word ptr es:[bx+4]
+	push	word ptr es:[bx+2]
+	push	cs
+	call	near ptr @m_actor@cycle$qv
+	add	sp,4
+	mov	ax,word ptr [bp-2]
+	add	ax,5
+	shl	ax,2
+	les	bx,dword ptr [bp+6]
+	add	bx,ax
+	push	word ptr es:[bx+4]
+	push	word ptr es:[bx+2]
+	push	cs
+	call	near ptr @m_actor@move$qv
+	add	sp,4
+   ;	
+   ;	        actors[var_2 + 6]->cycle(); actors[var_2 + 6]->move();
+   ;	
+	mov	ax,word ptr [bp-2]
+	add	ax,6
+	shl	ax,2
+	les	bx,dword ptr [bp+6]
+	add	bx,ax
+	push	word ptr es:[bx+4]
+	push	word ptr es:[bx+2]
+	push	cs
+	call	near ptr @m_actor@cycle$qv
+	add	sp,4
+	mov	ax,word ptr [bp-2]
+	add	ax,6
+	shl	ax,2
+	les	bx,dword ptr [bp+6]
+	add	bx,ax
+	push	word ptr es:[bx+4]
+	push	word ptr es:[bx+2]
+	push	cs
+	call	near ptr @m_actor@move$qv
+	add	sp,4
+   ;	
+   ;	        actors[var_2 + 7]->cycle(); actors[var_2 + 7]->move();
+   ;	
+	mov	ax,word ptr [bp-2]
+	add	ax,7
+	shl	ax,2
+	les	bx,dword ptr [bp+6]
+	add	bx,ax
+	push	word ptr es:[bx+4]
+	push	word ptr es:[bx+2]
+	push	cs
+	call	near ptr @m_actor@cycle$qv
+	add	sp,4
+	mov	ax,word ptr [bp-2]
+	add	ax,7
+	shl	ax,2
+	les	bx,dword ptr [bp+6]
+	add	bx,ax
+	push	word ptr es:[bx+4]
+	push	word ptr es:[bx+2]
+	push	cs
+	call	near ptr @m_actor@move$qv
+	add	sp,4
+   ;	
+   ;	        actors[var_2 + 8]->cycle(); actors[var_2 + 8]->move();
+   ;	
+	mov	ax,word ptr [bp-2]
+	add	ax,8
+	shl	ax,2
+	les	bx,dword ptr [bp+6]
+	add	bx,ax
+	push	word ptr es:[bx+4]
+	push	word ptr es:[bx+2]
+	push	cs
+	call	near ptr @m_actor@cycle$qv
+	add	sp,4
+	mov	ax,word ptr [bp-2]
+	add	ax,8
+	shl	ax,2
+	les	bx,dword ptr [bp+6]
+	add	bx,ax
+	push	word ptr es:[bx+4]
+	push	word ptr es:[bx+2]
+	push	cs
+	call	near ptr @m_actor@move$qv
+	add	sp,4
+   ;	
+   ;	        actors[var_2 + 9]->cycle(); actors[var_2 + 9]->move();
+   ;	
+	mov	ax,word ptr [bp-2]
+	add	ax,9
+	shl	ax,2
+	les	bx,dword ptr [bp+6]
+	add	bx,ax
+	push	word ptr es:[bx+4]
+	push	word ptr es:[bx+2]
+	push	cs
+	call	near ptr @m_actor@cycle$qv
+	add	sp,4
+	mov	ax,word ptr [bp-2]
+	add	ax,9
+	shl	ax,2
+	les	bx,dword ptr [bp+6]
+	add	bx,ax
+	push	word ptr es:[bx+4]
+	push	word ptr es:[bx+2]
+	push	cs
+	call	near ptr @m_actor@move$qv
+	add	sp,4
+   ;	
+   ;	        actors[var_2 + 10]->cycle(); actors[var_2 + 10]->move();
+   ;	
+	mov	ax,word ptr [bp-2]
+	add	ax,10
+	shl	ax,2
+	les	bx,dword ptr [bp+6]
+	add	bx,ax
+	push	word ptr es:[bx+4]
+	push	word ptr es:[bx+2]
+	push	cs
+	call	near ptr @m_actor@cycle$qv
+	add	sp,4
+	mov	ax,word ptr [bp-2]
+	add	ax,10
+	shl	ax,2
+	les	bx,dword ptr [bp+6]
+	add	bx,ax
+	push	word ptr es:[bx+4]
+	push	word ptr es:[bx+2]
+	push	cs
+	call	near ptr @m_actor@move$qv
+	add	sp,4
+   ;	
+   ;	        actors[var_2 + 11]->cycle(); actors[var_2 + 11]->move();
+   ;	
+	mov	ax,word ptr [bp-2]
+	add	ax,11
+	shl	ax,2
+	les	bx,dword ptr [bp+6]
+	add	bx,ax
+	push	word ptr es:[bx+4]
+	push	word ptr es:[bx+2]
+	push	cs
+	call	near ptr @m_actor@cycle$qv
+	add	sp,4
+	mov	ax,word ptr [bp-2]
+	add	ax,11
+	shl	ax,2
+	les	bx,dword ptr [bp+6]
+	add	bx,ax
+	push	word ptr es:[bx+4]
+	push	word ptr es:[bx+2]
+	push	cs
+	call	near ptr @m_actor@move$qv
+	add	sp,4
+   ;	
+   ;	        actors[var_2 + 12]->cycle(); actors[var_2 + 12]->move();
+   ;	
+	mov	ax,word ptr [bp-2]
+	add	ax,12
+	shl	ax,2
+	les	bx,dword ptr [bp+6]
+	add	bx,ax
+	push	word ptr es:[bx+4]
+	push	word ptr es:[bx+2]
+	push	cs
+	call	near ptr @m_actor@cycle$qv
+	add	sp,4
+	mov	ax,word ptr [bp-2]
+	add	ax,12
+	shl	ax,2
+	les	bx,dword ptr [bp+6]
+	add	bx,ax
+	push	word ptr es:[bx+4]
+	push	word ptr es:[bx+2]
+	push	cs
+	call	near ptr @m_actor@move$qv
+	add	sp,4
+   ;	
+   ;	        actors[var_2 + 13]->cycle(); actors[var_2 + 13]->move();
+   ;	
+	mov	ax,word ptr [bp-2]
+	add	ax,13
+	shl	ax,2
+	les	bx,dword ptr [bp+6]
+	add	bx,ax
+	push	word ptr es:[bx+4]
+	push	word ptr es:[bx+2]
+	push	cs
+	call	near ptr @m_actor@cycle$qv
+	add	sp,4
+	mov	ax,word ptr [bp-2]
+	add	ax,13
+	shl	ax,2
+	les	bx,dword ptr [bp+6]
+	add	bx,ax
+	push	word ptr es:[bx+4]
+	push	word ptr es:[bx+2]
+	push	cs
+	call	near ptr @m_actor@move$qv
+	add	sp,4
+   ;	
+   ;	        actors[var_2 + 14]->cycle(); actors[var_2 + 14]->move();
+   ;	
+	mov	ax,word ptr [bp-2]
+	add	ax,14
+	shl	ax,2
+	les	bx,dword ptr [bp+6]
+	add	bx,ax
+	push	word ptr es:[bx+4]
+	push	word ptr es:[bx+2]
+	push	cs
+	call	near ptr @m_actor@cycle$qv
+	add	sp,4
+	mov	ax,word ptr [bp-2]
+	add	ax,14
+	shl	ax,2
+	les	bx,dword ptr [bp+6]
+	add	bx,ax
+	push	word ptr es:[bx+4]
+	push	word ptr es:[bx+2]
+	push	cs
+	call	near ptr @m_actor@move$qv
+	add	sp,4
+   ;	
+   ;	        actors[var_2 + 15]->cycle(); actors[var_2 + 15]->move();
+   ;	
+	mov	ax,word ptr [bp-2]
+	add	ax,15
+	shl	ax,2
+	les	bx,dword ptr [bp+6]
+	add	bx,ax
+	push	word ptr es:[bx+4]
+	push	word ptr es:[bx+2]
+	push	cs
+	call	near ptr @m_actor@cycle$qv
+	add	sp,4
+	mov	ax,word ptr [bp-2]
+	add	ax,15
+	shl	ax,2
+	les	bx,dword ptr [bp+6]
+	add	bx,ax
+	push	word ptr es:[bx+4]
+	push	word ptr es:[bx+2]
+	push	cs
+	call	near ptr @m_actor@move$qv
+	add	sp,4
+   ;	
+   ;	        var_4++;
+   ;	
+	inc	word ptr [bp-4]
+@20@450:
+	mov	ax,word ptr [bp-4]
+	cmp	ax,word ptr [bp-8]
+	jge short	@@15
+	jmp	@20@422
+@@15:
+   ;	
+   ;	    }
+   ;	    var_2 = var_A;
+   ;	
+	mov	ax,word ptr [bp-10]
+	mov	word ptr [bp-2],ax
+	jmp	short @20@534
+@20@506:
+   ;	
+   ;	    while (var_2 < var_C) {
+   ;	        actors[var_2]->cycle();
+   ;	
+	mov	ax,word ptr [bp-2]
+	shl	ax,2
+	les	bx,dword ptr [bp+6]
+	add	bx,ax
+	push	word ptr es:[bx+4]
+	push	word ptr es:[bx+2]
+	push	cs
+	call	near ptr @m_actor@cycle$qv
+	add	sp,4
+   ;	
+   ;	        actors[var_2]->move();
+   ;	
+	mov	ax,word ptr [bp-2]
+	shl	ax,2
+	les	bx,dword ptr [bp+6]
+	add	bx,ax
+	push	word ptr es:[bx+4]
+	push	word ptr es:[bx+2]
+	push	cs
+	call	near ptr @m_actor@move$qv
+	add	sp,4
+   ;	
+   ;	        var_2++;
+   ;	
+	inc	word ptr [bp-2]
+@20@534:
+	mov	ax,word ptr [bp-2]
+	cmp	ax,word ptr [bp-12]
+	jl	short @20@506
+   ;	
+   ;	    }
+   ;	    ego->draw();
+   ;	
+	push	word ptr DGROUP:_ego+2
+	push	word ptr DGROUP:_ego
+	push	cs
+	call	near ptr @m_actor@draw$qv
+	add	sp,4
+   ;	
+   ;	    var_2 = 0;
+   ;	
+	mov	word ptr [bp-2],0
+	jmp	short @20@618
+@20@590:
+   ;	
+   ;	    while (var_2 < ed_list_size)
+   ;	        ed_list[var_2++]->draw();
+   ;	
+	mov	bx,word ptr [bp-2]
+	inc	word ptr [bp-2]
+	shl	bx,2
+	push	word ptr DGROUP:_ed_list[bx+2]
+	push	word ptr DGROUP:_ed_list[bx]
+	push	cs
+	call	near ptr @m_actor@draw$qv
+	add	sp,4
+@20@618:
+	mov	al,byte ptr DGROUP:_ed_list_size
+	mov	ah,0
+	cmp	ax,word ptr [bp-2]
+	jg	short @20@590
+   ;	
+   ;	}
+   ;	
+	leave	
+	ret	
+@game_cast@update$quc	endp
 	?debug	C E9
 	?debug	C FA00000000
 ACTOR_TEXT	ends
@@ -2552,6 +3178,7 @@ ACTOR_TEXT	ends
 	extrn	@game_manager@get_loop$qnuc:far
 	public	@game_cast@remove$quc
 	public	@game_cast@kill_all$qv
+	public	@game_cast@update$quc
 	public	@game_cast@add$qnucnvt2
 	public	@game_cast@$bctr$qv
 	public	@m_actor@on_pos$qui

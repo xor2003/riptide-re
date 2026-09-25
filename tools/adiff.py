@@ -275,11 +275,32 @@ def collapse_seq(out):
             res.append(out[i]); i += 1
     return res
 
-def get_orig(lst, fnpat):
-    lines = open(lst, errors='replace').read().splitlines()
-    sym = build_symtab(lst)
+_LST_LINES = {}            # lst path -> cached split lines
+
+def _lines(lst):
+    if lst not in _LST_LINES:
+        _LST_LINES[lst] = open(lst, errors='replace').read().splitlines()
+    return _LST_LINES[lst]
+
+_IDX = {}                # lst path -> {funcname: start line index}
+
+def _findex(lst):
+    if lst in _IDX: return _IDX[lst]
+    idx = {}
+    for i, l in enumerate(_lines(lst)):
+        m = re.match(r'^seg\w+:[0-9A-Fa-f]+\s+(\S+)\s+proc\b', l)
+        if m: idx.setdefault(m.group(1), i); continue
+        m = re.match(r'^seg\w+:[0-9A-Fa-f]+\s+([@\w$]+):', l)
+        if m: idx.setdefault(m.group(1), i)
+    _IDX[lst] = idx
+    return idx
+
+def orig_buf(lst, fnpat):
+    lines = _lines(lst)
+    idx = _findex(lst)
+    start0 = idx.get(fnpat, 0)     # exact-name hit: jump to it; else scan from top
     buf, infn, lblmode = [], False, False
-    for l in lines:
+    for l in lines[start0:] if fnpat in idx else lines:
         if not infn:
             if re.search(re.escape(fnpat) + r'\s+proc\b', l):
                 infn = True
@@ -289,12 +310,20 @@ def get_orig(lst, fnpat):
             if 'endp' in l: break
             if lblmode:
                 # stop at the next function label (@name or proc); internal loc_/data labels continue
-                m = re.match(r'^seg\w+:[0-9A-Fa-f]+\s+(@?[\w$]+):', l)
+                m = re.match(r'^seg\w+:[0-9A-Fa-f]+\s+([@\w$]+):', l)
                 if m and not re.match(r'loc|locret|sub_|unk_|off_|word_|byte_|dword_|asc_|a[A-Z]|flt_|dbl_', m.group(1)):
                     break
-                if re.match(r'^seg\w+:[0-9A-Fa-f]+\s+@?[\w$]+\s+proc\b', l):
+                if re.match(r'^seg\w+:[0-9A-Fa-f]+\s+[@\w$]+\s+proc\b', l):
                     break
         if infn: buf.append(l)
+    return buf
+
+def get_orig(lst, fnpat):
+    sym = build_symtab(lst)
+    return norm_orig(orig_buf(lst, fnpat), sym)
+
+def norm_orig(buf, sym):
+    """normalize a raw orig function body (varmap, labels, canon)."""
     varmap = {}
     for l in buf:
         m = re.match(r'.*?([A-Za-z_]\w*)\s*=\s*(s?byte|s?word|dword|qword|tbyte|\w+)\s+ptr\s+(-?[0-9A-Fa-f]+h?)\b', l)
@@ -344,11 +373,11 @@ def get_gen(asm, label_re, sym):
     # pass 1: label -> index of the next normalized insn; collect (norm, raw jmp tgt)
     lbl2idx, rows = {}, []
     for l in raw:
-        m = re.match(r'^(@\w+|_?[A-Za-z]\w*):\s*$', l)
+        m = re.match(r'^([@\w$]+|_?[A-Za-z]\w*):\s*$', l)
         if m: lbl2idx[m.group(1).rstrip(':')] = len(rows)
         n = normline(l, sym)
         if n:
-            j = re.match(r'^\s*jmp\s+(?:\w+\s+ptr\s+)?(?:short\s+|near\s+)?(@\w+|_?[A-Za-z]\w*)', l)
+            j = re.match(r'^\s*jmp\s+(?:\w+\s+ptr\s+)?(?:short\s+|near\s+)?([@\w$]+|_?[A-Za-z]\w*)', l)
             rows.append((n, j.group(1) if j else None))
     # pass 2: drop unconditional 'jmp' that targets the next insn (-O artifact)
     res = []
