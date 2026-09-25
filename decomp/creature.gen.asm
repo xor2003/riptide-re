@@ -15,17 +15,20 @@ $comm	macro	name,dist,size,count
 	endif
 	?debug	V 300h
 	?debug	S "creature.cpp"
-	?debug	C E97798375D0C63726561747572652E637070
-	?debug	C E97798375D09726970746964652E68
+	?debug	C E9F535395D0C63726561747572652E637070
+	?debug	C E9F535395D09726970746964652E68
 	?debug	C E9253FD45C12443A5C494E434C5544455C737464696F2E68
 	?debug	C E9263FD45C12443A5C494E434C5544455C5F646566732E68
 	?debug	C E9263FD45C13443A5C494E434C5544455C5F6E66696C652E68
 	?debug	C E9263FD45C12443A5C494E434C5544455C5F6E756C6C2E68
 	?debug	C E9263FD45C13443A5C494E434C5544455C737472696E672E68
+	?debug	C E9253FD45C0F443A5C494E434C5544455C696F2E68
+	?debug	C E9253FD45C12443A5C494E434C5544455C66636E746C2E68
 	?debug	C E9253FD45C10443A5C494E434C5544455C646F732E68
 	?debug	C E9253FD45C12443A5C494E434C5544455C636F6E696F2E68
 	?debug	C E9253FD45C12443A5C494E434C5544455C616C6C6F632E68
 	?debug	C E9263FD45C11443A5C494E434C5544455C74696D652E68
+	?debug	C E9253FD45C10443A5C494E434C5544455C6469722E68
 CREATURE_TEXT	segment byte public use16 'CODE'
 CREATURE_TEXT	ends
 DGROUP	group	_DATA,_BSS
@@ -551,14 +554,14 @@ CREATURE_TEXT	segment byte public use16 'CODE'
    ;	        var_E |= 0x8000;
    ;	
 	or	word ptr [bp-12],-32768
-	jmp	short @8@310
+	jmp	short @8@338
 @8@86:
    ;	
    ;	    else {
    ;	        var_B = 0;
    ;	
 	mov	byte ptr [bp-13],0
-	jmp	short @8@282
+	jmp	short @8@310
 @8@114:
    ;	
    ;	        while (var_B < barrier_count) {
@@ -577,7 +580,7 @@ CREATURE_TEXT	segment byte public use16 'CODE'
    ;	
 	mov	eax,dword ptr DGROUP:_act
 	cmp	eax,dword ptr [bp+6]
-	je	short @8@254
+	je	short @8@282
 	push	word ptr DGROUP:_act+2
 	push	word ptr DGROUP:_act
 	push	word ptr [bp+8]
@@ -585,7 +588,7 @@ CREATURE_TEXT	segment byte public use16 'CODE'
 	call	far ptr @touching$qn7m_actort1
 	add	sp,8
 	or	al,al
-	je	short @8@254
+	je	short @8@282
    ;	
    ;	                if (a->x >= act->x)
    ;	
@@ -593,43 +596,50 @@ CREATURE_TEXT	segment byte public use16 'CODE'
 	mov	ax,word ptr es:[bx]
 	les	bx,dword ptr DGROUP:_act
 	cmp	ax,word ptr es:[bx]
-	jl	short @8@310
+	jl	short @8@226
    ;	
    ;	                    var_E = 0x20;
    ;	
 	mov	word ptr [bp-12],32
-	jmp	short @8@310
+	jmp	short @8@338
+@8@226:
+   ;	
+   ;	                else
+   ;	                    var_E = 0x80;
+   ;	
+	mov	word ptr [bp-12],128
+	jmp	short @8@338
    ;	
    ;	                break;
    ;	
-	jmp	short @8@310
-@8@254:
+	jmp	short @8@338
+@8@282:
    ;	
    ;	            }
    ;	            var_B++;
    ;	
 	inc	byte ptr [bp-13]
-@8@282:
+@8@310:
 	mov	al,byte ptr [bp-13]
 	cmp	al,byte ptr DGROUP:_barrier_count
 	jb	short @8@114
-@8@310:
+@8@338:
    ;	
    ;	        }
    ;	    }
    ;	    if (var_E & 5)    var_A = 1;
    ;	
 	test	word ptr [bp-12],5
-	je	short @8@366
+	je	short @8@394
 	mov	word ptr [bp-10],1
-@8@366:
+@8@394:
    ;	
    ;	    if (var_E & 0x0A) var_8 = 1;
    ;	
 	test	word ptr [bp-12],10
-	je	short @8@422
+	je	short @8@450
 	mov	word ptr [bp-8],1
-@8@422:
+@8@450:
    ;	
    ;	    a->x = var_2;
    ;	
@@ -1530,10 +1540,10 @@ CREATURE_TEXT	segment byte public use16 'CODE'
    ;	
    ;	        }
    ;	    }
-   ;	    if (jason_on != 1)
+   ;	    if (jason_on == 1)
    ;	
 	cmp	byte ptr DGROUP:_jason_on,1
-	je short	@@4
+	jne short	@@4
 	jmp	@17@702
 @@4:
    ;	
@@ -1639,9 +1649,9 @@ CREATURE_TEXT	segment byte public use16 'CODE'
 	cmp	al,3
 	jne	short @17@702
    ;	
-   ;	        update_air_guage(5, 0x68, 0);
+   ;	        update_air_guage(5, 0x68, 0xA7);
    ;	
-	push	0
+	push	167
 	push	104
 	push	5
 	call	far ptr @update_air_guage$qiii
@@ -2840,14 +2850,14 @@ CREATURE_TEXT	segment byte public use16 'CODE'
 @28@114:
    ;	
    ;	    }
-   ;	    if (a->inactive != 1)
+   ;	    if (a->inactive == 1)
    ;	
 	les	bx,dword ptr [bp+6]
 	mov	al,byte ptr es:[bx+82]
 	shr	ax,5
 	and	ax,1
 	cmp	ax,1
-	je short	@@16
+	jne short	@@16
 	jmp	@28@982
 @@16:
    ;	
@@ -4086,14 +4096,14 @@ CREATURE_TEXT	segment byte public use16 'CODE'
 	les	bx,dword ptr [bp+6]
 	dec	word ptr es:[bx+34]
    ;	
-   ;	    if (a->door_open != 1)          /* not alerted — turn back */
+   ;	    if (a->door_open == 1)          /* turn-back requested — spin around */
    ;	
 	les	bx,dword ptr [bp+6]
 	mov	al,byte ptr es:[bx+82]
 	shr	ax,6
 	and	ax,1
 	cmp	ax,1
-	je short	@@33
+	jne short	@@33
 	jmp	@34@478
 @@33:
    ;	
@@ -4787,14 +4797,14 @@ CREATURE_TEXT	segment byte public use16 'CODE'
 	jmp	@37@450
 @@43:
    ;	
-   ;	        if (a->flag_7 != 1) {               /* counting down to release */
+   ;	        if (a->flag_7 == 1) {               /* counting down to release */
    ;	
 	les	bx,dword ptr [bp+6]
 	mov	al,byte ptr es:[bx+82]
 	shr	ax,7
 	and	ax,1
 	cmp	ax,1
-	je	short @37@338
+	jne	short @37@338
    ;	
    ;	            if (--a->counter_24 == 0) {
    ;	
@@ -8163,13 +8173,13 @@ CREATURE_TEXT	segment byte public use16 'CODE'
 @@81:
    ;	
    ;	        return;
-   ;	    if (a->flag_3 == 1) {
+   ;	    if (a->flag_3 == 0) {
    ;	
 	les	bx,dword ptr [bp+6]
 	mov	al,byte ptr es:[bx+82]
 	shr	ax,3
 	and	ax,1
-	cmp	ax,1
+	or	ax,ax
 	je short	@@82
 	jmp	@52@254
 @@82:
@@ -8282,14 +8292,14 @@ CREATURE_TEXT	segment byte public use16 'CODE'
 	mov	al,byte ptr es:[bx+18]
 	mov	byte ptr [bp-1],al
    ;	
-   ;	    if (a->door_open != 1)
+   ;	    if (a->door_open == 1)
    ;	
 	les	bx,dword ptr [bp+6]
 	mov	al,byte ptr es:[bx+82]
 	shr	ax,6
 	and	ax,1
 	cmp	ax,1
-	je	short @52@310
+	jne	short @52@310
    ;	
    ;	        act->flag_3 = 1;
    ;	
@@ -11435,16 +11445,7 @@ s@	label	byte
 _DATA	ends
 CREATURE_TEXT	segment byte public use16 'CODE'
 CREATURE_TEXT	ends
-	public	@do_bs3$qn7m_actor
-	public	@do_bs1$qn7m_actor
-	public	@do_bs3_face$qn7m_actor
-	public	@do_bs3a$qn7m_actor
-	public	@do_bs2$qn7m_actor
-	public	@do_bs3_prop$qn7m_actor
-	public	@do_bs2_eyes$qn7m_actor
-	public	@do_bs2tn$qn7m_actor
 	public	@do_fire_ball$qn7m_actor
-	public	@mv_bs2tn$qn7m_actornit2
 	public	@do_mine2$qn7m_actor
 	public	@do_follow$qn7m_actorii
 	public	@do_ship_bomb$qn7m_actor
@@ -11489,6 +11490,15 @@ CREATURE_TEXT	ends
 	public	@do_fish$qn7m_actor
 	public	@do_zapper$qn7m_actor
 	public	@do_mine1$qn7m_actor
+	public	@do_bs3_face$qn7m_actor
+	public	@do_bs3_prop$qn7m_actor
+	public	@do_bs3a$qn7m_actor
+	public	@do_bs3$qn7m_actor
+	public	@do_bs2_eyes$qn7m_actor
+	public	@do_bs2tn$qn7m_actor
+	public	@do_bs2$qn7m_actor
+	public	@do_bs1$qn7m_actor
+	public	@mv_bs2tn$qn7m_actornit2
 	public	@mv_std$qn7m_actornit2
 	public	@do_pod$qn7m_actor
 	public	@do_coin$qn7m_actor

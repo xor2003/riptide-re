@@ -150,6 +150,8 @@ int far check_new_pos(m_actor far *a, int arg4, int arg6,
             if (act != a && touching(a, act)) {
                 if (a->x >= act->x)
                     var_E = 0x20;
+                else
+                    var_E = 0x80;
                 break;
             }
             var_B++;
@@ -615,7 +617,7 @@ void far do_pup(m_actor far *a)
         a->inactive = 0;
         a->y_speed = -1;
     }
-    if (a->inactive != 1)
+    if (a->inactive == 1)
         return;
     if (a->y_speed != 0) {
         if (a->on_tile(0x100) != 0)
@@ -852,7 +854,7 @@ void far do_ship(m_actor far *a)
         goto bomb;
     }
     a->counter_24--;
-    if (a->door_open != 1)          /* not alerted — turn back */
+    if (a->door_open == 1)          /* turn-back requested — spin around */
         goto turn;
     if (random(0x1E) == 0)
         goto turn;
@@ -970,7 +972,7 @@ void far do_clam(m_actor far *a)
     diff_x = abs(cur_sub->center_x - a->center_x);
     diff_y = abs(cur_sub->center_y - a->center_y);
     if (a->door_open == 1) {                /* sub is inside — holding it */
-        if (a->flag_7 != 1) {               /* counting down to release */
+        if (a->flag_7 == 1) {               /* counting down to release */
             if (--a->counter_24 == 0) {
                 a->set_cycle(1, 3);            /* open */
                 a->flag_7 = 0;
@@ -1614,7 +1616,7 @@ void far do_mine1(m_actor far *a)
 
     if (!a->in_window)
         return;
-    if (a->flag_3 == 1) {
+    if (a->flag_3 == 0) {
         if (a->current_loop != 2) {
             var_4 = abs(a->center_x - cur_sub->center_x);
             if (var_4 < 0x23 && ego->y < a->y)
@@ -1632,7 +1634,7 @@ release:
     act->type = 1;
     act->set_xy(a->center_x, a->y);
     var_1 = act->height;
-    if (a->door_open != 1)
+    if (a->door_open == 1)
         act->flag_3 = 1;
     act = the_cast->add((uchar *)"mreal.l", (void far *)0, (void far *)0);
     act->set_xy(a->center_x - act->width / 2, a->y + var_1);
