@@ -15,8 +15,8 @@ $comm	macro	name,dist,size,count
 	endif
 	?debug	V 300h
 	?debug	S "creature.cpp"
-	?debug	C E9D551395D0C63726561747572652E637070
-	?debug	C E9D551395D09726970746964652E68
+	?debug	C E98065395D0C63726561747572652E637070
+	?debug	C E98065395D09726970746964652E68
 	?debug	C E9253FD45C12443A5C494E434C5544455C737464696F2E68
 	?debug	C E9263FD45C12443A5C494E434C5544455C5F646566732E68
 	?debug	C E9263FD45C13443A5C494E434C5544455C5F6E66696C652E68
@@ -3541,10 +3541,10 @@ CREATURE_TEXT	segment byte public use16 'CODE'
 	cmp	al,byte ptr es:[bx+52]
 	je	short @31@1010
    ;	
-   ;	            if ((ego->direction == 0 && a->center_x >= ego->center_x) ||
+   ;	            if ((ego->direction == 0 && a->center_x < ego->center_x) ||
    ;	
    ;	
-   ;	                (ego->direction == 1 && a->center_x <= ego->center_x))
+   ;	                (ego->direction == 1 && a->center_x > ego->center_x))
    ;	
 	les	bx,dword ptr DGROUP:_ego
 	cmp	byte ptr es:[bx+52],0
@@ -3553,7 +3553,7 @@ CREATURE_TEXT	segment byte public use16 'CODE'
 	mov	ax,word ptr es:[bx+8]
 	les	bx,dword ptr DGROUP:_ego
 	cmp	ax,word ptr es:[bx+8]
-	jl short	@@24
+	jge short	@@24
 	jmp	@31@1458
 @@24:
 @31@898:
@@ -3566,7 +3566,7 @@ CREATURE_TEXT	segment byte public use16 'CODE'
 	mov	ax,word ptr es:[bx+8]
 	les	bx,dword ptr DGROUP:_ego
 	cmp	ax,word ptr es:[bx+8]
-	jle short	@@26
+	jg short	@@26
 	jmp	@31@1570
 @@26:
    ;	
@@ -3579,10 +3579,10 @@ CREATURE_TEXT	segment byte public use16 'CODE'
 	jmp	@31@1570
 @31@1010:
    ;	
-   ;	            if ((ego->direction == 0 && a->center_x <= ego->center_x) ||
+   ;	            if ((ego->direction == 0 && a->center_x > ego->center_x) ||
    ;	
    ;	
-   ;	                (ego->direction == 1 && a->center_x >= ego->center_x))
+   ;	                (ego->direction == 1 && a->center_x < ego->center_x))
    ;	
 	les	bx,dword ptr DGROUP:_ego
 	cmp	byte ptr es:[bx+52],0
@@ -3591,7 +3591,7 @@ CREATURE_TEXT	segment byte public use16 'CODE'
 	mov	ax,word ptr es:[bx+8]
 	les	bx,dword ptr DGROUP:_ego
 	cmp	ax,word ptr es:[bx+8]
-	jg short	@@27
+	jle short	@@27
 	jmp	@31@1458
 @@27:
 @31@1066:
@@ -3604,7 +3604,7 @@ CREATURE_TEXT	segment byte public use16 'CODE'
 	mov	ax,word ptr es:[bx+8]
 	les	bx,dword ptr DGROUP:_ego
 	cmp	ax,word ptr es:[bx+8]
-	jge short	@@29
+	jl short	@@29
 	jmp	@31@1570
 @@29:
    ;	

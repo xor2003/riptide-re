@@ -741,12 +741,12 @@ void far do_probe(m_actor far *a)
             a->x_speed = 0;
         /* face the same way it's travelling relative to the sub */
         if (a->direction != ego->direction) {
-            if ((ego->direction == 0 && a->center_x >= ego->center_x) ||
-                (ego->direction == 1 && a->center_x <= ego->center_x))
+            if ((ego->direction == 0 && a->center_x < ego->center_x) ||
+                (ego->direction == 1 && a->center_x > ego->center_x))
                 goto turn;
         } else {
-            if ((ego->direction == 0 && a->center_x <= ego->center_x) ||
-                (ego->direction == 1 && a->center_x >= ego->center_x))
+            if ((ego->direction == 0 && a->center_x > ego->center_x) ||
+                (ego->direction == 1 && a->center_x < ego->center_x))
                 goto turn;
         }
         return;
