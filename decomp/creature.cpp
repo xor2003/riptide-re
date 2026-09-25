@@ -1185,7 +1185,7 @@ void far do_shark(m_actor far *a)
         }
         /* cruising — lunge when lined up with the sub */
         if (a->facing_actor(cur_sub) &&
-            abs(a->center_y - cur_sub->center_y) < 0x1E)
+            (diff_y = abs(a->center_y - cur_sub->center_y)) < 0x1E)
             goto lunge;
         if (random(0x64) == 0)
             goto turn;
@@ -2032,7 +2032,6 @@ void far do_bs1(m_actor far *a)
 void far do_bs3(m_actor far *a)
 {
     int var_2, var_4, var_6, var_8;
-    m_actor far *act2;
 
     if (a->state == 2) {
         if (!a->inactive) {
@@ -2064,9 +2063,9 @@ void far do_bs3(m_actor far *a)
                 add_explosion(var_6, var_8, 2, (uchar far *)0);
                 break;
             case 2:
-                act2 = the_cast->add((uchar *)"exp3.l", (void far *)0, (void far *)0);
-                act2->set_xy(var_6, var_8);
-                act2->set_cycle(0, 2);
+                act = the_cast->add((uchar *)"exp3.l", (void far *)0, (void far *)0);
+                act->set_xy(var_6, var_8);
+                act->set_cycle(0, 2);
                 break;
             }
         }

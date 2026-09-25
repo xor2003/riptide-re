@@ -15,8 +15,8 @@ $comm	macro	name,dist,size,count
 	endif
 	?debug	V 300h
 	?debug	S "creature.cpp"
-	?debug	C E95939395D0C63726561747572652E637070
-	?debug	C E95939395D09726970746964652E68
+	?debug	C E92F3C395D0C63726561747572652E637070
+	?debug	C E92F3C395D09726970746964652E68
 	?debug	C E9253FD45C12443A5C494E434C5544455C737464696F2E68
 	?debug	C E9263FD45C12443A5C494E434C5544455C5F646566732E68
 	?debug	C E9263FD45C13443A5C494E434C5544455C5F6E66696C652E68
@@ -5902,7 +5902,7 @@ CREATURE_TEXT	segment byte public use16 'CODE'
    ;	        if (a->facing_actor(cur_sub) &&
    ;	
    ;	
-   ;	            abs(a->center_y - cur_sub->center_y) < 0x1E)
+   ;	            (diff_y = abs(a->center_y - cur_sub->center_y)) < 0x1E)
    ;	
 	push	word ptr DGROUP:_cur_sub+2
 	push	word ptr DGROUP:_cur_sub
@@ -5919,6 +5919,7 @@ CREATURE_TEXT	segment byte public use16 'CODE'
 	push	ax
 	call	far ptr @abs$qi
 	pop	cx
+	mov	word ptr DGROUP:_diff_y,ax
 	cmp	ax,30
 	jl	short @43@702
 @43@590:
@@ -10626,11 +10627,10 @@ CREATURE_TEXT	segment byte public use16 'CODE'
    ;	
 	assume	cs:CREATURE_TEXT
 @do_bs3$qn7m_actor	proc	far
-	enter	12,0
+	enter	8,0
    ;	
    ;	{
    ;	    int var_2, var_4, var_6, var_8;
-   ;	    m_actor far *act2;
    ;	
    ;	    if (a->state == 2) {
    ;	
@@ -10845,7 +10845,7 @@ CREATURE_TEXT	segment byte public use16 'CODE'
    ;	
    ;	                break;
    ;	            case 2:
-   ;	                act2 = the_cast->add((uchar *)"exp3.l", (void far *)0, (void far *)0);
+   ;	                act = the_cast->add((uchar *)"exp3.l", (void far *)0, (void far *)0);
    ;	
 	push	0
 	push	0
@@ -10857,24 +10857,24 @@ CREATURE_TEXT	segment byte public use16 'CODE'
 	push	word ptr DGROUP:_the_cast
 	call	far ptr @game_cast@add$qnucnvt2
 	add	sp,16
-	mov	word ptr [bp-10],dx
-	mov	word ptr [bp-12],ax
+	mov	word ptr DGROUP:_act+2,dx
+	mov	word ptr DGROUP:_act,ax
    ;	
-   ;	                act2->set_xy(var_6, var_8);
+   ;	                act->set_xy(var_6, var_8);
    ;	
 	push	word ptr [bp-8]
 	push	word ptr [bp-6]
-	push	word ptr [bp-10]
-	push	word ptr [bp-12]
+	push	word ptr DGROUP:_act+2
+	push	word ptr DGROUP:_act
 	call	far ptr @m_actor@set_xy$qii
 	add	sp,8
    ;	
-   ;	                act2->set_cycle(0, 2);
+   ;	                act->set_cycle(0, 2);
    ;	
 	push	2
 	push	0
-	push	word ptr [bp-10]
-	push	word ptr [bp-12]
+	push	word ptr DGROUP:_act+2
+	push	word ptr DGROUP:_act
 	call	far ptr @m_actor@set_cycle$qucuc
 	add	sp,8
    ;	
