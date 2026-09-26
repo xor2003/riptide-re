@@ -76,8 +76,7 @@ void interrupt far gr_int9(...)
     fp_kbd_tail = (word far *)0x40001A;
     fp_kbd_head = (word far *)0x40001C;
     *fp_kbd_tail = *fp_kbd_head;                  /* flush BIOS buffer */
-    asm pushf;
-    gr_old_int9();                                /* chain to old int9 (pushf;call) */
+    gr_old_int9();                                /* chain to old int9 (interrupt ptr → compiler pushf;call) */
     if (scan == 0x44 && disable_exit_routine == 0 && exit_routine != 0)
         (*exit_routine)();
     outportb(0x20, 0x20);                         /* EOI to 8259A */

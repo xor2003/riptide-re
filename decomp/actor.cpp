@@ -11,16 +11,16 @@
  * ------------------------------------------------------------------------ */
 m_actor::m_actor(uchar far *name, void far *mv, void far *upd)
 {
-    update_func = (actfn_t)upd;
-    move_func   = (movefn_t)mv;
-    field_37 = field_28 = counter_24 = counter_26 = health = field_1E = counter_22 = field_2A = 0;
-    x = y = x_speed = y_speed = 0;
-    cycle_speed = field_36 = type = state = 0;
-    if (num_frames == 1) frame = 0; else frame = 1;
-    flag_0 = in_window = no_erase = flag_3 = new_sprite = inactive = door_open = flag_7 = flag_8 = 0;
+    doit = (actfn_t)upd;
+    mover   = (movefn_t)mv;
+    flash_count = field_28 = aux1 = aux2 = aux3 = field_1E = hit_y_step = field_2A = 0;
+    x = y = x_step = y_step = 0;
+    cycle_speed = flash_color = type = status = 0;
+    if (max_cel == 1) cycler = 0; else cycler = 1;
+    deleting = in_window = dont_erase = hit = new_looping = sleep = door_open = s_aux2 = active = 0;
     height = width = 0;
     new_loop(name);
-    target = linked = 0;
+    aux_act1 = aux_act2 = 0;
     field_4E = 0;
 }
 
@@ -34,14 +34,14 @@ m_actor::~m_actor()
 
 /* --------------------------------------------------------------------------
  * seg1224:01DE — facing_actor(other): is this actor facing toward `other`?
- *   returns 1 if (this center_x < other && direction==0 [right]) or
- *                (this center_x > other && direction==1 [left])
+ *   returns 1 if (this xw2 < other && facing==0 [right]) or
+ *                (this xw2 > other && facing==1 [left])
  * ------------------------------------------------------------------------ */
 byte m_actor::facing_actor(m_actor far *other)
 {
-    if (center_x < other->center_x && direction == 0)
+    if (xw2 < other->xw2 && facing == 0)
         return 1;
-    if (center_x > other->center_x && direction == 1)
+    if (xw2 > other->xw2 && facing == 1)
         return 1;
     return 0;
 }
@@ -52,9 +52,9 @@ byte m_actor::facing_actor(m_actor far *other)
  * ------------------------------------------------------------------------ */
 void m_actor::check_in_window()
 {
-    if (old_x >= the_map->field_0C &&
+    if (xw >= the_map->field_0C &&
         the_map->field_0C + the_map->field_18 >= x &&
-        old_y >= the_map->field_0E &&
+        yh >= the_map->field_0E &&
         the_map->field_0E + the_map->field_1A >= y)
         in_window = 1;
     else
@@ -62,17 +62,17 @@ void m_actor::check_in_window()
 }
 
 /* --------------------------------------------------------------------------
- * seg1224:028B — set_xy(x,y): place actor, recompute edges/centers/map_pos,
+ * seg1224:028B — set_xy(x,y): place actor, recompute edges/centers/my_map_pos,
  *   and register into ed_list while inside the window.
  * ------------------------------------------------------------------------ */
 void m_actor::set_xy(int x, int y)
 {
     this->x = x;
     this->y = y;
-    this->old_x = this->x + width;
-    this->old_y = this->y + height;
-    this->center_x = this->x + (width >> 1);
-    this->center_y = this->y + (height >> 1);
+    this->xw = this->x + width;
+    this->yh = this->y + height;
+    this->xw2 = this->x + (width >> 1);
+    this->yh2 = this->y + (height >> 1);
     check_in_window();
     if (in_window) {
         if (ed_list_size >= 0x63)
@@ -80,7 +80,7 @@ void m_actor::set_xy(int x, int y)
         ed_list[ed_list_size] = this;
         ed_list_size++;
     }
-    map_pos = tbl_mul_tw[this->y >> 3] + (this->x >> 3);
+    my_map_pos = tbl_mul_tw[this->y >> 3] + (this->x >> 3);
 }
 
 /* --------------------------------------------------------------------------
@@ -89,40 +89,40 @@ void m_actor::set_xy(int x, int y)
  * ------------------------------------------------------------------------ */
 void m_actor::new_loop(uchar far *s2)
 {
-    sprite_data = s2;
-    new_sprite = 1;
+    name = s2;
+    new_looping = 1;
     field_0C = width;
     field_0E = height;
-    loop_data = (loop_res far *)the_game->get_loop(s2);
-    if (loop_data == 0)
+    my_loop = (loop_res far *)the_game->get_loop(s2);
+    if (my_loop == 0)
         terminate((uchar far *)"Error looking for loop : ", s2);
-    width  = loop_data->frames[0]->w;
-    height = loop_data->frames[0]->h;
+    width  = my_loop->cels[0]->width;
+    height = my_loop->cels[0]->height;
     field_1A = (width  >> 3) + 1;
     field_1C = (height >> 3) + 1;
-    old_x = x + width;
-    old_y = y + height;
-    center_x = x + (width >> 1);
-    center_y = y + (height >> 1);
-    current_loop = cycle_timer = 0;
-    num_frames   = loop_data->num_frames;
+    xw = x + width;
+    yh = y + height;
+    xw2 = x + (width >> 1);
+    yh2 = y + (height >> 1);
+    cur_cel = cycle_count = 0;
+    max_cel   = my_loop->max_cel;
 }
 
 /* --------------------------------------------------------------------------
  * seg1224:055E — erase: restore background under the sprite (in window only).
- *   no_erase (bit2) suppresses one pass; new_sprite (bit4) uses the stashed
+ *   dont_erase (bit2) suppresses one pass; new_looping (bit4) uses the stashed
  *   dims (field_0C/0E) for the first erase after a sprite change.
  * ------------------------------------------------------------------------ */
 void m_actor::erase()
 {
     if (in_window) {
-        if (no_erase) {
-            no_erase = 0;
+        if (dont_erase) {
+            dont_erase = 0;
             return;
         }
-        if (new_sprite) {
+        if (new_looping) {
             the_map->erase_bits(x, y, x + field_0C, y + field_0E);
-            new_sprite = 0;
+            new_looping = 0;
         }
         else
             the_map->erase_bits(x, y, x + width, y + height);
@@ -131,7 +131,7 @@ void m_actor::erase()
 
 /* --------------------------------------------------------------------------
  * seg1224:0BD5 — on_tile(attr): scan the actor's field_1A x field_1C tile box
- *   (from map_pos, rows spaced by map_width-field_1A) for a tile_attr[attr].
+ *   (from my_map_pos, rows spaced by map_width-field_1A) for a tile_attr[attr].
  *   returns matching row index+1, or 0.
  * ------------------------------------------------------------------------ */
 byte m_actor::on_tile(int attr)
@@ -139,7 +139,7 @@ byte m_actor::on_tile(int attr)
     uchar var_6, var_5;
     word  var_2, var_4;
 
-    var_2 = map_pos;
+    var_2 = my_map_pos;
     var_4 = the_map->map_width - field_1A;
     for (var_6 = 0; var_6 < field_1C; var_6++) {
         for (var_5 = 0; var_5 < field_1A; var_5++) {
@@ -160,7 +160,7 @@ uchar m_actor::on_pos(uint pos)
     uchar var_6, var_5;
     word  var_2, var_4;
 
-    var_2 = map_pos;
+    var_2 = my_map_pos;
     var_4 = the_map->map_width - field_1A;
     for (var_6 = 0; var_6 < field_1C; var_6++) {
         for (var_5 = 0; var_5 < field_1A; var_5++) {
@@ -178,14 +178,14 @@ uchar m_actor::on_pos(uint pos)
  * ------------------------------------------------------------------------ */
 void m_actor::set_cycle(uchar speed, uchar frame)
 {
-    this->frame       = frame;
+    this->cycler       = frame;
     this->cycle_speed = speed;
-    this->cycle_timer = 0;
+    this->cycle_count = 0;
     if (frame == 5 || frame == 8)
     {
-        current_loop = num_frames - 1;
-        width  = loop_data->frames[current_loop]->w;
-        height = loop_data->frames[current_loop]->h;
+        cur_cel = max_cel - 1;
+        width  = my_loop->cels[cur_cel]->width;
+        height = my_loop->cels[cur_cel]->height;
         field_1A = (width  >> 3) + 1;
         field_1C = (height >> 3) + 1;
     }
@@ -203,9 +203,9 @@ byte touching(m_actor far *a, m_actor far *b)
     uchar far *var_18, *var_1C;
     m_actor far *var_14;
 
-    if (a->flag_0 || b->flag_0)
+    if (a->deleting || b->deleting)
         return 0;
-    if (a->inactive || b->inactive)
+    if (a->sleep || b->sleep)
         return 0;
     if (b->y < a->y) { var_14 = a; a = b; b = var_14; }
     var_2 = a->x;      var_4 = a->y;
@@ -234,8 +234,8 @@ byte touching(m_actor far *a, m_actor far *b)
         var_20 = var_10;
     else
         var_20 = var_8 - var_24;
-    var_18 = a->loop_data->frames[a->current_loop]->bitmap;
-    var_1C = b->loop_data->frames[b->current_loop]->bitmap;
+    var_18 = a->my_loop->cels[a->cur_cel]->bitmap;
+    var_1C = b->my_loop->cels[b->cur_cel]->bitmap;
     var_2E = var_6 - var_1E;
     var_30 = var_E - var_1E;
     var_2A = 0;
@@ -301,61 +301,61 @@ void game_cast::remove(uchar idx)
 }
 
 /* --------------------------------------------------------------------------
- * seg1224:0629 — cycle: per-frame animation mode machine. Runs when the
- *   cycle_timer reaches cycle_speed, then advances current_loop per the
- *   `frame` mode and re-derives dims from the new frame.
+ * seg1224:0629 — cycle: per-cycler animation mode machine. Runs when the
+ *   cycle_count reaches cycle_speed, then advances cur_cel per the
+ *   `cycler` mode and re-derives dims from the new cycler.
  * ------------------------------------------------------------------------ */
 void m_actor::cycle()
 {
-    if (frame == 0)
+    if (cycler == 0)
         return;
-    if (inactive)
+    if (sleep)
         return;
-    if (cycle_timer++ != cycle_speed)
+    if (cycle_count++ != cycle_speed)
         return;
-    cycle_timer = 0;
-    switch (frame)
+    cycle_count = 0;
+    switch (cycler)
     {
     case 1:
-        ++current_loop;
-        if (current_loop == num_frames) current_loop = 0;
+        ++cur_cel;
+        if (cur_cel == max_cel) cur_cel = 0;
         break;
     case 2:
-        if (current_loop++ == num_frames - 2) flag_0 = 1;
+        if (cur_cel++ == max_cel - 2) deleting = 1;
         break;
     case 3:
     case 4:
-        ++current_loop;
-        if (current_loop == num_frames) {
-            if (frame == 4) current_loop = num_frames - 1;
-            else            current_loop = 0;
-            frame = 0;
+        ++cur_cel;
+        if (cur_cel == max_cel) {
+            if (cycler == 4) cur_cel = max_cel - 1;
+            else            cur_cel = 0;
+            cycler = 0;
         }
         break;
     case 5:
-        if (current_loop-- == 0) { current_loop = 0; frame = 0; }
+        if (cur_cel-- == 0) { cur_cel = 0; cycler = 0; }
         break;
     case 6:
-        ++current_loop;
-        if (current_loop == num_frames) { current_loop = num_frames - 2; frame = 7; }
+        ++cur_cel;
+        if (cur_cel == max_cel) { cur_cel = max_cel - 2; cycler = 7; }
         break;
     case 7:
-        if (current_loop-- == 0) { current_loop = 1; frame = 6; }
+        if (cur_cel-- == 0) { cur_cel = 1; cycler = 6; }
         break;
     case 8:
-        --current_loop;
-        if (current_loop == 0xFF) current_loop = num_frames - 1;
+        --cur_cel;
+        if (cur_cel == 0xFF) cur_cel = max_cel - 1;
         break;
     case 9:
-        ++current_loop;
-        if (current_loop == 2) current_loop = 0;
+        ++cur_cel;
+        if (cur_cel == 2) cur_cel = 0;
         break;
     case 10:
-        current_loop = random(num_frames);
+        cur_cel = random(max_cel);
         break;
     }
-    width  = loop_data->frames[current_loop]->w;
-    height = loop_data->frames[current_loop]->h;
+    width  = my_loop->cels[cur_cel]->width;
+    height = my_loop->cels[cur_cel]->height;
     field_1A = (width  >> 3) + 1;
     field_1C = (height >> 3) + 1;
 }
@@ -368,25 +368,25 @@ void m_actor::cycle()
 void m_actor::move()
 {
     int var_2, var_4;
-    if (flag_0)
+    if (deleting)
         return;
-    if (update_func)
-        update_func(this);
-    if (move_func) {
-        var_2 = x + x_speed;
-        var_4 = y + y_speed;
-        move_func(this, &var_2, &var_4);
+    if (doit)
+        doit(this);
+    if (mover) {
+        var_2 = x + x_step;
+        var_4 = y + y_step;
+        mover(this, &var_2, &var_4);
         x = var_2;
         y = var_4;
     } else {
-        x += x_speed;
-        y += y_speed;
+        x += x_step;
+        y += y_step;
     }
-    old_x = x + width;
-    old_y = y + height;
-    center_x = x + (width  >> 1);
-    center_y = y + (height >> 1);
-    map_pos = tbl_mul_tw[y >> 3] + (x >> 3);
+    xw = x + width;
+    yh = y + height;
+    xw2 = x + (width  >> 1);
+    yh2 = y + (height >> 1);
+    my_map_pos = tbl_mul_tw[y >> 3] + (x >> 3);
     check_in_window();
     if (in_window) {
         if (this == ego)
@@ -399,23 +399,23 @@ void m_actor::move()
 }
 
 /* --------------------------------------------------------------------------
- * seg1224:09F7 — draw: blit the current sprite frame while in-window and
- *   flagged; a 2-tick flash toggle lives in field_36/field_37.
+ * seg1224:09F7 — draw: blit the current sprite cycler while in-window and
+ *   flagged; a 2-tick flash toggle lives in flash_color/flash_count.
  * ------------------------------------------------------------------------ */
 void m_actor::draw()
 {
-    if (new_sprite == 1)
-        new_sprite = 0;
+    if (new_looping == 1)
+        new_looping = 0;
     if (!in_window)
         return;
-    if (flag_0 == 1)
+    if (deleting == 1)
         return;
     the_map->put_bits_masked(x, y, width, height,
-        loop_data->frames[current_loop]->bitmap, 0, field_36);
-    if (field_36 == 0)
+        my_loop->cels[cur_cel]->bitmap, 0, flash_color);
+    if (flash_color == 0)
         return;
-    if (field_37++ == 1) {
-        field_37 = field_36 = 0;
+    if (flash_count++ == 1) {
+        flash_count = flash_color = 0;
     }
 }
 
@@ -436,7 +436,7 @@ uchar m_actor::tile_collision(int arg4, int arg6, int arg8)
         var_8 = arg4 - arg8;
         var_A = arg6;
     }
-    var_4 = map_pos + arg8;
+    var_4 = my_map_pos + arg8;
     var_6 = var_4 + tbl_mul_tw[var_A - 1];
     for (var_2 = 0; var_2 < var_8; var_2++) {
         if (the_map->tile_attr[var_4].attr < 0x100) var_B |= 1;
@@ -444,7 +444,7 @@ uchar m_actor::tile_collision(int arg4, int arg6, int arg8)
         var_4++;
         var_6++;
     }
-    var_4 = map_pos + arg8;
+    var_4 = my_map_pos + arg8;
     var_6 = var_4 + var_8 - 1;
     for (var_2 = 0; var_2 < var_A; var_2++) {
         if (the_map->tile_attr[var_4].attr < 0x100) var_B |= 2;
@@ -456,7 +456,7 @@ uchar m_actor::tile_collision(int arg4, int arg6, int arg8)
 }
 
 /* --------------------------------------------------------------------------
- * seg1224:0FBD — update(arg4): the per-frame driver. Phase flag selects the
+ * seg1224:0FBD — update(arg4): the per-cycler driver. Phase flag selects the
  *   erase pass (0) vs the flag-clear pass (1); always re-primes ed_list,
  *   drops dead actors, then runs cycle()+move() on every live actor in
  *   16-wide unrolled blocks, then draw()s ego + the ed_list.
@@ -472,15 +472,15 @@ void game_cast::update(uchar arg4)
     } else {
         var_2 = 0;
         while (var_2 < ed_list_size) {
-            ed_list[var_2]->new_sprite = 0;
-            ed_list[var_2]->no_erase = 0;
+            ed_list[var_2]->new_looping = 0;
+            ed_list[var_2]->dont_erase = 0;
             var_2++;
         }
     }
     ed_list_size = 0;
     var_2 = 0;
     while (var_2 < count) {
-        if (actors[var_2]->flag_0 == 1)
+        if (actors[var_2]->deleting == 1)
             remove(var_2);
         var_2++;
     }

@@ -331,8 +331,8 @@ uchar far *i_load_file(uchar far *src, uchar far *dest)
         delete tb;
         goto restart;
     }
-    if (tb->field_18->field_36 != 0 && tb->buttons[0]->field_20 == 0)
-        strcpy((char far *)dest, (char far *)tb->field_18->field_36);
+    if (tb->field_18->flash_color != 0 && tb->buttons[0]->field_20 == 0)
+        strcpy((char far *)dest, (char far *)tb->field_18->flash_color);
     else
         dest = 0;
     delete tb;
@@ -1302,7 +1302,7 @@ uchar file_box::poll()
 {
     int i, x1, y1, x2, y2, ox1, oy1, ox2, oy2;
     if (field_0A == 0) {
-        field_36 = 0;
+        flash_color = 0;
         return 0;
     }
     poll_arrows();
@@ -1347,9 +1347,9 @@ uchar file_box::poll()
         }
     }
     if (field_3E == -1)
-        field_36 = 0;
+        flash_color = 0;
     else
-        field_36 = field_50[field_450 + field_3E];
+        flash_color = field_50[field_450 + field_3E];
     return 0;
 }
 

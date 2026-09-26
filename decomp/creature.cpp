@@ -18,7 +18,7 @@ uchar gui_item::poll()
  * ------------------------------------------------------------------------ */
 void far hit_cur_sub(int a, int b)
 {
-    cur_sub->flag_3   = 1;      /* bit3 — "took a hit this frame" */
+    cur_sub->hit   = 1;      /* bit3 — "took a hit this frame" */
     cur_sub->field_28 += a;
     cur_sub->field_1E  = b;
 }
@@ -35,11 +35,11 @@ void far set_flying_death(m_actor far *a, uchar far *s2, int arg8, int argA, uch
 {
     a->new_loop(s2);
     a->set_cycle(arg8, argC);
-    a->state    = 2;
-    a->y_speed  = argA;
-    a->x_speed  = 0;
+    a->status    = 2;
+    a->y_step  = argA;
+    a->x_step  = 0;
     a->type     = 0;
-    a->flag_0   = 0;
+    a->deleting   = 0;
     enemies_killed++;
 }
 
@@ -48,26 +48,26 @@ void far set_flying_death(m_actor far *a, uchar far *s2, int arg8, int argA, uch
  * ------------------------------------------------------------------------ */
 void far check_flying_death(m_actor far *a)
 {
-    if (a->state == 2) {
-        a->y_speed++;
+    if (a->status == 2) {
+        a->y_step++;
         if (!a->in_window)
-            a->flag_0 = 1;
+            a->deleting = 1;
     }
 }
 
 /* --------------------------------------------------------------------------
- * seg0b2c:00BF — check_for_hit: consume a flag_3 hit, flash field_36, return
+ * seg0b2c:00BF — check_for_hit: consume a hit hit, flash flash_color, return
  *   0=no-hit / 1=killed / 2=survived.
  * ------------------------------------------------------------------------ */
 byte far check_for_hit(m_actor far *a, uchar arg4)
 {
-    if (!a->flag_3)
+    if (!a->hit)
         return 0;
-    a->flag_3   = 0;
-    a->field_36 = 0x0F;
+    a->hit   = 0;
+    a->flash_color = 0x0F;
     if (arg4 > a->field_28)
         return 1;
-    a->flag_0 = 1;
+    a->deleting = 1;
     return 2;
 }
 
@@ -78,8 +78,8 @@ byte far check_for_hit(m_actor far *a, uchar arg4)
 byte far check_vertical_ray(m_actor far *a, uint arg4)
 {
     int var_2, var_4, var_6;
-    var_2 = a->map_pos;
-    if (a->center_y < cur_sub->center_y) {
+    var_2 = a->my_map_pos;
+    if (a->yh2 < cur_sub->yh2) {
         var_2 += tbl_mul_tw[a->field_1C - 1];   /* row just below the actor (orig: word_2BA84[field_1C]) */
         var_4  = the_map->map_width;            /* scan downward */
     } else {
@@ -100,13 +100,13 @@ byte far check_vertical_ray(m_actor far *a, uint arg4)
 
 /* --------------------------------------------------------------------------
  * seg0b2c:01A9 — check_horizontal_ray: cast `arg4` tiles in the facing
- *   direction across the actor's mid-row; 1 = clear, 0 = blocked.
+ *   facing across the actor's mid-row; 1 = clear, 0 = blocked.
  * ------------------------------------------------------------------------ */
 byte far check_horizontal_ray(m_actor far *a, uint arg4)
 {
     int var_2, var_4;
-    var_2 = a->map_pos + tbl_mul_tw[a->field_1C >> 1];
-    if (a->direction == 0) {
+    var_2 = a->my_map_pos + tbl_mul_tw[a->field_1C >> 1];
+    if (a->facing == 0) {
         var_4  = 1;
         var_2 += a->field_1A;                   /* start just past the right edge */
     } else {
@@ -127,19 +127,19 @@ byte far check_horizontal_ray(m_actor far *a, uint arg4)
  *   Returns the mask (bit15 set if any tile hit); *x_spd/*y_spd get 1 when
  *   the corresponding axis was stopped.
  * ------------------------------------------------------------------------ */
-int far check_new_pos(m_actor far *a, int arg4, int arg6,
+uint far check_new_pos(m_actor far *a, int arg4, int arg6,
                       int far *arg8, int far *argC, int arg10, int arg12, int arg14)
 {
     int var_2, var_4, var_6, var_8, var_A, var_E;
     uchar var_B;
     var_2 = a->x;
     var_4 = a->y;
-    var_6 = a->map_pos;
-    var_8 = a->x_speed;
-    var_A = a->y_speed;
+    var_6 = a->my_map_pos;
+    var_8 = a->x_step;
+    var_A = a->y_step;
     a->x = arg4;
     a->y = arg6;
-    a->map_pos = tbl_mul_tw[a->y >> 3] + (a->x >> 3);
+    a->my_map_pos = tbl_mul_tw[a->y >> 3] + (a->x >> 3);
     var_E = a->tile_collision(arg10, arg12, arg14);
     if (var_E != 0)
         var_E |= 0x8000;
@@ -161,7 +161,7 @@ int far check_new_pos(m_actor far *a, int arg4, int arg6,
     if (var_E & 0x0A) var_8 = 1;
     a->x = var_2;
     a->y = var_4;
-    a->map_pos = var_6;
+    a->my_map_pos = var_6;
     *arg8 = var_8;
     *argC = var_A;
     return var_E;
@@ -177,8 +177,8 @@ void far mv_ego(m_actor far *a, int far *x_out, int far *y_out)
     if (*y_out < 0)
         *y_out = 0;
     if (a->door_open) {
-        var_2 = (((*y_out - a->y_speed) >> 3) + 1 << 3) - 1;
-        if (*y_out < var_2 && a->y_speed <= 0)
+        var_2 = (((*y_out - a->y_step) >> 3) + 1 << 3) - 1;
+        if (*y_out < var_2 && a->y_step <= 0)
             *y_out = var_2;
     }
     if (a == jason)
@@ -188,11 +188,11 @@ void far mv_ego(m_actor far *a, int far *x_out, int far *y_out)
     if (var_8 != 0) {
         if (var_4 != 0) {
             *x_out = a->x;
-            a->x_speed = 0;
+            a->x_step = 0;
         }
         if (var_6 != 0) {
             *y_out = a->y;
-            a->y_speed = 0;
+            a->y_step = 0;
         }
     }
 }
@@ -203,7 +203,7 @@ void far mv_ego(m_actor far *a, int far *x_out, int far *y_out)
  * ------------------------------------------------------------------------ */
 void far mv_pirana(m_actor far *a, int far *x_out, int far *y_out)
 {
-    if (!a->flag_7) {           /* bit7 — move-enable */
+    if (!a->s_aux2) {           /* bit7 — move-enable */
         *x_out = a->x;
         *y_out = a->y;
     }
@@ -219,13 +219,13 @@ void far mv_barrel(m_actor far *a, int far *x_out, int far *y_out)
     var_6 = check_new_pos(a, *x_out, *y_out, &var_2, &var_4, 0, 0, 0);
     if (var_6 != 0) {
         if (var_6 < 0)                          /* sign bit — hit the floor */
-            a->move_func = 0;                   /* [42h] — stop bouncing */
-        a->y_speed = 0;
+            a->mover = 0;                   /* [42h] — stop bouncing */
+        a->y_step = 0;
         *y_out = a->y;
     } else {
-        if (a->y_speed == 2)
+        if (a->y_step == 2)
             return;
-        a->y_speed++;                           /* gravity */
+        a->y_step++;                           /* gravity */
     }
 }
 
@@ -243,7 +243,7 @@ void far mv_std(m_actor far *a, int far *x_out, int far *y_out)
             *x_out = a->x;
         }
         if (var_4 != 0) {
-            a->y_speed = -a->y_speed;
+            a->y_step = -a->y_step;
             *y_out = a->y;
         }
     }
@@ -251,18 +251,18 @@ void far mv_std(m_actor far *a, int far *x_out, int far *y_out)
 
 /* --------------------------------------------------------------------------
  * seg0b2c:069F — mv_shark: shark edge check — if the tile it faces into is
- *   solid (or the ledge ends), latch flag_7 and hold position.
+ *   solid (or the ledge ends), latch s_aux2 and hold position.
  * ------------------------------------------------------------------------ */
 void far mv_shark(m_actor far *a, int far *x_out, int far *y_out)
 {
     if (a->door_open) {
-        if (the_map->tile_attr[a->map_pos - 2].attr < 0x100 && a->direction == 1)
+        if (the_map->tile_attr[a->my_map_pos - 2].attr < 0x100 && a->facing == 1)
             goto latch;
-        if (the_map->tile_attr[a->map_pos + a->field_1A + 2].attr < 0x100 && a->direction == 0)
+        if (the_map->tile_attr[a->my_map_pos + a->field_1A + 2].attr < 0x100 && a->facing == 0)
             goto latch;
         return;
 latch:
-        a->flag_7 = 1;
+        a->s_aux2 = 1;
         *x_out = a->x;
     }
 }
@@ -273,10 +273,10 @@ latch:
 void far mv_ship(m_actor far *a, int far *x_out, int far *y_out)
 {
     int var_2;
-    var_2 = a->map_pos + word_2BA84[a->field_1C];
-    if (the_map->tile_attr[var_2 - 1].attr < 0x100 && a->direction == 1)
+    var_2 = a->my_map_pos + word_2BA84[a->field_1C];
+    if (the_map->tile_attr[var_2 - 1].attr < 0x100 && a->facing == 1)
         goto latch;
-    if (the_map->tile_attr[var_2 + a->field_1A + 1].attr < 0x100 && a->direction == 0)
+    if (the_map->tile_attr[var_2 + a->field_1A + 1].attr < 0x100 && a->facing == 0)
         goto latch;
     return;
 latch:
@@ -285,32 +285,32 @@ latch:
 }
 
 /* --------------------------------------------------------------------------
- * seg0b2c:07B6 — mv_bs2tn: boss tentacle — position tracks its linked parent
- *   plus a per-direction offset.
+ * seg0b2c:07B6 — mv_bs2tn: boss tentacle — position tracks its aux_act2 parent
+ *   plus a per-facing offset.
  * ------------------------------------------------------------------------ */
 void far mv_bs2tn(m_actor far *a, int far *x_out, int far *y_out)
 {
-    if (a->direction == 1)
-        *x_out = a->target->x + a->counter_24;
+    if (a->facing == 1)
+        *x_out = a->aux_act1->x + a->aux1;
     else
-        *x_out = a->target->x + a->health;
-    *y_out = a->target->y + a->counter_26;
+        *x_out = a->aux_act1->x + a->aux3;
+    *y_out = a->aux_act1->y + a->aux2;
 }
 
 /* --------------------------------------------------------------------------
  * seg0b2c:0586 — mv_pace: pacing move — peeks one step ahead for a ledge or a
- *   barrier; flags door_open so the update_func turns around at the edge.
+ *   barrier; flags door_open so the doit turns around at the edge.
  * ------------------------------------------------------------------------ */
 void far mv_pace(m_actor far *a, int far *x_out, int far *y_out)
 {
     int var_2, var_4, var_6, var_8;
 
-    if (a->state == 2)
+    if (a->status == 2)
         return;
     if (a->in_window) {
-        var_2 = a->map_pos + tbl_mul_tw[a->field_1C];
+        var_2 = a->my_map_pos + tbl_mul_tw[a->field_1C];
         var_4 = var_2 - the_map->map_width;
-        if (a->x_speed > 0) {
+        if (a->x_step > 0) {
             var_4 += a->field_1A;
             var_2 += a->field_1A;
         }
@@ -319,7 +319,7 @@ void far mv_pace(m_actor far *a, int far *x_out, int far *y_out)
             a->door_open = 1;
         } else {
             var_8 = a->x;
-            a->x = *x_out + a->x_speed;
+            a->x = *x_out + a->x_step;
             for (var_6 = 0; var_6 < barrier_count; var_6++) {
                 if (touching(a, barrier_list[var_6])) {
                     a->x = var_8;
@@ -343,38 +343,38 @@ done:
 void far do_ego(m_actor far *a)
 {
     int var_2, var_4;
-    if (a->state == 2 || a->state == 6)
+    if (a->status == 2 || a->status == 6)
         return;
-    if (a->flag_3) {                        /* bit3 — took a hit */
+    if (a->hit) {                        /* bit3 — took a hit */
         update_shld_guage(-a->field_28, 0x68, 0xB3);
-        a->field_36 = 0x20;
-        a->flag_3 = 0;
+        a->flash_color = 0x20;
+        a->hit = 0;
         a->field_28 = 0;
         if (jason_present && !jason_on)
-            jason->flag_7 = 1;
+            jason->s_aux2 = 1;
         if (a->field_1E != 0) {
-            a->x_speed += a->field_1E;
+            a->x_step += a->field_1E;
             a->field_1E = 0;
         }
     }
     if (jason_on == 1)
         return;
-    if (a->state == 1 && --a->counter_24 == 0) {
-        a->new_loop(a->direction == 1 ? (uchar *)"subl.l" : (uchar *)"subr.l");
-        a->state = 0;
+    if (a->status == 1 && --a->aux1 == 0) {
+        a->new_loop(a->facing == 1 ? (uchar *)"subl.l" : (uchar *)"subr.l");
+        a->status = 0;
     }
     if (a->cycle_speed == 0 && random(2) == 0) {
         var_2 = a->x;
-        var_4 = a->center_y + random(0x0A);
-        if (a->direction == 0)
+        var_4 = a->yh2 + random(0x0A);
+        if (a->facing == 0)
             add_bubble(var_2, var_4, -6);
         else
             add_bubble(var_2 + a->width, var_4, 6);
     }
     if (a->on_tile(0x100) == 3) {
         update_air_guage(5, 0x68, 0xA7);
-        if (a->y_speed < 0)
-            a->y_speed = 0;
+        if (a->y_step < 0)
+            a->y_step = 0;
     }
 }
 
@@ -391,8 +391,8 @@ void far do_block(m_actor far *a)
  * ------------------------------------------------------------------------ */
 void far do_score(m_actor far *a)
 {
-    if (a->counter_24++ == 0x0F)
-        a->flag_0 = 1;
+    if (a->aux1++ == 0x0F)
+        a->deleting = 1;
 }
 
 /* --------------------------------------------------------------------------
@@ -404,17 +404,17 @@ void far do_chest(m_actor far *a)
     int var_2, var_4, var_6, var_8;
     if (!a->in_window)
         return;
-    if (a->flag_3) {                            /* bit3 — got hit */
+    if (a->hit) {                            /* bit3 — got hit */
         if (!a->door_open && a->field_28 >= 4) {
             a->door_open = 1;
             a->set_cycle(3, 4);                 /* open animation */
         }
-        a->flag_3 = 0;
-        a->field_36 = 0x0F;
+        a->hit = 0;
+        a->flash_color = 0x0F;
     }
     if (a->door_open) {
-        if (a->counter_24++ == 0x0A) {
-            a->flag_0 = 1;
+        if (a->aux1++ == 0x0A) {
+            a->deleting = 1;
             return;
         }
     } else
@@ -425,16 +425,16 @@ void far do_chest(m_actor far *a)
     var_8 = random(8) + 6;
     if (random(0x0F) == 0) {
         act = the_cast->add((uchar *)"gem.l", 0, (void far *)do_coin);
-        act->flag_7 = 1;
+        act->s_aux2 = 1;
     } else
         act = the_cast->add((uchar *)"coin.l", 0, (void far *)do_coin);
-    act->y_speed = -var_8;
+    act->y_step = -var_8;
     act->set_xy(var_2, var_4);
     act->set_cycle(1, 1);
     switch (random(3)) {
-        case 0: act->x_speed = -var_6; break;
-        case 1: act->x_speed = 0;     break;
-        case 2: act->x_speed =  var_6; break;
+        case 0: act->x_step = -var_6; break;
+        case 1: act->x_step = 0;     break;
+        case 2: act->x_step =  var_6; break;
     }
 }
 
@@ -445,38 +445,38 @@ void far do_chest(m_actor far *a)
 void far do_coin(m_actor far *a)
 {
     int var_2;
-    if (the_map->tile_attr[a->map_pos - 1].attr < 0x100 ||
-        the_map->tile_attr[a->map_pos + 2].attr < 0x100) {
-        if (a->x_speed != 0)
-            a->x_speed = 0;
-        else if (a->y_speed != 1)
-            a->y_speed = 1;
+    if (the_map->tile_attr[a->my_map_pos - 1].attr < 0x100 ||
+        the_map->tile_attr[a->my_map_pos + 2].attr < 0x100) {
+        if (a->x_step != 0)
+            a->x_step = 0;
+        else if (a->y_step != 1)
+            a->y_step = 1;
     }
-    var_2 = a->map_pos + word_2BA88[a->flag_7 ? 0 : 1];
+    var_2 = a->my_map_pos + word_2BA88[a->s_aux2 ? 0 : 1];
     if (the_map->tile_attr[var_2].attr < 0x100)
-        a->y_speed = 0;
+        a->y_step = 0;
     if (!a->in_window)
         return;
-    if (a->y_speed == 0 && !a->door_open) {
+    if (a->y_step == 0 && !a->door_open) {
         a->door_open = 1;
-        a->y_speed = 1;
+        a->y_step = 1;
     }
-    if (a->y_speed != 0 && a->y_speed != 1)
-        a->y_speed++;
-    if (a->x_speed != 0) {
-        if (a->x_speed > 0)
-            a->x_speed--;
+    if (a->y_step != 0 && a->y_step != 1)
+        a->y_step++;
+    if (a->x_step != 0) {
+        if (a->x_step > 0)
+            a->x_step--;
         else
-            a->x_speed++;
+            a->x_step++;
     }
     if (touching(a, cur_sub)) {
-        a->flag_0 = 1;
+        a->deleting = 1;
         the_game->play_sound((uchar *)"pup", 9);
-        if (a->flag_7)                          /* gem — worth far more */
-            var_2 = 0x7D0 << (a->y_speed != 0);
+        if (a->s_aux2)                          /* gem — worth far more */
+            var_2 = 0x7D0 << (a->y_step != 0);
         else
-            var_2 = a->y_speed != 0 ? 0x1F4 : 0x64;
-        score_at(a->center_x, a->center_y, var_2);
+            var_2 = a->y_step != 0 ? 0x1F4 : 0x64;
+        score_at(a->xw2, a->yh2, var_2);
         goodies_found++;
     }
 }
@@ -488,35 +488,35 @@ void far do_coin(m_actor far *a)
 void far do_fish(m_actor far *a)
 {
     if (a->tile_collision(0, 0, 0) == 0) {
-        if (a->counter_24++ == a->counter_26)
-            a->counter_24 = 0;
+        if (a->aux1++ == a->aux2)
+            a->aux1 = 0;
         else
             return;
     }
-    if (a->direction == 1)
-        a->new_loop(a->health == 1 ? (uchar *)"fish1r.l" : (uchar *)"fish2r.l");
+    if (a->facing == 1)
+        a->new_loop(a->aux3 == 1 ? (uchar *)"fish1r.l" : (uchar *)"fish2r.l");
     else
-        a->new_loop(a->health == 1 ? (uchar *)"fish1l.l" : (uchar *)"fish2l.l");
-    a->direction ^= 1;
-    a->x_speed = -a->x_speed;
+        a->new_loop(a->aux3 == 1 ? (uchar *)"fish1l.l" : (uchar *)"fish2l.l");
+    a->facing ^= 1;
+    a->x_step = -a->x_step;
 }
 
 /* --------------------------------------------------------------------------
- * seg0b2c:11E5 — do_switch: a wall switch — once hit, latches open its linked
- *   door(s) and becomes inactive.
+ * seg0b2c:11E5 — do_switch: a wall switch — once hit, latches open its aux_act2
+ *   door(s) and becomes sleep.
  * ------------------------------------------------------------------------ */
 void far do_switch(m_actor far *a)
 {
-    if (a->inactive)                                /* bit5 — already thrown */
+    if (a->sleep)                                /* bit5 — already thrown */
         return;
-    if (!a->flag_3)                                 /* bit3 — not hit yet */
+    if (!a->hit)                                 /* bit3 — not hit yet */
         return;
-    a->current_loop = 0;
-    a->target->door_open = 1;
-    a->flag_3 = 0;
-    a->inactive = 1;
-    if (a->linked)
-        a->linked->door_open = 1;
+    a->cur_cel = 0;
+    a->aux_act1->door_open = 1;
+    a->hit = 0;
+    a->sleep = 1;
+    if (a->aux_act2)
+        a->aux_act2->door_open = 1;
 }
 
 /* --------------------------------------------------------------------------
@@ -525,7 +525,7 @@ void far do_switch(m_actor far *a)
  * ------------------------------------------------------------------------ */
 void far do_door(m_actor far *a)
 {
-    if (a->door_open == 1 && a->frame == 0) {
+    if (a->door_open == 1 && a->cycler == 0) {
         the_game->play_sound((uchar *)"door", 6);
         a->set_cycle(4, 2);
     }
@@ -540,11 +540,11 @@ void far do_duct_lr(m_actor far *a)
     int var_2;
     if (!a->in_window)
         return;
-    if (cur_sub->state == 6)
+    if (cur_sub->status == 6)
         return;
-    if (cur_sub->old_y > a->y + 0x2B || cur_sub->y < a->y)
+    if (cur_sub->yh > a->y + 0x2B || cur_sub->y < a->y)
         return;
-    diff_x = abs(a->center_x - cur_sub->center_x);
+    diff_x = abs(a->xw2 - cur_sub->xw2);
     if (diff_x >= 0x46)
         return;
     if (diff_x > 0x32)
@@ -553,14 +553,14 @@ void far do_duct_lr(m_actor far *a)
         var_2 = 3;
     else
         var_2 = 5;
-    if (a->direction == 1) {
-        cur_sub->x_speed -= var_2;
-        if (cur_sub->x_speed < -8)
-            cur_sub->x_speed = -8;
+    if (a->facing == 1) {
+        cur_sub->x_step -= var_2;
+        if (cur_sub->x_step < -8)
+            cur_sub->x_step = -8;
     } else {
-        cur_sub->x_speed += var_2;
-        if (cur_sub->x_speed > 8)
-            cur_sub->x_speed = 8;
+        cur_sub->x_step += var_2;
+        if (cur_sub->x_step > 8)
+            cur_sub->x_step = 8;
     }
 }
 
@@ -573,24 +573,24 @@ void far do_duct_ud(m_actor far *a)
     int var_2;
     if (!a->in_window)
         return;
-    if (cur_sub->state == 6)
+    if (cur_sub->status == 6)
         return;
-    diff_y = abs(a->center_y - cur_sub->center_y);
-    if (cur_sub->center_x < a->x || cur_sub->center_x > a->x + 0x38)
+    diff_y = abs(a->yh2 - cur_sub->yh2);
+    if (cur_sub->xw2 < a->x || cur_sub->xw2 > a->x + 0x38)
         return;
     if (diff_y >= 0x2D)
         return;
-    if (diff_y > 0x0F && abs(cur_sub->x_speed) >= 4)
+    if (diff_y > 0x0F && abs(cur_sub->x_step) >= 4)
         return;
     var_2 = 3;
-    if (a->direction == 2) {
-        cur_sub->y_speed -= var_2;
-        if (cur_sub->y_speed < -6)
-            cur_sub->y_speed = -6;
+    if (a->facing == 2) {
+        cur_sub->y_step -= var_2;
+        if (cur_sub->y_step < -6)
+            cur_sub->y_step = -6;
     } else {
-        cur_sub->y_speed += var_2;
-        if (cur_sub->y_speed > 6)
-            cur_sub->y_speed = 6;
+        cur_sub->y_step += var_2;
+        if (cur_sub->y_step > 6)
+            cur_sub->y_step = 6;
     }
 }
 
@@ -602,7 +602,7 @@ void far do_barrel(m_actor far *a)
 {
     if (check_for_hit(a, 2) == 2) {
         add_explosion(a->x, a->y, 2, (uchar *)0);
-        add_map_item(a->map_pos, a->counter_24);
+        add_map_item(a->my_map_pos, a->aux1);
     }
 }
 
@@ -613,21 +613,21 @@ void far do_barrel(m_actor far *a)
 void far do_pup(m_actor far *a)
 {
     int var_2;
-    if (a->in_window == 1 && a->inactive == 1) {
-        a->inactive = 0;
-        a->y_speed = -1;
+    if (a->in_window == 1 && a->sleep == 1) {
+        a->sleep = 0;
+        a->y_step = -1;
     }
-    if (a->inactive == 1)
+    if (a->sleep == 1)
         return;
-    if (a->y_speed != 0) {
+    if (a->y_step != 0) {
         if (a->on_tile(0x100) != 0)
-            a->y_speed = 0;
+            a->y_step = 0;
         else if (a->tile_collision(0, 0, 0) != 0)
-            a->y_speed = 0;
+            a->y_step = 0;
     }
     if (!touching(a, ego))
         return;
-    switch (a->counter_24 - 1) {                    /* pup kind 1..9 */
+    switch (a->aux1 - 1) {                    /* pup kind 1..9 */
         case 0: update_air_guage(0x50, 0x68, 0xA7); break;
         case 1: if (shot_size < 3) shot_size++; post_message(3); break;
         case 2: update_shld_guage(0x28, 0x68, 0xB3);
@@ -640,7 +640,7 @@ void far do_pup(m_actor far *a)
         case 7: add_jason(); break;
         case 8: jason_fire = 1; break;
     }
-    if (a->counter_24 == 6) {                       /* the key */
+    if (a->aux1 == 6) {                       /* the key */
         var_2 = 0x3E8;
         the_game->play_sound((uchar *)"pup2", 0x0E);
         update_key_guage();
@@ -648,14 +648,14 @@ void far do_pup(m_actor far *a)
     } else {
         var_2 = 0x1F4;
     }
-    if (a->y_speed != 0) {
+    if (a->y_step != 0) {
         the_game->play_sound((uchar *)"pup2", 0x0A);
         var_2 *= 2;                                 /* caught mid-air — double */
     } else {
         the_game->play_sound((uchar *)"pup", 9);
     }
-    score_at(a->center_x, a->center_y, var_2);
-    a->flag_0 = 1;
+    score_at(a->xw2, a->yh2, var_2);
+    a->deleting = 1;
     goodies_found++;
 }
 
@@ -665,7 +665,7 @@ void far do_pup(m_actor far *a)
 void far do_exp(m_actor far *a)
 {
     if (!a->in_window)
-        a->flag_0 = 1;
+        a->deleting = 1;
 }
 
 /* --------------------------------------------------------------------------
@@ -674,22 +674,22 @@ void far do_exp(m_actor far *a)
  * ------------------------------------------------------------------------ */
 void far do_bubble(m_actor far *a)
 {
-    if (a->counter_24++ == 0x14) {
-        a->flag_0 = 1;
+    if (a->aux1++ == 0x14) {
+        a->deleting = 1;
         return;
     }
-    if (a->x_speed != 0) {
-        if (a->x_speed > 0)
-            a->x_speed--;
+    if (a->x_step != 0) {
+        if (a->x_step > 0)
+            a->x_step--;
         else
-            a->x_speed++;
+            a->x_step++;
     }
     if (!a->in_window) {
-        a->flag_0 = 1;
+        a->deleting = 1;
         return;
     }
-    if (the_map->tile_attr[a->map_pos].attr == 0x100)
-        a->flag_0 = 1;
+    if (the_map->tile_attr[a->my_map_pos].attr == 0x100)
+        a->deleting = 1;
 }
 
 /* --------------------------------------------------------------------------
@@ -700,76 +700,76 @@ void far do_probe(m_actor far *a)
 {
     int var_2, var_4;
 
-    if (a->y_speed < 0 && a->on_tile(0x100))
-        a->y_speed = 0;
+    if (a->y_step < 0 && a->on_tile(0x100))
+        a->y_step = 0;
 
     if (jason_on != 1) {
-        if (a->state == 4) {
+        if (a->status == 4) {
             /* spinning drill attack — jitter about until the timer dies */
-            if (--a->counter_24 == 0)
+            if (--a->aux1 == 0)
                 goto turn;
-            a->x_speed = random(5) - 2;
-            a->y_speed = random(3) - 1;
+            a->x_step = random(5) - 2;
+            a->y_step = random(3) - 1;
             if ((a->x & 2) == 2)
-                add_bubble(a->center_x, a->center_y, 0);
+                add_bubble(a->xw2, a->yh2, 0);
             return;
         }
-        if (a->flag_7 && a->in_window) {
-            if (a->state == 0 && random(7) == 0) {
+        if (a->s_aux2 && a->in_window) {
+            if (a->status == 0 && random(7) == 0) {
                 a->new_loop((uchar *)"probspin.l");
                 a->set_cycle(1, 1);
-                a->state = 4;
-                a->counter_24 = random(0x14) + 0x14;
+                a->status = 4;
+                a->aux1 = random(0x14) + 0x14;
                 the_game->play_sound((uchar *)"drillhi", 0x0B);
                 return;
             }
-            a->flag_7 = 0;
+            a->s_aux2 = 0;
         }
         /* home in on the sub */
-        diff_x = abs(ego->center_x - a->center_x);
-        diff_y = abs(ego->center_y - a->center_y);
+        diff_x = abs(ego->xw2 - a->xw2);
+        diff_y = abs(ego->yh2 - a->yh2);
         if (diff_y > 0x0A) {
             var_4 = 0x0A;
-            a->y_speed = (a->center_y < ego->center_y) ? 3 : -3;
+            a->y_step = (a->yh2 < ego->yh2) ? 3 : -3;
         } else {
             var_4 = 0x19;
-            a->y_speed = 0;
+            a->y_step = 0;
         }
         if (diff_x > var_4)
-            a->x_speed = (a->center_x < ego->center_x) ? 4 : -4;
+            a->x_step = (a->xw2 < ego->xw2) ? 4 : -4;
         else
-            a->x_speed = 0;
+            a->x_step = 0;
         /* face the same way it's travelling relative to the sub */
-        if (a->direction != ego->direction) {
-            if ((ego->direction == 0 && a->center_x < ego->center_x) ||
-                (ego->direction == 1 && a->center_x > ego->center_x))
+        if (a->facing != ego->facing) {
+            if ((ego->facing == 0 && a->xw2 < ego->xw2) ||
+                (ego->facing == 1 && a->xw2 > ego->xw2))
                 goto turn;
         } else {
-            if ((ego->direction == 0 && a->center_x > ego->center_x) ||
-                (ego->direction == 1 && a->center_x < ego->center_x))
+            if ((ego->facing == 0 && a->xw2 > ego->xw2) ||
+                (ego->facing == 1 && a->xw2 < ego->xw2))
                 goto turn;
         }
         return;
     }
 
     /* jason_on == 1 — player-controlled: passive drift, input drives speed */
-    if (a->state != 0)
+    if (a->status != 0)
         goto turn;
-    if (a->flag_3) {
-        ego->flag_3 = 1;
+    if (a->hit) {
+        ego->hit = 1;
         ego->field_1E = 0;
         ego->field_28 = a->field_28;
-        a->flag_3 = 0;
+        a->hit = 0;
         a->field_28 = 0;
-        a->field_36 = 0x20;
+        a->flash_color = 0x20;
         if (a->field_1E != 0) {
-            a->x_speed += a->field_1E;
+            a->x_step += a->field_1E;
             a->field_1E = 0;
         }
     }
     if (a->cycle_speed == 0 && random(4) == 0) {
         var_2 = a->y + random(3) + 4;
-        if (a->direction == 0)
+        if (a->facing == 0)
             add_bubble(a->x, var_2, -4);
         else
             add_bubble(a->x + a->width, var_2, 4);
@@ -777,9 +777,9 @@ void far do_probe(m_actor far *a)
     return;
 
 turn:
-    a->state = 0;
-    a->new_loop(a->direction ? (uchar *)"prober.l" : (uchar *)"probel.l");
-    a->direction ^= 1;
+    a->status = 0;
+    a->new_loop(a->facing ? (uchar *)"prober.l" : (uchar *)"probel.l");
+    a->facing ^= 1;
 }
 
 /* --------------------------------------------------------------------------
@@ -791,7 +791,7 @@ void far do_gun_piece(m_actor far *a)
     if (!a->in_window)
         return;
     if (touching(a, ego)) {
-        a->flag_0 = 1;
+        a->deleting = 1;
         score_at(a->x, a->y, 0x7D0);
         gun_count++;
         goodies_found++;
@@ -813,30 +813,30 @@ byte far do_follow(m_actor far *a, int arg_4, int arg_6)
 {
     byte var_1, var_2;
 
-    diff_x = abs(cur_sub->center_x - a->center_x);
-    diff_y = abs(cur_sub->center_y - a->center_y);
+    diff_x = abs(cur_sub->xw2 - a->xw2);
+    diff_y = abs(cur_sub->yh2 - a->yh2);
     var_1 = check_horizontal_ray(a, diff_x >> 3);
     var_2 = check_vertical_ray(a, diff_y >> 3);
     if (var_2 != 0) {
-        a->x_speed = 0;
+        a->x_step = 0;
         if (diff_y <= 0x0A)
             goto chase_x;
-        a->y_speed = (cur_sub->center_y < a->center_y) ? -arg_4 : arg_4;
+        a->y_step = (cur_sub->yh2 < a->yh2) ? -arg_4 : arg_4;
         return 0;
     }
     if (var_1 != 0)
         goto chase_x;
     if (var_2 != 0 || var_1 == 0) {
-        a->y_speed = 0;
-        a->x_speed = 0;
+        a->y_step = 0;
+        a->x_step = 0;
         return 0;
     }
-    a->y_speed = 0;
-    a->x_speed = (cur_sub->center_x < a->center_x) ? -arg_6 : arg_6;
+    a->y_step = 0;
+    a->x_step = (cur_sub->xw2 < a->xw2) ? -arg_6 : arg_6;
     return 0;
 chase_x:
-    a->y_speed = 0;
-    a->x_speed = (cur_sub->center_x < a->center_x) ? -(arg_6 - 1) : (arg_6 - 1);
+    a->y_step = 0;
+    a->x_step = (cur_sub->xw2 < a->xw2) ? -(arg_6 - 1) : (arg_6 - 1);
     return 1;
 }
 
@@ -849,16 +849,16 @@ void far do_ship(m_actor far *a)
 {
     byte hit;
 
-    if (a->counter_24 == 0) {
-        a->counter_24 = 0x2D;
+    if (a->aux1 == 0) {
+        a->aux1 = 0x2D;
         goto bomb;
     }
-    a->counter_24--;
+    a->aux1--;
     if (a->door_open == 1)          /* turn-back requested — spin around */
         goto turn;
     if (random(0x1E) == 0)
         goto turn;
-    diff_y = abs(cur_sub->center_y - a->old_y);
+    diff_y = abs(cur_sub->yh2 - a->yh);
     if (diff_y < 0x0A) {
         if (a->facing_actor(cur_sub)) {
             if (random(0x0A) == 0)
@@ -872,23 +872,23 @@ void far do_ship(m_actor far *a)
         if (hit == 1 && random(6) == 0)
             goto bomb;
         if (hit == 2) {
-            add_explosion(a->center_x, a->center_y, 2, (uchar far *)NULL);
-            score_at(a->center_x, a->center_y, 0xBB8);
+            add_explosion(a->xw2, a->yh2, 2, (uchar far *)NULL);
+            score_at(a->xw2, a->yh2, 0xBB8);
         }
     }
     return;
 
 turn:
-    a->new_loop(a->direction == 1 ? (uchar *)"shipr.l" : (uchar *)"shipl.l");
-    a->x_speed = -a->x_speed;
-    a->direction ^= 1;
+    a->new_loop(a->facing == 1 ? (uchar *)"shipr.l" : (uchar *)"shipl.l");
+    a->x_step = -a->x_step;
+    a->facing ^= 1;
     a->door_open = 0;
     return;
 
 bomb:
     act = the_cast->add((uchar *)"shpbmb.l", (void far *)0, (void far *)do_ship_bomb);
-    act->y_speed = 3;
-    act->set_xy(a->center_x, a->old_y);
+    act->y_step = 3;
+    act->set_xy(a->xw2, a->yh);
 }
 
 /* --------------------------------------------------------------------------
@@ -897,21 +897,21 @@ bomb:
  * ------------------------------------------------------------------------ */
 void far do_ship_bomb(m_actor far *a)
 {
-    if (the_map->tile_attr[a->map_pos].attr >= 0x100) {
+    if (the_map->tile_attr[a->my_map_pos].attr >= 0x100) {
         if (a->in_window) {
             if (touching(a, cur_sub)) {
                 hit_cur_sub(6, 0);
                 goto boom;
             }
             if (random(6) == 0)
-                add_bubble(a->center_x, a->y, 0);
+                add_bubble(a->xw2, a->y, 0);
         }
         return;
     }
 boom:
     if (a->in_window)
         add_explosion(a->x, a->y, 1, (uchar far *)NULL);
-    a->flag_0 = 1;
+    a->deleting = 1;
 }
 
 /* --------------------------------------------------------------------------
@@ -923,22 +923,22 @@ void far do_cannon(m_actor far *a)
     if (!a->in_window)
         return;
     if (!a->facing_actor(cur_sub)) {
-        a->new_loop(a->direction == 1 ? (uchar *)"cannonr.l" : (uchar *)"cannonl.l");
-        a->direction ^= 1;
+        a->new_loop(a->facing == 1 ? (uchar *)"cannonr.l" : (uchar *)"cannonl.l");
+        a->facing ^= 1;
     }
-    if (a->counter_24 != 0) {
-        if (a->counter_24-- == 8)
+    if (a->aux1 != 0) {
+        if (a->aux1-- == 8)
             add_missile(a, 0x0A, 5);
     } else {
-        diff_y = abs(cur_sub->center_y - a->center_y);
+        diff_y = abs(cur_sub->yh2 - a->yh2);
         if (diff_y < 0x0A) {
             a->set_cycle(2, 3);
-            a->counter_24 = random(5) + 0x0A;
+            a->aux1 = random(5) + 0x0A;
         }
     }
     if (check_for_hit(a, 0x0A) == 2) {
-        add_explosion(a->center_x, a->y, 2, (uchar far *)NULL);
-        score_at(a->center_x, a->y, 0x3E8);
+        add_explosion(a->xw2, a->y, 2, (uchar far *)NULL);
+        score_at(a->xw2, a->y, 0x3E8);
     }
 }
 
@@ -950,61 +950,61 @@ void far do_clam(m_actor far *a)
 {
     if (!a->in_window)
         return;
-    if (a->counter_26 != 0) {
-        a->counter_26--;
+    if (a->aux2 != 0) {
+        a->aux2--;
         return;
     }
     if (check_for_hit(a, 6) == 2) {
         /* destroyed — pop open and release the gem */
-        a->flag_0 = 0;
+        a->deleting = 0;
         a->type = 0;
-        a->update_func = (actfn_t)0;
+        a->doit = (actfn_t)0;
         a->set_cycle(0, 4);
-        add_explosion(a->center_x, a->y, 1, (uchar far *)NULL);
-        add_bubble(a->center_x, a->y, 0);
+        add_explosion(a->xw2, a->y, 1, (uchar far *)NULL);
+        add_bubble(a->xw2, a->y, 0);
         act = the_cast->add((uchar *)"gem.l", (void far *)0, (void far *)do_coin);
-        act->flag_7 = 1;
-        act->y_speed = -8;
-        act->set_xy(a->center_x, a->y);
+        act->s_aux2 = 1;
+        act->y_step = -8;
+        act->set_xy(a->xw2, a->y);
         act->set_cycle(1, 1);
     }
     /* idle / grab logic */
-    diff_x = abs(cur_sub->center_x - a->center_x);
-    diff_y = abs(cur_sub->center_y - a->center_y);
+    diff_x = abs(cur_sub->xw2 - a->xw2);
+    diff_y = abs(cur_sub->yh2 - a->yh2);
     if (a->door_open == 1) {                /* sub is inside — holding it */
-        if (a->flag_7 == 1) {               /* counting down to release */
-            if (--a->counter_24 == 0) {
+        if (a->s_aux2 == 1) {               /* counting down to release */
+            if (--a->aux1 == 0) {
                 a->set_cycle(1, 3);            /* open */
-                a->flag_7 = 0;
+                a->s_aux2 = 0;
                 a->door_open = 0;
-                a->counter_26 = 0x28;
+                a->aux2 = 0x28;
                 the_game->field_0E = 0;
-                cur_sub->y_speed = -4;
+                cur_sub->y_step = -4;
             } else {
-                cur_sub->y_speed = 0;          /* held fast */
-                cur_sub->x_speed = 0;
+                cur_sub->y_step = 0;          /* held fast */
+                cur_sub->x_step = 0;
             }
         } else {
             /* closed — keep it latched while the sub struggles */
-            if (abs(cur_sub->center_y - a->y) < 8) {
+            if (abs(cur_sub->yh2 - a->y) < 8) {
                 the_game->play_sound((uchar *)"dirhit", 6);
                 the_game->field_0E = 1;
                 hit_cur_sub(4, 0);
-                a->flag_7 = 1;
-                a->counter_24 = 0x3C;
+                a->s_aux2 = 1;
+                a->aux1 = 0x3C;
                 a->set_cycle(1, 5);
             } else {
-                cur_sub->y_speed += 4;
+                cur_sub->y_step += 4;
             }
         }
         return;
     }
     /* mouth open — snap when the sub is above and inside the mouth span */
-    if (cur_sub->center_y < a->center_y &&
+    if (cur_sub->yh2 < a->yh2 &&
         jason_on == 0 &&
         diff_y < 0x32 &&
-        cur_sub->center_x >= a->x &&
-        cur_sub->center_x < a->old_x) {
+        cur_sub->xw2 >= a->x &&
+        cur_sub->xw2 < a->xw) {
         the_game->play_sound((uchar *)"swish", 6);
         a->set_cycle(1, 4);
         a->door_open = 1;
@@ -1020,24 +1020,24 @@ void far do_shuttle(m_actor far *a)
 {
     byte hit;
 
-    if (!a->in_window && !a->flag_7)
+    if (!a->in_window && !a->s_aux2)
         return;
-    a->flag_7 = 1;                          /* once woken, stays awake */
-    if (a->counter_24 != 0)
-        a->counter_24--;
+    a->s_aux2 = 1;                          /* once woken, stays awake */
+    if (a->aux1 != 0)
+        a->aux1--;
     if (a->door_open != 0) {
         /* sub slipped behind — flip and pause */
-        a->new_loop(a->direction == 1 ? (uchar *)"shutl_r.l" : (uchar *)"shutl_l.l");
-        a->direction ^= 1;
+        a->new_loop(a->facing == 1 ? (uchar *)"shutl_r.l" : (uchar *)"shutl_l.l");
+        a->facing ^= 1;
         a->door_open = 0;
-        a->counter_24 = 0x0A;
+        a->aux1 = 0x0A;
         return;
     }
     if (!a->facing_actor(cur_sub))
         a->door_open = 1;
     hit = check_for_hit(a, 0x19);
     if (hit == 2) {
-        add_explosion(a->center_x, a->center_y, 2, (uchar far *)NULL);
+        add_explosion(a->xw2, a->yh2, 2, (uchar far *)NULL);
         score_at(a->x, a->y, 0x7D0);
     }
     if (do_follow(a, 2, 4)) {
@@ -1047,20 +1047,20 @@ void far do_shuttle(m_actor far *a)
 }
 
 /* --------------------------------------------------------------------------
- * seg0b2c:2001 — do_fire_ball: a lava-pit fireball — arcs for counter_24
+ * seg0b2c:2001 — do_fire_ball: a lava-pit fireball — arcs for aux1
  *   frames, swapping to the "down" sprite at the apex, then dies on the sub.
  * ------------------------------------------------------------------------ */
 void far do_fire_ball(m_actor far *a)
 {
-    if (a->y_speed++ == a->counter_24)
-        a->flag_0 = 1;
-    if (a->y_speed == 1)
+    if (a->y_step++ == a->aux1)
+        a->deleting = 1;
+    if (a->y_step == 1)
         a->new_loop((uchar *)"firbaldn.l");
     if (a->in_window) {
         if (random(0x0A) == 0)
-            add_bubble(a->center_x, a->center_y, 0);
+            add_bubble(a->xw2, a->yh2, 0);
         if (touching(a, cur_sub)) {
-            a->flag_0 = 1;
+            a->deleting = 1;
             hit_cur_sub(0x0F, 2);
             add_explosion(a->x, a->y, 1, (uchar far *)NULL);
         }
@@ -1068,24 +1068,24 @@ void far do_fire_ball(m_actor far *a)
 }
 
 /* --------------------------------------------------------------------------
- * seg0b2c:20BA — do_fire_pit: a lava vent — every counter_26 frames launches
+ * seg0b2c:20BA — do_fire_pit: a lava vent — every aux2 frames launches
  *   a firbalup.l fireball with a random negative arc.
  * ------------------------------------------------------------------------ */
 void far do_fire_pit(m_actor far *a)
 {
     int var_2;
 
-    if (a->counter_24++ != a->counter_26)
+    if (a->aux1++ != a->aux2)
         return;
-    a->counter_24 = random(5);
+    a->aux1 = random(5);
     if (a->in_window)
         the_game->play_sound((uchar *)"fire1", 5);
     act = the_cast->add((uchar *)"firbalup.l", (void far *)0, (void far *)do_fire_ball);
     act->set_xy(a->x + 0x0F, a->y);
     act->set_cycle(1, 1);
     var_2 = random(5) + 0x0C;
-    act->y_speed = -var_2;
-    act->counter_24 = var_2 - 2;
+    act->y_step = -var_2;
+    act->aux1 = var_2 - 2;
 }
 
 /* --------------------------------------------------------------------------
@@ -1096,7 +1096,7 @@ void far do_spikes(m_actor far *a)
 {
     if (!a->in_window)
         return;
-    if (a->frame != 0) {
+    if (a->cycler != 0) {
         /* extended — deadly to touch */
         if (a->door_open == 0 && touching(a, cur_sub)) {
             a->door_open = 1;
@@ -1105,15 +1105,15 @@ void far do_spikes(m_actor far *a)
         return;
     }
     /* cycling — extend, hold, retract */
-    if (a->current_loop == a->num_frames - 1) {
-        if (a->counter_24 != 0) {
-            a->counter_24--;
+    if (a->cur_cel == a->max_cel - 1) {
+        if (a->aux1 != 0) {
+            a->aux1--;
         } else {
             a->door_open = 0;
             a->set_cycle(2, 5);
         }
-    } else if (a->current_loop == 0) {
-        a->counter_24 = a->counter_26;
+    } else if (a->cur_cel == 0) {
+        a->aux1 = a->aux2;
         a->set_cycle(2, 4);
     }
 }
@@ -1121,33 +1121,33 @@ void far do_spikes(m_actor far *a)
 /* --------------------------------------------------------------------------
  * seg0b2c:2265 — do_tentacle: a lurking floor tentacle — hidden (state 0)
  *   until its timer pops it out (tent_out); a touch kills the sub outright;
- *   flag_3 retracts it back in for 0x64 frames.
+ *   hit retracts it back in for 0x64 frames.
  * ------------------------------------------------------------------------ */
 void far do_tentacle(m_actor far *a)
 {
     if (!a->in_window)
         return;
-    if (a->state == 0) {
-        if (--a->counter_24 == 0) {
-            a->state = 5;
-            a->flag_3 = 0;
+    if (a->status == 0) {
+        if (--a->aux1 == 0) {
+            a->status = 5;
+            a->hit = 0;
             a->new_loop((uchar *)"tent_out.l");
             a->set_cycle(4, 4);
         }
         return;
     }
     if (touching(a, ego)) {
-        a->flag_0 = 1;
+        a->deleting = 1;
         death_type = 1;
         kill_ego(a->x, a->y);
     }
-    if (a->flag_3) {
+    if (a->hit) {
         a->new_loop((uchar *)"tent_in.l");
         a->set_cycle(1, 4);
-        a->flag_3 = 0;
-        a->field_36 = 0x0F;
-        a->state = 0;
-        a->counter_24 = 0x64;
+        a->hit = 0;
+        a->flash_color = 0x0F;
+        a->status = 0;
+        a->aux1 = 0x64;
     }
 }
 
@@ -1159,7 +1159,7 @@ void far do_shark(m_actor far *a)
 {
     byte hit;
 
-    if (a->state == 2) {
+    if (a->status == 2) {
         check_flying_death(a);
         return;
     }
@@ -1168,24 +1168,24 @@ void far do_shark(m_actor far *a)
     if (!a->door_open) {                    /* first sight — wake & swim */
         a->door_open = 1;
         a->set_cycle(8, 1);
-        a->x_speed = (a->direction == 1) ? -1 : 1;
+        a->x_step = (a->facing == 1) ? -1 : 1;
     }
-    if (a->flag_7 == 1) {                    /* in a lunge */
-        if (a->counter_24 != 0) {
-            if (a->counter_26 != 0) {
-                a->counter_26--;
+    if (a->s_aux2 == 1) {                    /* in a lunge */
+        if (a->aux1 != 0) {
+            if (a->aux2 != 0) {
+                a->aux2--;
             } else if (touching(a, cur_sub)) {
                 the_game->play_sound((uchar *)"pirana", 8);
-                hit_cur_sub(0x0F, a->x_speed / 2);
-                a->counter_26 = 3;
+                hit_cur_sub(0x0F, a->x_step / 2);
+                a->aux2 = 3;
             }
-            if (--a->counter_24 == 1)
+            if (--a->aux1 == 1)
                 goto end_lunge;
             goto check_hit;
         }
         /* cruising — lunge when lined up with the sub */
         if (a->facing_actor(cur_sub) &&
-            (diff_y = abs(a->center_y - cur_sub->center_y)) < 0x1E)
+            (diff_y = abs(a->yh2 - cur_sub->yh2)) < 0x1E)
             goto lunge;
         if (random(0x64) == 0)
             goto turn;
@@ -1193,19 +1193,19 @@ void far do_shark(m_actor far *a)
     }
     goto turn;
 lunge:
-    a->x_speed *= 0x0A;
-    a->counter_24 = 0x19;
+    a->x_step *= 0x0A;
+    a->aux1 = 0x19;
     a->set_cycle(1, 1);
     return;
 end_lunge:
-    a->x_speed /= 0x0A;
+    a->x_step /= 0x0A;
     a->set_cycle(0x0A, 1);
     return;
 turn:
-    a->new_loop(a->direction == 1 ? (uchar *)"sharkr.l" : (uchar *)"sharkl.l");
-    a->direction ^= 1;
-    a->x_speed = -a->x_speed;
-    a->flag_7 = 0;
+    a->new_loop(a->facing == 1 ? (uchar *)"sharkr.l" : (uchar *)"sharkl.l");
+    a->facing ^= 1;
+    a->x_step = -a->x_step;
+    a->s_aux2 = 0;
     return;
 check_hit:
     hit = check_for_hit(a, 0x16);
@@ -1217,7 +1217,7 @@ check_hit:
         return;
     }
     if (hit == 2) {
-        score_at(a->center_x, a->center_y, 0xBB8);
+        score_at(a->xw2, a->yh2, 0xBB8);
         set_flying_death(a, (uchar far *)"sharkdie.l", 2, -9, 4);
         the_game->play_sound((uchar *)"pirana", 8);
     }
@@ -1232,54 +1232,54 @@ void far do_jelly(m_actor far *a)
     byte hit;
     int var_2;
 
-    if (a->state == 0) {                    /* rising */
-        if (a->y_speed != 0)
-            a->y_speed++;
-        if (a->current_loop == 0) {
-            a->y_speed = -2;
-            a->counter_26++;
+    if (a->status == 0) {                    /* rising */
+        if (a->y_step != 0)
+            a->y_step++;
+        if (a->cur_cel == 0) {
+            a->y_step = -2;
+            a->aux2++;
         }
         if (random(0x12C) == 0)
             goto sink;
-        var_2 = a->map_pos + 1 - word_2BA88[0];
+        var_2 = a->my_map_pos + 1 - word_2BA88[0];
         if (the_map->tile_attr[var_2].attr > 0x100)
             goto common;
         goto sink;
     }
     /* state 3 — sinking */
-    if (a->current_loop == 1)
+    if (a->cur_cel == 1)
         a->set_cycle(0, 0);
-    var_2 = a->map_pos + tbl_mul_tw[a->field_1C] + 1;
+    var_2 = a->my_map_pos + tbl_mul_tw[a->field_1C] + 1;
     if (the_map->tile_attr[var_2].attr < 0x100)
         goto floor;
     if (random(0x12C) == 0)
         goto floor;
 common:
     if (a->in_window) {
-        if (a->counter_24 != 0) {
-            a->counter_24--;
+        if (a->aux1 != 0) {
+            a->aux1--;
         } else if (touching(a, cur_sub)) {
-            a->counter_24 = 0x0A;
+            a->aux1 = 0x0A;
             hit_cur_sub(0x0A, 0);
         }
         hit = check_for_hit(a, 2);
         if (hit != 0) {
             if (hit == 2) {
-                score_at(a->center_x, a->center_y, 0x1F4);
+                score_at(a->xw2, a->yh2, 0x1F4);
                 enemies_killed++;
-            } else if (a->state == 3) {
+            } else if (a->status == 3) {
                 goto floor;
             }
         }
     }
     return;
 sink:
-    a->state = 3;
-    a->y_speed = 1;
+    a->status = 3;
+    a->y_step = 1;
     return;
 floor:
-    a->state = 0;
-    a->y_speed = 0;
+    a->status = 0;
+    a->y_step = 0;
     a->set_cycle(random(2) + 4, 1);
 }
 
@@ -1289,31 +1289,31 @@ floor:
  * ------------------------------------------------------------------------ */
 void far do_crab(m_actor far *a)
 {
-    if (a->state == 2) {
+    if (a->status == 2) {
         check_flying_death(a);
         return;
     }
     if (!a->in_window)
         return;
     if (a->door_open) {                     /* bumped an edge — reverse */
-        a->x_speed = -a->x_speed;
+        a->x_step = -a->x_step;
         a->door_open = 0;
     }
     if (random(0x3C) == 0)
-        a->x_speed = -a->x_speed;
-    if (a->counter_24 != 0) {
-        a->counter_24--;
+        a->x_step = -a->x_step;
+    if (a->aux1 != 0) {
+        a->aux1--;
     } else {
-        diff_y = abs(a->center_y - cur_sub->center_y);
+        diff_y = abs(a->yh2 - cur_sub->yh2);
         if (diff_y < 0x41) {
-            a->direction = (a->x < cur_sub->x) ? 0 : 1;
+            a->facing = (a->x < cur_sub->x) ? 0 : 1;
             add_missile(a, 9, 1);
-            a->counter_24 = 0x19;
+            a->aux1 = 0x19;
             return;
         }
     }
     if (check_for_hit(a, 4) == 2) {
-        score_at(a->center_x, a->center_y, 0x3E8);
+        score_at(a->xw2, a->yh2, 0x3E8);
         set_flying_death(a, (uchar far *)"crabdie.l", 6, -6, 4);
         the_game->play_sound((uchar *)"pirana", 8);
     }
@@ -1325,31 +1325,31 @@ void far do_crab(m_actor far *a)
  * ------------------------------------------------------------------------ */
 void far do_serpent(m_actor far *a)
 {
-    if (a->state == 2) {
+    if (a->status == 2) {
         check_flying_death(a);
         return;
     }
     if (!a->in_window)
         return;
     if (a->door_open) {                     /* reached an edge — turn around */
-        a->new_loop(a->direction == 0 ? (uchar *)"serp_l.l" : (uchar *)"serp_r.l");
+        a->new_loop(a->facing == 0 ? (uchar *)"serp_l.l" : (uchar *)"serp_r.l");
         a->door_open = 0;
-        a->direction ^= 1;
-        a->x_speed = -a->x_speed;
+        a->facing ^= 1;
+        a->x_step = -a->x_step;
         return;
     }
-    if (a->counter_24 != 0) {
-        a->counter_24--;
+    if (a->aux1 != 0) {
+        a->aux1--;
     } else {
-        diff_y = abs(a->center_y - cur_sub->center_y);
+        diff_y = abs(a->yh2 - cur_sub->yh2);
         if (diff_y < 0x1E && a->facing_actor(cur_sub)) {
             add_missile(a, 7, 4);
-            a->counter_24 = 0x0F;
+            a->aux1 = 0x0F;
             return;
         }
     }
     if (check_for_hit(a, 3) == 2) {
-        score_at(a->center_x, a->center_y, 0x1F4);
+        score_at(a->xw2, a->yh2, 0x1F4);
         set_flying_death(a, (uchar far *)"serpdie.l", 2, -8, 1);
     }
 }
@@ -1364,28 +1364,28 @@ void far do_face(m_actor far *a)
 
     if (!a->in_window)
         return;
-    if (a->flag_3) {                        /* took a hit */
+    if (a->hit) {                        /* took a hit */
         if (a->field_28 >= 0x0A) {
-            score_at(a->center_x, a->center_y, 0x3E8);
-            add_explosion(a->center_x, a->center_y, 2, (uchar far *)NULL);
-            a->flag_0 = 1;
+            score_at(a->xw2, a->yh2, 0x3E8);
+            add_explosion(a->xw2, a->yh2, 2, (uchar far *)NULL);
+            a->deleting = 1;
             enemies_killed++;
         }
-        a->flag_3 = 0;
-        a->field_36 = 0x0F;
+        a->hit = 0;
+        a->flash_color = 0x0F;
     }
-    if (a->counter_24 != 0) {
-        a->counter_24--;
-        if (!a->door_open && a->current_loop == 1) {
+    if (a->aux1 != 0) {
+        a->aux1--;
+        if (!a->door_open && a->cur_cel == 1) {
             add_missile(a, 8, 0x0C);
             a->door_open = 1;
         }
         return;
     }
-    var_2 = abs(a->center_y - cur_sub->center_y);
+    var_2 = abs(a->yh2 - cur_sub->yh2);
     if (var_2 < 0x23 && a->facing_actor(cur_sub)) {
         a->door_open = 0;
-        a->counter_24 = 0x19;
+        a->aux1 = 0x19;
         a->set_cycle(4, 3);
     }
 }
@@ -1399,56 +1399,56 @@ void far do_pirana(m_actor far *a)
     byte hit;
 
     if (!a->in_window) {
-        if (a->counter_24 != 0)
+        if (a->aux1 != 0)
             goto reset;                     /* darted off-screen — reset */
-        if (a->flag_7 != 1)
+        if (a->s_aux2 != 1)
             return;                          /* hidden & not yet woken */
     }
-    a->flag_7 = 1;                           /* awake */
+    a->s_aux2 = 1;                           /* awake */
     if (a->door_open == 1) {
         a->door_open = 0;
-        a->new_loop(a->direction == 1 ? (uchar *)"piranar.l" : (uchar *)"piranal.l");
-        a->x_speed = -a->x_speed;
-        a->direction ^= 1;
+        a->new_loop(a->facing == 1 ? (uchar *)"piranar.l" : (uchar *)"piranal.l");
+        a->x_step = -a->x_step;
+        a->facing ^= 1;
     }
     hit = check_for_hit(a, 7);
     if (hit != 0) {
-        if (hit == 1 && a->counter_26 == 0)
+        if (hit == 1 && a->aux2 == 0)
             goto dart;
         if (hit == 2)
             enemies_killed++;
-        score_at(a->center_x, a->center_y, 0x64);
+        score_at(a->xw2, a->yh2, 0x64);
     }
-    if (a->counter_26 != 0)
+    if (a->aux2 != 0)
         goto track;
     /* idle — pounce when the sub swims close */
-    diff_x = abs(a->center_x - ego->center_x);
-    diff_y = abs(a->center_y - ego->center_y);
+    diff_x = abs(a->xw2 - ego->xw2);
+    diff_y = abs(a->yh2 - ego->yh2);
     if (diff_x < 0x32 && diff_y < 0x1E)
         goto dart;
     return;
 dart:
-    a->counter_26 = 0x1E;
-    a->x_speed *= 2;
+    a->aux2 = 0x1E;
+    a->x_step *= 2;
 track:
-    if (a->counter_26-- == 1)
+    if (a->aux2-- == 1)
         goto reset;
     if (!a->facing_actor(cur_sub))
         a->door_open = 1;
-    if (a->y < cur_sub->center_y) {
-        if (a->y_speed != 2)
-            a->y_speed = 2;
-    } else if (a->y > cur_sub->center_y) {
-        if (a->y_speed != -2)
-            a->y_speed = -2;
+    if (a->y < cur_sub->yh2) {
+        if (a->y_step != 2)
+            a->y_step = 2;
+    } else if (a->y > cur_sub->yh2) {
+        if (a->y_step != -2)
+            a->y_step = -2;
     }
-    if ((a->counter_26 & 3) == 0 && touching(a, cur_sub))
+    if ((a->aux2 & 3) == 0 && touching(a, cur_sub))
         goto bite;
     return;
 reset:
-    a->counter_26 = 0;
-    a->y_speed = 0;
-    a->x_speed = (a->direction == 0) ? 1 : -1;
+    a->aux2 = 0;
+    a->y_step = 0;
+    a->x_step = (a->facing == 0) ? 1 : -1;
     return;
 bite:
     the_game->play_sound((uchar *)"pirana", 8);
@@ -1457,67 +1457,67 @@ bite:
 
 /* --------------------------------------------------------------------------
  * seg0b2c:2DB8 — do_tulip: a carnivorous flower — stays closed (regenerating
- *   health), opens to track the sub, spits; killed at 5 hits, closes at 3.
+ *   aux3), opens to track the sub, spits; killed at 5 hits, closes at 3.
  * ------------------------------------------------------------------------ */
 void far do_tulip(m_actor far *a)
 {
     if (!a->in_window)
         return;
     if (a->door_open == 0) {
-        if (a->health != 0) {               /* closed — count down to reopen */
-            if (a->frame == 0)
-                a->health--;
+        if (a->aux3 != 0) {               /* closed — count down to reopen */
+            if (a->cycler == 0)
+                a->aux3--;
             return;
         }
         a->door_open = 1;                    /* begin opening */
         a->set_cycle(3, 4);
         return;
     }
-    if (a->flag_7 == 0) {
+    if (a->s_aux2 == 0) {
         /* opening anim — armed once it reaches the last frame */
-        if (a->current_loop == a->num_frames - 1) {
-            a->flag_7 = 1;
-            a->direction = 0x63;             /* "not yet facing" sentinel */
+        if (a->cur_cel == a->max_cel - 1) {
+            a->s_aux2 = 1;
+            a->facing = 0x63;             /* "not yet facing" sentinel */
         }
         goto hits;
     }
     /* open & tracking — face the sub */
-    if (cur_sub->x < a->x && a->direction != 1) {
+    if (cur_sub->x < a->x && a->facing != 1) {
         a->type = 1;
-        a->direction = 1;
+        a->facing = 1;
         a->new_loop((uchar *)"tulipl.l");
         goto fire;
     }
-    if (cur_sub->x > a->x && a->direction != 0) {
+    if (cur_sub->x > a->x && a->facing != 0) {
         a->type = 1;
-        a->direction = 0;
+        a->facing = 0;
         a->new_loop((uchar *)"tulipr.l");
         goto fire;
     }
-    if (a->counter_24++ == a->counter_26)
+    if (a->aux1++ == a->aux2)
         goto fire;
     goto hits;
 fire:
-    a->counter_24 = 0;
+    a->aux1 = 0;
     add_missile(a, 6, 6);
     a->set_cycle(0, 3);
     return;
 hits:
-    if (a->flag_3) {
-        a->flag_3 = 0;
-        a->field_36 = 0x0F;
+    if (a->hit) {
+        a->hit = 0;
+        a->flash_color = 0x0F;
         if (a->field_28 >= 3) {
-            score_at(a->center_x, a->center_y, 0x1F4);
+            score_at(a->xw2, a->yh2, 0x1F4);
             if (a->field_28 >= 5) {
-                a->flag_0 = 1;
+                a->deleting = 1;
                 enemies_killed++;
             } else {
                 a->field_28 = 0;
                 a->new_loop((uchar *)"tulip.l");
                 a->set_cycle(1, 5);
                 a->type = 0;
-                a->health = 0x64;
-                a->flag_7 = 0;
+                a->aux3 = 0x64;
+                a->s_aux2 = 0;
                 a->door_open = 0;
             }
         }
@@ -1525,64 +1525,64 @@ hits:
 }
 
 /* --------------------------------------------------------------------------
- * seg0b2c:2FC2 — do_pod: a homing mine — drops until it lands (flag_7), then
- *   actively steers toward the sub at speed health+1; detonates on contact.
+ * seg0b2c:2FC2 — do_pod: a homing mine — drops until it lands (s_aux2), then
+ *   actively steers toward the sub at speed aux3+1; detonates on contact.
  * ------------------------------------------------------------------------ */
 void far do_pod(m_actor far *a)
 {
     byte var_1;
 
-    if (a->flag_7 != 1) {
+    if (a->s_aux2 != 1) {
         /* falling — settle once it grounds */
         if (a->on_tile(0x100))
-            a->y_speed -= a->y_speed;
-        if (a->counter_26++ < 0x0A) {
+            a->y_step -= a->y_step;
+        if (a->aux2++ < 0x0A) {
             if (a->door_open == 1) {
-                a->x_speed = -a->x_speed;
+                a->x_step = -a->x_step;
                 if (random(2) == 0)
-                    a->y_speed = 0;
+                    a->y_step = 0;
                 a->door_open = 0;
-                a->counter_26 = random(5);
+                a->aux2 = random(5);
             }
             goto hitblock;
         }
-        a->flag_7 = 1;                        /* settled — start homing */
+        a->s_aux2 = 1;                        /* settled — start homing */
     }
     if (!a->in_window)
         return;
-    a->flag_7 = 1;
+    a->s_aux2 = 1;
     /* steer toward the sub */
-    diff_x = abs(a->center_x - cur_sub->center_x);
-    diff_y = abs(a->center_y - cur_sub->center_y);
-    a->counter_26 = random(5);
-    if (diff_y < 0x0F && diff_x < 0x5A && a->x_speed != 0) {
-        a->y_speed = 0;
+    diff_x = abs(a->xw2 - cur_sub->xw2);
+    diff_y = abs(a->yh2 - cur_sub->yh2);
+    a->aux2 = random(5);
+    if (diff_y < 0x0F && diff_x < 0x5A && a->x_step != 0) {
+        a->y_step = 0;
     } else {
-        a->y_speed = (cur_sub->center_y < a->center_y)
-                        ? -(a->health + 1) : (a->health + 1);
+        a->y_step = (cur_sub->yh2 < a->yh2)
+                        ? -(a->aux3 + 1) : (a->aux3 + 1);
     }
-    if (diff_x < 0x1E && diff_y < 0x3C && a->y_speed != 0) {
-        a->x_speed = 0;
+    if (diff_x < 0x1E && diff_y < 0x3C && a->y_step != 0) {
+        a->x_step = 0;
     } else {
-        a->x_speed = (cur_sub->center_x < a->center_x)
-                        ? -(a->health + 1) : (a->health + 1);
+        a->x_step = (cur_sub->xw2 < a->xw2)
+                        ? -(a->aux3 + 1) : (a->aux3 + 1);
     }
     return;
 hitblock:
     if (a->in_window) {
-        var_1 = (a->health != 0) ? 4 : 2;
+        var_1 = (a->aux3 != 0) ? 4 : 2;
         if (check_for_hit(a, var_1) == 2) {
-            score_at(a->center_x, a->center_y, 0x1F4);
+            score_at(a->xw2, a->yh2, 0x1F4);
             goto die;
         }
         if (touching(a, cur_sub)) {
-            hit_cur_sub(0x19, a->x_speed);
+            hit_cur_sub(0x19, a->x_step);
             goto die;
         }
     }
     return;
 die:
-    a->flag_0 = 1;
+    a->deleting = 1;
     add_explosion(a->x, a->y, 1, (uchar far *)NULL);
     enemies_killed++;
 }
@@ -1593,12 +1593,12 @@ die:
  * ------------------------------------------------------------------------ */
 void far do_zapper(m_actor far *a)
 {
-    if (a->counter_24++ == a->counter_26) {
-        a->counter_24 = 0;
+    if (a->aux1++ == a->aux2) {
+        a->aux1 = 0;
         a->set_cycle(0, 3);
     }
-    if (a->in_window && a->frame != 0) {
-        if (a->counter_24 == 2)
+    if (a->in_window && a->cycler != 0) {
+        if (a->aux1 == 2)
             the_game->play_sound((uchar *)"zap", 8);
         if (touching(a, cur_sub))
             hit_cur_sub(8, 0);
@@ -1616,9 +1616,9 @@ void far do_mine1(m_actor far *a)
 
     if (!a->in_window)
         return;
-    if (a->flag_3 == 0) {
-        if (a->current_loop != 2) {
-            var_4 = abs(a->center_x - cur_sub->center_x);
+    if (a->hit == 0) {
+        if (a->cur_cel != 2) {
+            var_4 = abs(a->xw2 - cur_sub->xw2);
             if (var_4 < 0x23 && ego->y < a->y)
                 goto release;
         }
@@ -1632,14 +1632,14 @@ void far do_mine1(m_actor far *a)
 release:
     act = the_cast->add((uchar *)"freemine.l", (void far *)0, (void far *)do_mine2);
     act->type = 1;
-    act->set_xy(a->center_x, a->y);
+    act->set_xy(a->xw2, a->y);
     var_1 = act->height;
     if (a->door_open == 1)
-        act->flag_3 = 1;
+        act->hit = 1;
     act = the_cast->add((uchar *)"mreal.l", (void far *)0, (void far *)0);
-    act->set_xy(a->center_x - act->width / 2, a->y + var_1);
+    act->set_xy(a->xw2 - act->width / 2, a->y + var_1);
     act->set_cycle(5, 2);
-    a->flag_0 = 1;
+    a->deleting = 1;
 }
 
 /* --------------------------------------------------------------------------
@@ -1652,8 +1652,8 @@ void far do_mine2(m_actor far *a)
 
     if (!a->in_window)
         goto die;
-    if (a->flag_3 == 1) {
-        score_at(a->center_x, a->center_y, 0x1F4);
+    if (a->hit == 1) {
+        score_at(a->xw2, a->yh2, 0x1F4);
         goto boom;
     }
     if (a->tile_collision(0, 0, 0))
@@ -1665,14 +1665,14 @@ void far do_mine2(m_actor far *a)
     }
     if (a->on_tile(0x100))
         goto boom;
-    if (a->y_speed != -5)
-        a->y_speed--;
+    if (a->y_step != -5)
+        a->y_step--;
     return;
 boom:
     add_explosion(a->x, a->y, 1,
                   var_1 ? (uchar far *)"dirhit" : (uchar far *)NULL);
 die:
-    a->flag_0 = 1;
+    a->deleting = 1;
 }
 
 /* --------------------------------------------------------------------------
@@ -1686,52 +1686,52 @@ void far do_missle(m_actor far *a)
 
     if (a->in_window == 1) {
         /* accelerate toward terminal speed */
-        if (a->direction == 1) {
-            if (a->x_speed > -a->counter_26)
-                a->x_speed -= 2;
-        } else if (a->direction == 0) {
-            if (a->x_speed < a->counter_26)
-                a->x_speed += 2;
+        if (a->facing == 1) {
+            if (a->x_step > -a->aux2)
+                a->x_step -= 2;
+        } else if (a->facing == 0) {
+            if (a->x_step < a->aux2)
+                a->x_step += 2;
         }
-        if (a->state == 3 && a->y_speed != 0x0A)
-            a->y_speed++;
-        if (a->flag_7 && random(0x0A) == 0)
-            add_bubble(a->center_x, a->y, 0);
+        if (a->status == 3 && a->y_step != 0x0A)
+            a->y_step++;
+        if (a->s_aux2 && random(0x0A) == 0)
+            add_bubble(a->xw2, a->y, 0);
         var_2 = 0;
-        if (a->target->type & 0x10) {           /* smart — strike shootables */
+        if (a->aux_act1->type & 0x10) {           /* smart — strike shootables */
             for (var_1 = 0; var_1 < shootable_count; var_1++) {
                 act = shootable_list[var_1];
-                if (act->inactive)
+                if (act->sleep)
                     continue;
                 if (!touching(a, act))
                     continue;
-                act->flag_3 = 1;
-                act->field_28 += a->health;
-                act->field_1E = (a->x_speed > 0) ? 5 : -5;
+                act->hit = 1;
+                act->field_28 += a->aux3;
+                act->field_1E = (a->x_step > 0) ? 5 : -5;
                 if (act->type & 0x20) {
                     diff_y = abs(a->y - act->y);
                     if (act->height / 2 > diff_y)
                         act->door_open = 1;
                 }
-                if (a->health < 0x0A)
+                if (a->aux3 < 0x0A)
                     goto die;
             }
-            if (a->direction == 0x63) {           /* top torpedo — sinks */
-                if (the_map->tile_attr[a->map_pos].attr == 0x100)
+            if (a->facing == 0x63) {           /* top torpedo — sinks */
+                if (the_map->tile_attr[a->my_map_pos].attr == 0x100)
                     goto die;
-                if (a->y_speed != -a->counter_26)
-                    a->y_speed--;
+                if (a->y_step != -a->aux2)
+                    a->y_step--;
             }
             goto wallcheck;
         }
         /* dumb shot — steer toward the sub */
-        if (smart_missiles == 1 && a->direction != 0x63) {
-            if (a->center_y > cur_sub->center_y)
-                a->y_speed = -1;
-            else if (a->center_y < cur_sub->center_y)
-                a->y_speed = 1;
+        if (smart_missiles == 1 && a->facing != 0x63) {
+            if (a->yh2 > cur_sub->yh2)
+                a->y_step = -1;
+            else if (a->yh2 < cur_sub->yh2)
+                a->y_step = 1;
             else
-                a->y_speed = 0;
+                a->y_step = 0;
         }
         for (var_1 = 0; var_1 < barrier_count; var_1++) {
             act = barrier_list[var_1];
@@ -1739,28 +1739,28 @@ void far do_missle(m_actor far *a)
                 goto die;
         }
         if (touching(a, cur_sub)) {
-            hit_cur_sub(a->health, (a->x_speed > 0) ? 5 : -5);
+            hit_cur_sub(a->aux3, (a->x_step > 0) ? 5 : -5);
             var_2++;
             goto die;
         }
 wallcheck:
-        if (a->health < 0x0A && a->tile_collision(0, 0, 0))
+        if (a->aux3 < 0x0A && a->tile_collision(0, 0, 0))
             goto die;
         return;
     }
 die:
-    a->flag_0 = 1;
-    if (a->direction == 0x63)
+    a->deleting = 1;
+    if (a->facing == 0x63)
         top_shot_count--;
-    else if (a->target->type & 0x10)
+    else if (a->aux_act1->type & 0x10)
         shot_count--;
     if (a->in_window != 1)
         return;
     if (var_2)
-        add_explosion(a->center_x, a->center_y, a->counter_24,
+        add_explosion(a->xw2, a->yh2, a->aux1,
                       (uchar far *)a->field_4E);
     else
-        add_explosion(a->center_x, a->center_y, a->counter_24,
+        add_explosion(a->xw2, a->yh2, a->aux1,
                       (uchar far *)NULL);
 }
 
@@ -1770,13 +1770,13 @@ die:
 void far do_bs2tn(m_actor far *a)
 {
     if (check_for_hit(a, 0x14) == 2) {
-        score_at(a->center_x, a->center_y, 0xFA0);
-        a->target->counter_26++;
-        if (a->target->counter_26 == 4)
-            a->target->field_28 = 0;
+        score_at(a->xw2, a->yh2, 0xFA0);
+        a->aux_act1->aux2++;
+        if (a->aux_act1->aux2 == 4)
+            a->aux_act1->field_28 = 0;
     }
-    if (cur_sub->field_36 == 0 && touching(a, cur_sub))
-        hit_cur_sub(a->target->x_speed, 1);
+    if (cur_sub->flash_color == 0 && touching(a, cur_sub))
+        hit_cur_sub(a->aux_act1->x_step, 1);
 }
 
 /* --------------------------------------------------------------------------
@@ -1784,14 +1784,14 @@ void far do_bs2tn(m_actor far *a)
  * ------------------------------------------------------------------------ */
 void far do_bs2_eyes(m_actor far *a)
 {
-    a->field_36 = a->target->field_36;
-    if (a->target->state == 2) {
-        a->current_loop = 3;
-    } else if (a->health == 0) {
-        a->current_loop = random(3);
-        a->health = 0x14;
+    a->flash_color = a->aux_act1->flash_color;
+    if (a->aux_act1->status == 2) {
+        a->cur_cel = 3;
+    } else if (a->aux3 == 0) {
+        a->cur_cel = random(3);
+        a->aux3 = 0x14;
     } else {
-        a->health--;
+        a->aux3--;
     }
 }
 
@@ -1802,19 +1802,19 @@ void far do_bs3_prop(m_actor far *a)
 {
     int var_2, var_4;
 
-    if (a->target->state == 2)
-        a->flag_0 = 1;
-    if (a->target->direction != a->direction) {
-        if (a->direction == 0)
+    if (a->aux_act1->status == 2)
+        a->deleting = 1;
+    if (a->aux_act1->facing != a->facing) {
+        if (a->facing == 0)
             a->new_loop((uchar *)"bs3_prpl.l");
         else
             a->new_loop((uchar *)"bs3_prpr.l");
-        a->direction ^= 1;
+        a->facing ^= 1;
     }
     if (random(2) == 0) {
         var_2 = a->x;
         var_4 = a->y + random(0x0F);
-        if (a->direction == 0)
+        if (a->facing == 0)
             add_bubble(var_2, var_4, -8);
         else
             add_bubble(var_2 + a->width, var_4, 8);
@@ -1827,11 +1827,11 @@ void far do_bs3_prop(m_actor far *a)
  * ------------------------------------------------------------------------ */
 void far do_bs2(m_actor far *a)
 {
-    if (a->state == 2) {
-        if (a->y_speed != 0) {
+    if (a->status == 2) {
+        if (a->y_step != 0) {
             if (a->tile_collision(0, 0, 0) != 0) {
-                a->y_speed = 0;
-                a->inactive = 1;
+                a->y_step = 0;
+                a->sleep = 1;
                 enemies_killed++;
             }
             if (random(3) == 0)
@@ -1842,41 +1842,41 @@ void far do_bs2(m_actor far *a)
         }
         return;
     }
-    if (a->counter_24 != 0) {
-        a->counter_24--;
+    if (a->aux1 != 0) {
+        a->aux1--;
     } else if (a->door_open) {
-        a->counter_24 = random(0x14) + 0x0A;
+        a->aux1 = random(0x14) + 0x0A;
         a->door_open = 0;
-        a->x_speed = -a->x_speed;
-        a->direction ^= 1;
+        a->x_step = -a->x_step;
+        a->facing ^= 1;
     }
-    if (a->counter_26 == 4 && a->y_speed != 0) {
-        a->y_speed = 0;
-        a->flag_3 = 0;
+    if (a->aux2 == 4 && a->y_step != 0) {
+        a->y_step = 0;
+        a->hit = 0;
         a->field_28 = 0;
     }
     if (a->facing_actor(cur_sub) == 0)
         a->door_open = 1;
-    if (a->counter_26 == 4) {
+    if (a->aux2 == 4) {
         if (check_for_hit(a, 0x3C) == 2) {
-            a->target->door_open = 1;
-            a->flag_0 = 0;
-            a->x_speed = 0;
-            a->y_speed = 1;
-            a->move_func = (movefn_t)0;
-            a->state = 2;
+            a->aux_act1->door_open = 1;
+            a->deleting = 0;
+            a->x_step = 0;
+            a->y_step = 1;
+            a->mover = (movefn_t)0;
+            a->status = 2;
             score += 75000;
         }
         if (random(0x1E) == 0)
             add_missile(a, 0x0B, 0x23);
     } else {
-        diff_y = abs(a->center_y - cur_sub->center_y);
+        diff_y = abs(a->yh2 - cur_sub->yh2);
         if (diff_y < 0x28 && random(0x14) == 0)
             add_missile(a, 0x0B, 0x23);
-        a->y_speed = (cur_sub->center_y < a->old_y) ? -1 : 1;
+        a->y_step = (cur_sub->yh2 < a->yh) ? -1 : 1;
     }
-    if (cur_sub->field_36 == 0 && touching(a, cur_sub))
-        hit_cur_sub(a->x_speed, 1);
+    if (cur_sub->flash_color == 0 && touching(a, cur_sub))
+        hit_cur_sub(a->x_step, 1);
 }
 
 /* --------------------------------------------------------------------------
@@ -1889,20 +1889,20 @@ void far do_bs3a(m_actor far *a)
 
     var_1 = check_for_hit(a, 0x28);
     if (var_1 == 2) {
-        a->target->target = (m_actor far *)0;
-        a->target->flag_3 = 0;
-        a->target->field_28 = 0;
+        a->aux_act1->aux_act1 = (m_actor far *)0;
+        a->aux_act1->hit = 0;
+        a->aux_act1->field_28 = 0;
         add_explosion(a->x, a->y, 1, (uchar far *)0);
-        add_explosion(a->old_x, a->y, 1, (uchar far *)0);
-        add_explosion(a->center_x, a->center_y, 2, (uchar far *)0);
+        add_explosion(a->xw, a->y, 1, (uchar far *)0);
+        add_explosion(a->xw2, a->yh2, 2, (uchar far *)0);
     } else if (var_1 == 1 && a->facing_actor(cur_sub) == 0 && random(4) == 0) {
-        a->target->door_open = 1;
+        a->aux_act1->door_open = 1;
     }
-    if (a->flag_7) {
-        if (a->frame == 0)
-            a->flag_7 = 0;
+    if (a->s_aux2) {
+        if (a->cycler == 0)
+            a->s_aux2 = 0;
     } else if (random(0x0A) == 0 && a->facing_actor(cur_sub) != 0) {
-        a->flag_7 = 1;
+        a->s_aux2 = 1;
         a->set_cycle(2, 3);
         add_missile(a, 0x0A, 0x12);
     }
@@ -1913,14 +1913,14 @@ void far do_bs3a(m_actor far *a)
  * ------------------------------------------------------------------------ */
 void far do_bs3_face(m_actor far *a)
 {
-    if (a->target->state == 2)
-        a->flag_0 = 1;
-    if (a->target->direction != a->direction) {
-        if (a->direction == 0)
+    if (a->aux_act1->status == 2)
+        a->deleting = 1;
+    if (a->aux_act1->facing != a->facing) {
+        if (a->facing == 0)
             a->new_loop((uchar *)"bs3_facl.l");
         else
             a->new_loop((uchar *)"bs3_facr.l");
-        a->direction ^= 1;
+        a->facing ^= 1;
     }
 }
 
@@ -1930,101 +1930,101 @@ void far do_bs3_face(m_actor far *a)
  * ------------------------------------------------------------------------ */
 void far do_bs1(m_actor far *a)
 {
-    if (a->state == 2) {
-        if (!a->inactive) {
+    if (a->status == 2) {
+        if (!a->sleep) {
             if (random(2) == 0)
                 add_explosion(a->x + random(a->width), a->y + random(a->height),
                               random(2) == 0 ? 5 : 1, (uchar far *)0);
             if (a->tile_collision(0, 0, 0) != 0) {
-                a->target->door_open = 1;
-                a->inactive = 1;
-                a->y_speed = 0;
+                a->aux_act1->door_open = 1;
+                a->sleep = 1;
+                a->y_step = 0;
             }
         } else if (random(3) == 0) {
             add_bubble(a->x + random(a->width), a->y + random(a->height), 0x14);
         }
         return;
     }
-    if (a->x_speed == 0) {
+    if (a->x_step == 0) {
         if (a->in_window != 1)
             return;
-        a->x_speed = -1;
+        a->x_step = -1;
         a->set_cycle(8, 9);
         the_game->play_sound((uchar *)"badgrunt", 0x0F);
     }
-    if (a->flag_3) {
-        a->flag_3 = 0;
+    if (a->hit) {
+        a->hit = 0;
         if (a->facing_actor(cur_sub) == 0) {
-            a->field_36 = 0x0F;
+            a->flash_color = 0x0F;
             if (random(4 - shot_size) == 0)
                 a->door_open = 1;
-            a->health = a->field_28;
+            a->aux3 = a->field_28;
             if (a->field_28 > 0x5A) {
                 a->new_loop((uchar *)"bs1dr.l");
                 a->set_cycle(0, 0);
-                a->state = 2;
-                a->x_speed = 0;
-                a->y_speed = 1;
-                a->move_func = (movefn_t)0;
+                a->status = 2;
+                a->x_step = 0;
+                a->y_step = 1;
+                a->mover = (movefn_t)0;
                 a->type = 0;
                 score += 50000;
                 enemies_killed++;
                 return;
             }
         } else {
-            a->field_28 = a->health;
+            a->field_28 = a->aux3;
             the_game->play_sound((uchar *)"dirhit", 8);
         }
     }
-    if (a->counter_24 != 0) {
-        a->counter_24--;
+    if (a->aux1 != 0) {
+        a->aux1--;
     } else if (a->door_open) {
-        a->counter_24 = random(0x14) + 0x0A;
+        a->aux1 = random(0x14) + 0x0A;
         a->door_open = 0;
-        a->x_speed = -a->x_speed;
-        if (a->direction == 1)
+        a->x_step = -a->x_step;
+        if (a->facing == 1)
             a->new_loop((uchar *)"bs1_bdr.l");
         else
             a->new_loop((uchar *)"bs1_bdl.l");
-        a->direction ^= 1;
+        a->facing ^= 1;
     }
-    if (a->counter_26 != 0) {
-        if (--a->counter_26 != 0) {
+    if (a->aux2 != 0) {
+        if (--a->aux2 != 0) {
             if (random(4) == 0)
                 add_missile(a, 5, 0x28);
-            if (cur_sub->field_36 == 0 && touching(a, cur_sub))
-                hit_cur_sub(-(cur_sub->x_speed), 5);
+            if (cur_sub->flash_color == 0 && touching(a, cur_sub))
+                hit_cur_sub(-(cur_sub->x_step), 5);
         } else {
             if (random(2) != 0)
                 a->door_open = 1;
-            a->x_speed = a->x_speed / 8;
-            a->y_speed = a->y_speed / 2;
+            a->x_step = a->x_step / 8;
+            a->y_step = a->y_step / 2;
             a->set_cycle(0, 5);
         }
         return;
     }
-    diff_x = abs(cur_sub->center_x - a->center_x);
-    diff_y = abs(cur_sub->center_y - a->center_y);
+    diff_x = abs(cur_sub->xw2 - a->xw2);
+    diff_y = abs(cur_sub->yh2 - a->yh2);
     if (diff_x < 0x96 && diff_y < 0x28) {
         if (a->facing_actor(cur_sub) != 0 && random(0x0A) == 0) {
-            a->counter_26 = 0x0A;
-            a->x_speed *= 8;
-            a->y_speed *= 2;
+            a->aux2 = 0x0A;
+            a->x_step *= 8;
+            a->y_step *= 2;
             a->set_cycle(1, 4);
             return;
         }
     } else {
-        if (diff_y > 0x0A && a->counter_24 == 0)
-            a->y_speed = (a->center_y < cur_sub->center_y) ? 1 : -1;
+        if (diff_y > 0x0A && a->aux1 == 0)
+            a->y_step = (a->yh2 < cur_sub->yh2) ? 1 : -1;
     }
-    if (a->frame == 0)
+    if (a->cycler == 0)
         a->set_cycle(8, 9);
     if (random(0x12C) == 0)
         the_game->play_sound((uchar *)"badgrunt", 0x0C);
 }
 
 /* --------------------------------------------------------------------------
- * seg0b2c:40AC — do_bs3: boss3 — the big finale boss.  When target is set it
+ * seg0b2c:40AC — do_bs3: boss3 — the big finale boss.  When aux_act1 is set it
  *   escorts/mirrors that actor; when clear it is the vulnerable head that
  *   paces, fires missiles, and takes hits.  state 2 is the dying hulk whose
  *   crash releases the sub and triggers the end sequence.
@@ -2033,17 +2033,17 @@ void far do_bs3(m_actor far *a)
 {
     int var_2, var_4, var_6, var_8;
 
-    if (a->state == 2) {
-        if (!a->inactive) {
+    if (a->status == 2) {
+        if (!a->sleep) {
             if (a->tile_collision(0, 0, 0) != 0) {
-                a->y_speed = 0;
-                a->linked->door_open = 1;
-                a->inactive = 1;
+                a->y_step = 0;
+                a->aux_act2->door_open = 1;
+                a->sleep = 1;
                 enemies_killed++;
                 control = 0;
-                ego->y_speed = 0;
-                ego->x_speed = 0;
-                ego->move_func = (movefn_t)0;
+                ego->y_step = 0;
+                ego->x_step = 0;
+                ego->mover = (movefn_t)0;
                 if (ego->facing_actor(a) == 0)
                     turn_ego();
                 ego->set_cycle(0, 1);
@@ -2071,20 +2071,20 @@ void far do_bs3(m_actor far *a)
         }
         return;
     }
-    if (a->target != 0) {
-        if (a->flag_3) {
-            a->flag_3 = 0;
+    if (a->aux_act1 != 0) {
+        if (a->hit) {
+            a->hit = 0;
             the_game->play_sound((uchar *)"dirhit", 8);
         }
     } else {
         var_4 = check_for_hit(a, 0x5A);
         if (var_4 == 2) {
             a->new_loop((uchar *)"bs3_dthr.l");
-            a->state = 2;
-            a->x_speed = 0;
-            a->y_speed = 1;
-            a->move_func = (movefn_t)0;
-            a->flag_0 = 0;
+            a->status = 2;
+            a->x_step = 0;
+            a->y_step = 1;
+            a->mover = (movefn_t)0;
+            a->deleting = 0;
             score += 100000;
             return;
         }
@@ -2092,42 +2092,42 @@ void far do_bs3(m_actor far *a)
             if (random(3 - shot_size + 1) == 0 && a->facing_actor(cur_sub) == 0)
                 a->door_open = 1;
         }
-        if (a->counter_26 != 0)
-            a->counter_26--;
+        if (a->aux2 != 0)
+            a->aux2--;
         else if (a->facing_actor(cur_sub) != 0) {
-            diff_y = abs(a->center_y - cur_sub->center_y);
+            diff_y = abs(a->yh2 - cur_sub->yh2);
             if (diff_y < 0x28) {
-                a->counter_26 = 5;
+                a->aux2 = 5;
                 add_missile(a, 2, 0x20);
             }
         }
     }
     if (a->facing_actor(cur_sub) == 0 && random(5) == 0)
         a->door_open = 1;
-    if (a->counter_24 != 0) {
-        a->counter_24--;
+    if (a->aux1 != 0) {
+        a->aux1--;
         a->door_open = 0;
     } else {
-        var_2 = (a->target != 0) ? a->old_y + 0x0F : a->old_y;
-        a->y_speed = (cur_sub->center_y < var_2) ? -a->health : a->health;
-        a->counter_24 = 0x0A;
+        var_2 = (a->aux_act1 != 0) ? a->yh + 0x0F : a->yh;
+        a->y_step = (cur_sub->yh2 < var_2) ? -a->aux3 : a->aux3;
+        a->aux1 = 0x0A;
         if (a->door_open) {
             a->door_open = 0;
-            a->x_speed = -a->x_speed;
-            if (a->direction == 1) {
+            a->x_step = -a->x_step;
+            if (a->facing == 1) {
                 a->new_loop((uchar *)"bs3_bdr.l");
-                if (a->target) a->target->new_loop((uchar *)"bs3_arr.l");
+                if (a->aux_act1) a->aux_act1->new_loop((uchar *)"bs3_arr.l");
             } else {
                 a->new_loop((uchar *)"bs3_bdl.l");
-                if (a->target) a->target->new_loop((uchar *)"bs3_arl.l");
+                if (a->aux_act1) a->aux_act1->new_loop((uchar *)"bs3_arl.l");
             }
-            a->direction ^= 1;
-            if (a->target) {
-                a->target->direction ^= 1;
-                a->target->set_cycle(0, 0);
+            a->facing ^= 1;
+            if (a->aux_act1) {
+                a->aux_act1->facing ^= 1;
+                a->aux_act1->set_cycle(0, 0);
             }
         }
     }
-    if (cur_sub->field_36 == 0 && touching(a, cur_sub))
+    if (cur_sub->flash_color == 0 && touching(a, cur_sub))
         hit_cur_sub(0, 1);
 }

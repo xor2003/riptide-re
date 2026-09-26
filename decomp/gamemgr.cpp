@@ -21,7 +21,7 @@ struct cur_sound_t {
  * Registered via set_external_open/read so the WoRx resource loader reads
  * through the game's own element layer.
  * ------------------------------------------------------------------------ */
-int far gm_open(uchar far *name)
+long far gm_open(uchar far *name)
 {
     return openelement(name);
 }
@@ -40,7 +40,6 @@ void interrupt far pc_sound_doit(...)
 {
     if (++ticks18_2 >= 6) {
         ticks18_2 = 0;
-        asm pushf;
         theirhandler();
     }
     if (the_game->field_1C != 0 && cur_sound != 0 &&
@@ -131,7 +130,7 @@ game_manager::~game_manager()
 
 /* --------------------------------------------------------------------------
  * doit — per-frame input+sound pump.  Clears the finished VOC, resets the
- * player, folds the key/joystick state into the direction/fire/ack fields and
+ * player, folds the key/joystick state into the facing/fire/ack fields and
  * runs the registered field_00 callback.
  * ------------------------------------------------------------------------ */
 void game_manager::doit()
@@ -540,22 +539,22 @@ void far *game_manager::load_loop(uchar far *src)
         return 0;
     if (g_element_read(buf, 1) != 1)
         return 0;
-    for (var_2 = 0; var_2 < buf->count; ++var_2) {
-        buf->frames[var_2] = (gm_frame far *)new gm_frame;
-        if (buf->frames[var_2] == 0)
+    for (var_2 = 0; var_2 < buf->max_cel; ++var_2) {
+        buf->cels[var_2] = (gm_frame far *)new gm_frame;
+        if (buf->cels[var_2] == 0)
             goto oom;
         if (g_element_read(&var_5, 1) != 1)
             return 0;
         if (g_element_read(&var_6, 1) != 1)
             return 0;
-        buf->frames[var_2]->w = var_5;
-        buf->frames[var_2]->h = var_6;
+        buf->cels[var_2]->width = var_5;
+        buf->cels[var_2]->height = var_6;
         len = var_5 * var_6;
         field_04 += len;
-        buf->frames[var_2]->data = (void far *)new char[len];
-        if (buf->frames[var_2]->data == 0)
+        buf->cels[var_2]->bitmap = (uchar far *)new char[len];
+        if (buf->cels[var_2]->bitmap == 0)
             goto oom;
-        if (g_element_read(buf->frames[var_2]->data, len) != len)
+        if (g_element_read(buf->cels[var_2]->bitmap, len) != len)
             return 0;
     }
     loops[field_38++] = buf;
@@ -585,9 +584,9 @@ void game_manager::remove_loop(uchar far *s2)
     var_4 = var_2;
     block = loops[var_4];
     delete block->name;
-    for (var_2 = 0; var_2 < block->count; ++var_2) {
-        delete block->frames[var_2]->data;
-        delete block->frames[var_2];
+    for (var_2 = 0; var_2 < block->max_cel; ++var_2) {
+        delete block->cels[var_2]->bitmap;
+        delete block->cels[var_2];
     }
     delete block;
     my_movsd(&loops[var_4], &loops[var_4 + 1], field_38 - var_4);

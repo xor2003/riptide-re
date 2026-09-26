@@ -70,8 +70,8 @@ void init_game(void)
     display->field_07 = 0;
     i_init_interface(de_left, de_right, de_up, de_down, de_button);
     loopdat = (loop_res far *)the_game->get_loop((uchar far *)"mouse.l");
-    mouse->set_cursor(loopdat->frames[0]->bitmap,
-                      loopdat->frames[0]->w, loopdat->frames[0]->h);
+    mouse->set_cursor(loopdat->cels[0]->bitmap,
+                      loopdat->cels[0]->width, loopdat->cels[0]->height);
     pd_redraws = 1;
     i_set_text(0x30, 2, 0x18, 0x1d);   /* asm pushes 1D,18,2,30 r-to-l */
     setup_options();
@@ -120,15 +120,15 @@ void init_game(void)
  * ------------------------------------------------------------------------ */
 /* --------------------------------------------------------------------------
  * Boss-level start_up routines — seg03f9:6B3F / 6BC0 / 6F89.  Each spawns the
- * boss body plus its linked appendages via the_cast->add(), then fixes up
- * direction/type/target and the boss-relative x/y offsets (counter_24/26).
+ * boss body plus its aux_act2 appendages via the_cast->add(), then fixes up
+ * facing/type/aux_act1 and the boss-relative x/y offsets (aux1/26).
  * ------------------------------------------------------------------------ */
 void far bs1_start_up(void)
 {
     act = the_cast->add((uchar far *)"bs1_bdl.l", mv_std, do_bs1);
     act->type = 1;
-    act->direction = 1;
-    act->target = end_door_ptr;
+    act->facing = 1;
+    act->aux_act1 = end_door_ptr;
     act->set_cycle(0, 0);
     act->set_xy(0x1C4, 0x1DA);
     boss = act;
@@ -140,110 +140,110 @@ void far bs2_start_up(void)
     smart_missiles = 1;
     act = the_cast->add((uchar far *)"bs2_bod.l", mv_std, do_bs2);
     act->type = 1;
-    act->x_speed = -1;
-    act->direction = 1;
-    act->target = end_door_ptr;
+    act->x_step = -1;
+    act->facing = 1;
+    act->aux_act1 = end_door_ptr;
     act->set_cycle(0, 0);
     act->set_xy(0x1ED, 0x70);
     boss = act;
     enemy_count++;
 
     act = the_cast->add((uchar far *)"otiseyes.l", mv_bs2tn, do_bs2_eyes);
-    act->direction = 1;
-    act->target = boss;
+    act->facing = 1;
+    act->aux_act1 = boss;
     act->set_xy(0x1FB, 0x82);
     act->set_cycle(0, 0);
     act->door_open = 1;
-    act->counter_24 = act->x - boss->x;
-    act->counter_26 = act->y - boss->y;
+    act->aux1 = act->x - boss->x;
+    act->aux2 = act->y - boss->y;
 
     act = the_cast->add((uchar far *)"bs2_tnl2.l", mv_bs2tn, do_bs2tn);
-    act->direction = 1;
+    act->facing = 1;
     act->type = 1;
-    act->target = boss;
+    act->aux_act1 = boss;
     act->set_cycle(random(2) + 2, 1);
     act->set_xy(0x1CC, 0x90);
-    act->counter_24 = act->x - boss->x;
-    act->counter_26 = act->y - boss->y;
+    act->aux1 = act->x - boss->x;
+    act->aux2 = act->y - boss->y;
 
     act = the_cast->add((uchar far *)"bs2_tnr2.l", mv_bs2tn, do_bs2tn);
-    act->direction = 1;
+    act->facing = 1;
     act->type = 1;
-    act->target = boss;
+    act->aux_act1 = boss;
     act->set_cycle(random(2) + 2, 1);
     act->set_xy(0x217, 0x90);
-    act->counter_24 = act->x - boss->x;
-    act->counter_26 = act->y - boss->y;
+    act->aux1 = act->x - boss->x;
+    act->aux2 = act->y - boss->y;
 
     act = the_cast->add((uchar far *)"bs2_tnl1.l", mv_bs2tn, do_bs2tn);
-    act->direction = 1;
+    act->facing = 1;
     act->type = 1;
-    act->target = boss;
+    act->aux_act1 = boss;
     act->set_cycle(random(2) + 2, 1);
     act->set_xy(0x1D0, 0x94);
-    act->counter_24 = act->x - boss->x;
-    act->counter_26 = act->y - boss->y;
+    act->aux1 = act->x - boss->x;
+    act->aux2 = act->y - boss->y;
 
     act = the_cast->add((uchar far *)"bs2_tnr1.l", mv_bs2tn, do_bs2tn);
-    act->direction = 1;
+    act->facing = 1;
     act->type = 1;
-    act->target = boss;
+    act->aux_act1 = boss;
     act->set_cycle(random(2) + 2, 1);
     act->set_xy(0x213, 0x94);
-    act->counter_24 = act->x - boss->x;
-    act->counter_26 = act->y - boss->y;
+    act->aux1 = act->x - boss->x;
+    act->aux2 = act->y - boss->y;
 }
 
 void far bs3_start_up(void)
 {
     smart_missiles = 1;
     act = the_cast->add((uchar far *)"bs3_bdl.l", mv_std, do_bs3);
-    act->x_speed = -2;
+    act->x_step = -2;
     act->type = 1;
-    act->direction = 1;
-    act->linked = end_door_ptr;
+    act->facing = 1;
+    act->aux_act2 = end_door_ptr;
     act->set_xy(0x193, 0x65);
-    act->health = 1;
+    act->aux3 = 1;
     boss = act;
     enemy_count++;
 
     act = the_cast->add((uchar far *)"bs3_arr.l", mv_bs2tn, do_bs3a);
     act->type = 1;
-    act->direction = 1;
-    act->target = boss;
+    act->facing = 1;
+    act->aux_act1 = boss;
     act->set_xy(0x1A4, 0x8A);
     act->set_cycle(0, 0);
-    act->counter_24 = act->x - boss->x;
-    act->counter_26 = act->y - boss->y;
-    act->health = boss->width - act->counter_24 - act->width - 13;
-    boss->target = act;
+    act->aux1 = act->x - boss->x;
+    act->aux2 = act->y - boss->y;
+    act->aux3 = boss->width - act->aux1 - act->width - 13;
+    boss->aux_act1 = act;
     act->new_loop((uchar far *)"bs3_arl.l");
 
     act = the_cast->add((uchar far *)"bs3_prpr.l", mv_bs2tn, do_bs3_prop);
-    act->direction = 1;
-    act->target = boss;
+    act->facing = 1;
+    act->aux_act1 = boss;
     act->set_xy(0x1E8, 0x7D);
     act->set_cycle(1, 1);
-    act->counter_24 = act->x - boss->x;
-    act->counter_26 = act->y - boss->y;
-    act->health = boss->width - act->counter_24 - act->width - 13;
+    act->aux1 = act->x - boss->x;
+    act->aux2 = act->y - boss->y;
+    act->aux3 = boss->width - act->aux1 - act->width - 13;
     act->new_loop((uchar far *)"bs3_prpl.l");
 
     act = the_cast->add((uchar far *)"bs3_facr.l", mv_bs2tn, do_bs3_face);
-    act->direction = 1;
-    act->target = boss;
+    act->facing = 1;
+    act->aux_act1 = boss;
     act->set_xy(0x1A9, 0x6B);
     act->set_cycle(0xF, 0xA);
-    act->counter_24 = act->x - boss->x;
-    act->counter_26 = act->y - boss->y;
-    act->health = boss->width - act->counter_24 - act->width - 13;
+    act->aux1 = act->x - boss->x;
+    act->aux2 = act->y - boss->y;
+    act->aux3 = boss->width - act->aux1 - act->width - 13;
     act->new_loop((uchar far *)"bs3_facl.l");
 }
 
 /* --------------------------------------------------------------------------
- * seg03f9:6928-69AF — direction-poll callbacks for i_init_interface().  Each
+ * seg03f9:6928-69AF — facing-poll callbacks for i_init_interface().  Each
  * refreshes input via the_game->doit() then returns the OR of the raw key
- * byte (seg2608:5193..519B) with the game_manager's accumulated direction
+ * byte (seg2608:5193..519B) with the game_manager's accumulated facing
  * flag (field_27/28/29/2A).
  * ------------------------------------------------------------------------ */
 uchar far de_left(void)  { the_game->doit(); return byte_2D3F6 | the_game->field_29; }
@@ -543,13 +543,13 @@ void start_room(uchar far *path)
 
     if (the_map->map_hdr[0] % 2) {                  /* odd start -> face left */
         ego = the_cast->add((uchar *)"subl.l", mv_ego, do_ego);
-        ego->direction = 1;
+        ego->facing = 1;
     } else {
         ego = the_cast->add((uchar *)"subr.l", mv_ego, do_ego);
-        ego->direction = 0;
+        ego->facing = 0;
     }
     ego->set_cycle(0x0C, 1);
-    ego->state = 0;
+    ego->status = 0;
     ego->set_xy(start_x, start_y);
     ego->type = 0x11;
     ego_map_w = (ego->width >> 3) + 1;
@@ -615,20 +615,20 @@ void de_doit(void)
         if (act->type & 2) {
             if (barrier_count == 0x22)
                 terminate((uchar far *)"Too many barriers for list.", 0);
-            if (!act->inactive)
+            if (!act->sleep)
                 barrier_list[barrier_count++] = act;
         }
         if (act->in_window == 1 && (act->type & 1) && !(act->type & 0x10)) {
             if (shootable_count == 0x1D)
                 terminate((uchar far *)"Too many shootables.", 0);
-            if (!act->inactive)
+            if (!act->sleep)
                 shootable_list[shootable_count++] = act;
         }
     }
 
-    cx = cur_sub->center_x & ~3;
-    cy = cur_sub->center_y;
-    if (ego->state != 2)
+    cx = cur_sub->xw2 & ~3;
+    cy = cur_sub->yh2;
+    if (ego->status != 2)
         centered = the_map->center_on(cx, cy);
     else
         centered = 0;
@@ -713,40 +713,40 @@ void de_doit(void)
 
     if (cur_map == 0x15 && the_game->field_0F == 1) {
         pause(2);
-        dist = abs(ego->x - boss->old_x);
+        dist = abs(ego->x - boss->xw);
         if (the_game->field_10 == 0) {
             if (control)
                 control = 0;
-            if (cur_sub->old_y != boss->center_y) {
-                ego->x_speed = 0;
-                if (ego->old_y < boss->center_y)
-                    ego->y_speed = 1;
+            if (cur_sub->yh != boss->yh2) {
+                ego->x_step = 0;
+                if (ego->yh < boss->yh2)
+                    ego->y_step = 1;
                 else
-                    ego->y_speed = -1;
+                    ego->y_step = -1;
             } else if (dist > 4) {
-                ego->y_speed = 0;
-                if (boss->old_x > ego->x)
-                    ego->x_speed = 4;
+                ego->y_step = 0;
+                if (boss->xw > ego->x)
+                    ego->x_step = 4;
                 else
-                    ego->x_speed = -4;
+                    ego->x_step = -4;
             } else {
                 the_game->field_10 = 1;
-                if (ego->direction) {
+                if (ego->facing) {
                     ego->new_loop((uchar far *)"subr.l");
-                    ego->direction = 0;
+                    ego->facing = 0;
                 }
                 act = the_cast->add((uchar far *)"chain.l", 0, 0);
-                act->set_xy(cur_sub->center_x + 5 - act->width,
-                            cur_sub->old_y);
+                act->set_xy(cur_sub->xw2 + 5 - act->width,
+                            cur_sub->yh);
                 act->set_cycle(0, 4);
-                ego->target = act;
-                ego->x_speed = ego->y_speed = 0;
+                ego->aux_act1 = act;
+                ego->x_step = ego->y_step = 0;
             }
         } else {
-            if (ego->target->current_loop == 2)
+            if (ego->aux_act1->cur_cel == 2)
                 the_game->play_sound((uchar far *)"plunk2", 0x0F);
-            if (boss->x_speed == 0 && !ego->target->frame)
-                ego->x_speed = ego->target->x_speed = boss->x_speed = 4;
+            if (boss->x_step == 0 && !ego->aux_act1->cycler)
+                ego->x_step = ego->aux_act1->x_step = boss->x_step = 4;
             pause(3);
             if (ego->x > 0x258 && !displayed_page) {
                 show_loop((uchar far *)"the.l", 0x23, 0x41, 0, 0);
@@ -826,39 +826,39 @@ void kill_ego(int arg0, int arg2)
 {
     if (god_mode == 1)
         return;
-    if (cur_sub->state == 6)
+    if (cur_sub->status == 6)
         return;
-    if (ego->state == 2) {
+    if (ego->status != 2) {
         ego->erase();
         if (death_type == 0) {
-            the_game->load_loop(src);
-            ego->new_loop((uchar far *)"egodie2.l");
+            the_game->load_loop(aEgodie2_l_0_);
+            ego->new_loop(aEgodie2_l_0);
             ego->set_cycle(2, 4);
             ego->set_xy(ego->x + 1, ego->y - 10);
+        } else {
+            the_game->play_sound((uchar far *)"swish", 0x0F);
+            the_game->load_loop((uchar far *)"gotcha.l");
+            ego->new_loop((uchar far *)"gotcha.l");
+            ego->set_cycle(1, 4);
+            ego->set_xy(arg0 - 28, arg2 - 28);
+            the_game->play_sound((uchar far *)"smash", 0x0F);
         }
-    } else {
-        the_game->play_sound((uchar far *)"swish", 0x0F);
-        the_game->load_loop((uchar far *)"gotcha.l");
-        ego->new_loop((uchar far *)"gotcha.l");
-        ego->set_cycle(1, 4);
-        ego->set_xy(arg0 - 28, arg2 - 28);
-        the_game->play_sound((uchar far *)"smash", 0x0F);
-        ego->state = 2;
-        ego->counter_24 = 0x3C;
-        ego->x_speed = ego->y_speed = 0;
+        ego->status = 2;
+        ego->aux1 = 0x3C;
+        ego->x_step = ego->y_step = 0;
         if (jason_present == 1)
             kill_jason();
         control = 0;
     }
-    if (death_type == 0 && ego->current_loop == 4)
+    if (death_type == 0 && ego->cur_cel == 4)
         the_game->play_sound((uchar far *)"exp2", 0x0F);
-    if (ego->current_loop > 4 && !ego->door_open)
+    if (ego->cur_cel > 4 && !ego->door_open)
         add_bubble(ego->x + random(ego->width),
                    ego->y + random(ego->height), 0);
-    if (ego->frame)
+    if (ego->cycler)
         return;
     if (death_type == 0)
-        the_game->remove_loop((uchar far *)"egodie2.l");
+        the_game->remove_loop(aEgodie2_l_1);
     else
         the_game->remove_loop((uchar far *)"gotcha.l");
     the_game->reset_sound();
@@ -906,7 +906,7 @@ void score_at(int x, int y, int val)
 
     score += val;
     act = the_cast->add(s2, 0, do_score);
-    act->y_speed = -(random(2) + 2);
+    act->y_step = -(random(2) + 2);
     act->set_xy(x, y);
 }
 
@@ -997,7 +997,7 @@ void add_map_item(uint arg_0, uint arg_2)
             s2 = (uchar far *)"coin.l";
         act = the_cast->add(s2, 0, do_coin);
         act->set_cycle(random(2) + 1, 1);
-        if (arg_2 == 0x2800) act->flag_7 = 1;
+        if (arg_2 == 0x2800) act->s_aux2 = 1;
         var_2 += act->width >> 1;
         if (arg_2 != 0x10) ++goody_count;
         break;
@@ -1009,7 +1009,7 @@ void add_map_item(uint arg_0, uint arg_2)
         else
         {
             act = the_cast->add((uchar far *)"pod2.l", mv_std, do_pod);
-            act->health = 1;
+            act->aux3 = 1;
         }
         act->set_cycle(2, 1);
         act->type = 1;
@@ -1030,7 +1030,7 @@ void add_map_item(uint arg_0, uint arg_2)
         act = the_cast->add((uchar far *)"zap_ud.l", 0, do_zapper);
         var_2 = var_2 - 3;
         var_4 = var_4 + 8;
-        act->counter_26 = zapper_count % 2 * 0xA + 0x28;
+        act->aux2 = zapper_count % 2 * 0xA + 0x28;
         act->set_cycle(0, 0);
         act->type = 1;
         break;
@@ -1039,17 +1039,17 @@ void add_map_item(uint arg_0, uint arg_2)
         if (var_5)
         {
             act = the_cast->add((uchar far *)"fish1r.l", 0, do_fish);
-            act->health = 1;
+            act->aux3 = 1;
         }
         else
         {
             act = the_cast->add((uchar far *)"fish2r.l", 0, do_fish);
-            act->health = 2;
+            act->aux3 = 2;
         }
         var_4 -= act->height / 2;
-        act->direction = 0;
-        act->x_speed = 1;
-        act->counter_26 = random(0x64) + 0x64;
+        act->facing = 0;
+        act->x_step = 1;
+        act->aux2 = random(0x64) + 0x64;
         act->set_cycle(3, 1);
         break;
 
@@ -1062,10 +1062,10 @@ void add_map_item(uint arg_0, uint arg_2)
 
     case 0x1C00:                /* tulip */
         act = the_cast->add((uchar far *)"tulip.l", 0, do_tulip);
-        act->counter_26 = 0x16;
+        act->aux2 = 0x16;
         act->set_cycle(0, 0);
         var_2 -= 0xB;
-        var_4 -= act->loop_data->frames[1]->h + 3;
+        var_4 -= act->my_loop->cels[1]->height + 3;
         break;
 
     case 0x2000:                /* chest */
@@ -1081,12 +1081,12 @@ void add_map_item(uint arg_0, uint arg_2)
         if (var_5)
         {
             act = the_cast->add((uchar far *)"duct_r.l", 0, do_duct_lr);
-            act->direction = 0;
+            act->facing = 0;
         }
         else
         {
             act = the_cast->add((uchar far *)"duct_l.l", 0, do_duct_lr);
-            act->direction = 1;
+            act->facing = 1;
         }
         var_4 += 8;
         act->set_cycle(1, 1);
@@ -1096,12 +1096,12 @@ void add_map_item(uint arg_0, uint arg_2)
         if (var_5)
         {
             act = the_cast->add((uchar far *)"duct_u.l", 0, do_duct_ud);
-            act->direction = 2;
+            act->facing = 2;
         }
         else
         {
             act = the_cast->add((uchar far *)"duct_d.l", 0, do_duct_ud);
-            act->direction = 3;
+            act->facing = 3;
         }
         var_2 += 8;
         act->set_cycle(1, 1);
@@ -1111,14 +1111,14 @@ void add_map_item(uint arg_0, uint arg_2)
         if (var_5)
         {
             act = the_cast->add((uchar far *)"piranar.l", mv_pirana, do_pirana);
-            act->x_speed = 1;
-            act->direction = 0;
+            act->x_step = 1;
+            act->facing = 0;
         }
         else
         {
             act = the_cast->add((uchar far *)"piranal.l", mv_pirana, do_pirana);
-            act->x_speed = -1;
-            act->direction = 1;
+            act->x_step = -1;
+            act->facing = 1;
         }
         act->type = 1;
         var_2 -= act->width / 2;
@@ -1138,13 +1138,13 @@ void add_map_item(uint arg_0, uint arg_2)
         if (arg_2 == 0x3800)
         {
             act = the_cast->add((uchar far *)"face_r.l", 0, do_face);
-            act->direction = 0;
+            act->facing = 0;
             var_2 += 7;
         }
         else
         {
             act = the_cast->add((uchar far *)"face_l.l", 0, do_face);
-            act->direction = 1;
+            act->facing = 1;
             var_2 -= act->width - 1;
         }
         act->set_cycle(0, 0);
@@ -1157,14 +1157,14 @@ void add_map_item(uint arg_0, uint arg_2)
         if (var_5)
         {
             act = the_cast->add((uchar far *)"serp_r.l", mv_pace, do_serpent);
-            act->direction = 0;
-            act->x_speed = 1;
+            act->facing = 0;
+            act->x_step = 1;
         }
         else
         {
             act = the_cast->add((uchar far *)"serp_l.l", mv_pace, do_serpent);
-            act->direction = 1;
-            act->x_speed = -1;
+            act->facing = 1;
+            act->x_step = -1;
         }
         var_2 -= act->width / 2;
         var_4 -= act->height;
@@ -1175,8 +1175,8 @@ void add_map_item(uint arg_0, uint arg_2)
 
     case 0x4000:                /* crab */
         act = the_cast->add((uchar far *)"crab.l", mv_pace, do_crab);
-        if (var_5) { act->direction = 0; act->x_speed = 2; }
-        else       { act->direction = 1; act->x_speed = -2; }
+        if (var_5) { act->facing = 0; act->x_step = 2; }
+        else       { act->facing = 1; act->x_step = -2; }
         act->set_cycle(1, 1);
         act->type = 1;
         var_4 -= act->height;
@@ -1214,12 +1214,12 @@ void add_map_item(uint arg_0, uint arg_2)
         if (var_5)
         {
             act = the_cast->add((uchar far *)"sharkr.l", mv_shark, do_shark);
-            act->direction = 0;
+            act->facing = 0;
         }
         else
         {
             act = the_cast->add((uchar far *)"sharkl.l", mv_shark, do_shark);
-            act->direction = 1;
+            act->facing = 1;
         }
         act->type = 1;
         act->set_cycle(0, 0);
@@ -1230,7 +1230,7 @@ void add_map_item(uint arg_0, uint arg_2)
     case 0x5400:                /* tentacle */
         act = the_cast->add((uchar far *)"tent_out.l", 0, do_tentacle);
         act->type = 1;
-        act->counter_24 = 0x19;
+        act->aux1 = 0x19;
         act->set_cycle(0, 0);
         var_2 -= 0xF;
         var_4 += act->height;
@@ -1247,7 +1247,7 @@ void add_map_item(uint arg_0, uint arg_2)
             act = the_cast->add((uchar far *)"spikes_u.l", 0, do_spikes);
             var_4 -= act->height;
         }
-        act->counter_26 = random(0x19) + 0x28;
+        act->aux2 = random(0x19) + 0x28;
         act->type = 1;
         act->set_cycle(0, 0);
         var_2 += act->width;
@@ -1262,15 +1262,15 @@ void add_map_item(uint arg_0, uint arg_2)
     case 0x6000:                /* fire pit */
         act = the_cast->add((uchar far *)"fire_pit.l", 0, do_fire_pit);
         act->set_cycle(3, 1);
-        if (var_5) act->counter_26 = 0x50;
-        else       act->counter_26 = 0x28;
+        if (var_5) act->aux2 = 0x50;
+        else       act->aux2 = 0x28;
         var_4 -= 5;
         break;
 
     case 0x6400:                /* shuttle */
         act = the_cast->add((uchar far *)"shutl_l.l", 0, do_shuttle);
         act->type = 1;
-        act->direction = 1;
+        act->facing = 1;
         var_2 += act->width;
         break;
 
@@ -1285,24 +1285,24 @@ void add_map_item(uint arg_0, uint arg_2)
     case 0x6C00:                /* cannon */
         act = the_cast->add((uchar far *)"cannonr.l", mv_std, do_cannon);
         act->type = 1;
-        act->direction = 0;
+        act->facing = 0;
         act->set_cycle(0, 0);
-        act->y_speed = 1;
-        var_2 -= act->loop_data->frames[2]->w / 2;
+        act->y_step = 1;
+        var_2 -= act->my_loop->cels[2]->width / 2;
         break;
 
     case 0x7400:                /* ship */
         if (var_5)
         {
             act = the_cast->add((uchar far *)"shipl.l", mv_ship, do_ship);
-            act->x_speed = -5;
-            act->direction = 1;
+            act->x_step = -5;
+            act->facing = 1;
         }
         else
         {
             act = the_cast->add((uchar far *)"shipr.l", mv_ship, do_ship);
-            act->x_speed = 5;
-            act->direction = 0;
+            act->x_step = 5;
+            act->facing = 0;
         }
         act->set_cycle(1, 0xA);
         act->type = 1;
@@ -1328,8 +1328,8 @@ void add_barrel(uint arg_0, uint arg_2)
         }
     act = the_cast->add(_tmp, mv_barrel, do_barrel);
     act->type = 3;
-    act->counter_24 = arg_2;
-    act->y_speed = 1;
+    act->aux1 = arg_2;
+    act->y_step = 1;
     get_map_coords(arg_0, (int *)act, (int *)act + 1);
     act->set_xy(act->x - act->width / 2, act->y - act->height);
     if (arg_2 & 0xF)  ++goody_count;
@@ -1396,8 +1396,8 @@ void add_map_pup(uint arg_0, uint arg_2)
         terminate((uchar far *)"Pup not defined!", 0);
     }
     act = the_cast->add(_tmp, 0, do_pup);
-    act->counter_24 = arg_2;
-    act->inactive = 1;
+    act->aux1 = arg_2;
+    act->sleep = 1;
     act->set_cycle(2, 1);
     get_map_coords(arg_0, &var_2, &var_4);
     act->set_xy(var_2, var_4);
@@ -1421,12 +1421,12 @@ void hook_up_switches(void)
             for (j = 0; j < the_cast->count; ++j)
             {
                 if ((the_cast->actors[j]->type & 8) &&
-                    the_cast->actors[j]->counter_24 == act->counter_24)
+                    the_cast->actors[j]->aux1 == act->aux1)
                 {
-                    if (act->target == 0)
-                        act->target = the_cast->actors[j];
+                    if (act->aux_act1 == 0)
+                        act->aux_act1 = the_cast->actors[j];
                     else
-                        act->linked = the_cast->actors[j];
+                        act->aux_act2 = the_cast->actors[j];
                 }
             }
     }
@@ -1442,10 +1442,10 @@ void add_switch(uint arg_0, uint arg_2)
     get_map_coords(arg_0, &var_2, &var_4);
     act = the_cast->add((uchar far *)"switch.l", 0, do_switch);
     act->type = 5;
-    act->counter_24 = arg_2 >> 6;
+    act->aux1 = arg_2 >> 6;
     act->set_xy(var_2 - 1, var_4);
     act->set_cycle(0, 0);
-    act->current_loop = 1;
+    act->cur_cel = 1;
 }
 
 /* --------------------------------------------------------------------------
@@ -1465,7 +1465,7 @@ void add_door(uint arg_0, uint arg_2)
     else
         act = the_cast->add((uchar far *)"door_ud.l", 0, do_door);
     act->type = 0xB;
-    act->counter_24 = arg_2 >> 8;
+    act->aux1 = arg_2 >> 8;
     act->set_xy(var_2 - 4, var_4);
     act->set_cycle(0, 0);
 }
@@ -1483,8 +1483,8 @@ void add_bubble(int arg_0, int arg_2, int arg_4)
         act = the_cast->add((uchar far *)"bubmd.l", 0, do_bubble);
     else
         act = the_cast->add((uchar far *)"bubsm.l", 0, do_bubble);
-    act->x_speed = arg_4;
-    act->y_speed = -(var_1 + 1);
+    act->x_step = arg_4;
+    act->y_step = -(var_1 + 1);
     act->set_xy(arg_0, arg_2);
     act->set_cycle(var_1, 1);
 }
@@ -1533,34 +1533,34 @@ void add_missile(m_actor far *arg_0, uchar arg_4, int arg_6)
     }
     else
     {
-        if (arg_0->direction == 1)
+        if (arg_0->facing == 1)
         {
             act = the_cast->add(_all_projectiles[arg_4].spr_l, 0, do_missle);
             var_2 = arg_0->x;
             var_2 -= act->width;
-            act->x_speed = -1;
+            act->x_step = -1;
         }
         else
         {
             act = the_cast->add(_all_projectiles[arg_4].spr_r, 0, do_missle);
-            var_2 = arg_0->old_x - 3;
-            act->x_speed = 1;
+            var_2 = arg_0->xw - 3;
+            act->x_step = 1;
         }
-        act->direction = arg_0->direction;
+        act->facing = arg_0->facing;
         if (arg_6 == 0)
-            var_4 = arg_0->center_y + 3;
+            var_4 = arg_0->yh2 + 3;
         else
             var_4 = arg_0->y + arg_6;
-        act->counter_24 = _all_projectiles[arg_4].v2;
-        act->counter_26 = _all_projectiles[arg_4].v1;
-        act->health = _all_projectiles[arg_4].v0;
-        act->flag_7 = _all_projectiles[arg_4].flag;
+        act->aux1 = _all_projectiles[arg_4].v2;
+        act->aux2 = _all_projectiles[arg_4].v1;
+        act->aux3 = _all_projectiles[arg_4].v0;
+        act->s_aux2 = _all_projectiles[arg_4].flag;
         if (arg_4 == 9)
         {
-            act->state = 3;
-            act->y_speed = -7;
+            act->status = 3;
+            act->y_step = -7;
         }
-        act->target = arg_0;
+        act->aux_act1 = arg_0;
         act->field_4E = _all_projectiles[arg_4].link;
         act->set_cycle(0, 1);
         act->set_xy(var_2, var_4);
@@ -1571,15 +1571,15 @@ void add_missile(m_actor far *arg_0, uchar arg_4, int arg_6)
         return;
     }
     act = the_cast->add((uchar far *)"msl_top.l", 0, do_missle);
-    act->target = arg_0;
-    act->direction = 0x63;
-    act->flag_7 = 1;
-    act->counter_26 = 8;
-    act->health = 2;
-    if (ego->direction == 0)
-        act->set_xy(ego->x + 0x0B, ego->center_y - act->height - 8);
+    act->aux_act1 = arg_0;
+    act->facing = 0x63;
+    act->s_aux2 = 1;
+    act->aux2 = 8;
+    act->aux3 = 2;
+    if (ego->facing == 0)
+        act->set_xy(ego->x + 0x0B, ego->yh2 - act->height - 8);
     else
-        act->set_xy(ego->x + ego->width - 0x0D, ego->center_y - act->height - 8);
+        act->set_xy(ego->x + ego->width - 0x0D, ego->yh2 - act->height - 8);
     top_shot_count++;
 }
 
@@ -1590,11 +1590,11 @@ void add_jason(void)
 {
     jason = the_cast->add((uchar far *)"prober.l", mv_ego, do_probe);
     jason->type = 0x11;
-    jason->direction = 0;
-    if (ego->direction == 0)
+    jason->facing = 0;
+    if (ego->facing == 0)
         jason->set_xy(ego->x - 2, ego->y);
     else
-        jason->set_xy(ego->old_x, ego->y);
+        jason->set_xy(ego->xw, ego->y);
     jason->set_cycle(0xC, 1);
     jason_power = 100;
     jason_present = 1;
@@ -1605,9 +1605,9 @@ void add_jason(void)
  * ------------------------------------------------------------------------ */
 void kill_jason(void)
 {
-    jason->flag_0 = 1;
-    add_explosion(jason->center_x, jason->center_y, 2, 0);
-    if (jason_on == 1 && ego->state != 2)
+    jason->deleting = 1;
+    add_explosion(jason->xw2, jason->yh2, 2, 0);
+    if (jason_on == 1 && ego->status != 2)
         scroll_to(ego);
     jason_on = jason_present = 0;
     cur_sub = ego;
@@ -1622,7 +1622,7 @@ void toggle_sub_control(void)
     if (jason_present != 0)
     {
         the_game->play_sound_file((uchar far *)"squeek");
-        cur_sub->x_speed = cur_sub->y_speed = 0;
+        cur_sub->x_step = cur_sub->y_step = 0;
         if (jason_on == 1)
         {
             scroll_to(ego);
@@ -1631,7 +1631,7 @@ void toggle_sub_control(void)
         }
         else
         {
-            ego->y_speed = 0;
+            ego->y_step = 0;
             scroll_to(jason);
             jason_on = 1;
             cur_sub = jason;
@@ -1655,8 +1655,8 @@ void scroll_to(m_actor far *arg_0)
     var_8 = var_A = 0;
     while (var_4 != var_8 || var_6 != var_A)
     {
-        var_8 = (arg_0->center_x >> 3) << 3;
-        var_A = (arg_0->center_y >> 3) << 3;
+        var_8 = (arg_0->xw2 >> 3) << 3;
+        var_A = (arg_0->yh2 >> 3) << 3;
         if (var_4 < var_8)
             var_4 += 8;
         else if (var_4 > var_8)
@@ -1674,8 +1674,8 @@ void scroll_to(m_actor far *arg_0)
     }
     while (var_4 != var_8 || var_6 != var_A)
     {
-        var_8 = (arg_0->center_x >> 2) << 2;
-        var_A = arg_0->center_y;
+        var_8 = (arg_0->xw2 >> 2) << 2;
+        var_A = arg_0->yh2;
         if (var_4 < var_8)
             var_4 += 4;
         else if (var_4 > var_8)
@@ -1709,40 +1709,40 @@ void ego_fire(void)
             add_missile(jason, 1, 4);
         return;
     }
-    if (ego->state == 1)
+    if (ego->status == 1)
         return;
     shot_count++;
     add_missile(ego, shot_size, 0);
     if (heavy_timer != 0)
         heavy_timer--;
-    if (jason_fire != 0 && jason_present != 0 && jason->state == 0)
+    if (jason_fire != 0 && jason_present != 0 && jason->status == 0)
         add_missile(jason, 1 - (shot_size == 0), 0);
     if (top_fire == 1 && top_shot_count != 2)
         add_missile(ego, 0x63, 0);
-    if (shot_size != 0 && abs(ego->x_speed) <= 6)
+    if (shot_size != 0 && abs(ego->x_step) <= 6)
     {
-        if (ego->direction == 0)
-            ego->x_speed -= shot_size + 2;
+        if (ego->facing == 0)
+            ego->x_step -= shot_size + 2;
         else
-            ego->x_speed += shot_size + 2;
+            ego->x_step += shot_size + 2;
     }
 }
 
 /* --------------------------------------------------------------------------
- * seg03f9:3B43 — flip the controlled actor's facing direction
+ * seg03f9:3B43 — flip the controlled actor's facing facing
  * ------------------------------------------------------------------------ */
 void turn_ego(void)
 {
     if (jason_on != 0)
-        jason->new_loop(jason->direction == 1 ? (uchar far *)"prober.l"
+        jason->new_loop(jason->facing == 1 ? (uchar far *)"prober.l"
                                             : (uchar far *)"probel.l");
     else
     {
-        ego->state = 1;
-        ego->counter_24 = 3;
+        ego->status = 1;
+        ego->aux1 = 3;
         ego->new_loop((uchar far *)"turn.l");
     }
-    cur_sub->direction ^= 1;
+    cur_sub->facing ^= 1;
 }
 
 /* --------------------------------------------------------------------------
@@ -1783,7 +1783,7 @@ void check_user(void)
             space_bar_been_up++;
     }
 
-    if (the_game->field_2C == 1 && ego->state == 0)
+    if (the_game->field_2C == 1 && ego->status == 0)
     {
         for (var_4 = 0; var_4 < teleport_count; var_4++)
             if (cur_sub->on_pos(all_teleports[var_4][0]))
@@ -1801,63 +1801,63 @@ void check_user(void)
     var_1 = 0;
     if (the_game->field_2A != 0)
     {
-        if (cur_sub->direction != 0)
+        if (cur_sub->facing != 0)
             turn_ego();
-        if (cur_sub->state != 1)
-            cur_sub->x_speed = ego_x_speed;
+        if (cur_sub->status != 1)
+            cur_sub->x_step = ego_x_speed;
         var_1 = 1;
     }
     else if (the_game->field_29 != 0)
     {
-        if (cur_sub->direction != 1)
+        if (cur_sub->facing != 1)
             turn_ego();
-        if (cur_sub->state != 1)
-            cur_sub->x_speed = -ego_x_speed;
+        if (cur_sub->status != 1)
+            cur_sub->x_step = -ego_x_speed;
         var_1 = 1;
     }
     else
     {
-        if (cur_sub->x_speed != 0)
+        if (cur_sub->x_step != 0)
         {
-            if (cur_sub->x_speed > 0)
-                cur_sub->x_speed--;
+            if (cur_sub->x_step > 0)
+                cur_sub->x_step--;
             else
-                cur_sub->x_speed++;
+                cur_sub->x_step++;
         }
     }
 
     if (the_game->field_28 != 0)
     {
-        if (ego_y_speed > cur_sub->y_speed)
-            cur_sub->y_speed++;
-        else if (ego_y_speed < cur_sub->y_speed)
-            cur_sub->y_speed = ego_y_speed;
+        if (ego_y_speed > cur_sub->y_step)
+            cur_sub->y_step++;
+        else if (ego_y_speed < cur_sub->y_step)
+            cur_sub->y_step = ego_y_speed;
         var_1 = 1;
     }
     else if (the_game->field_27 != 0)
     {
-        if (-ego_y_speed < cur_sub->y_speed)
-            cur_sub->y_speed--;
-        else if (-ego_y_speed > cur_sub->y_speed)
-            cur_sub->y_speed = -ego_y_speed;
+        if (-ego_y_speed < cur_sub->y_step)
+            cur_sub->y_step--;
+        else if (-ego_y_speed > cur_sub->y_step)
+            cur_sub->y_step = -ego_y_speed;
         var_1 = 1;
     }
     else
     {
-        if (abs(cur_sub->y_speed) > 1)
+        if (abs(cur_sub->y_step) > 1)
         {
-            if (cur_sub->y_speed > 0)
-                cur_sub->y_speed--;
+            if (cur_sub->y_step > 0)
+                cur_sub->y_step--;
             else
-                cur_sub->y_speed++;
+                cur_sub->y_step++;
         }
     }
 
-    if (ego->state != 1)
+    if (ego->status != 1)
     {
         if (var_1 != 0)
         {
-            if (cur_sub->cycle_speed != 0 || cur_sub->frame == 0)
+            if (cur_sub->cycle_speed != 0 || cur_sub->cycler == 0)
                 cur_sub->set_cycle(0, 1);
         }
         else
@@ -1940,14 +1940,14 @@ void teleport_to(uint arg_0)
     int var_2, var_4, var_6;
 
     control = 0;
-    cur_sub->state = 6;
+    cur_sub->status = 6;
     if (jason_on == 0)
     {
         ego->new_loop((uchar far *)"backsub.l");
         ego->set_cycle(0, 1);
     }
-    cur_sub->x_speed = 0;
-    cur_sub->y_speed = 0;
+    cur_sub->x_step = 0;
+    cur_sub->y_step = 0;
     var_6 = 10;
     the_game->play_sound((uchar far *)"tport", 0xF);
     while (var_6--) de_doit();
@@ -1965,31 +1965,31 @@ void teleport_to(uint arg_0)
     while (var_6--) de_doit();
     if (jason_on == 0)
     {
-        if (ego->direction == 0)
+        if (ego->facing == 0)
             ego->new_loop((uchar far *)"subr.l");
         else
             ego->new_loop((uchar far *)"subl.l");
     }
-    cur_sub->state = 0;
+    cur_sub->status = 0;
     control = 1;
 }
 
 /* --------------------------------------------------------------------------
- * seg03f9:41DD — redraw the boss health gauge (per-level boss width)
+ * seg03f9:41DD — redraw the boss aux3 gauge (per-level boss width)
  *   fill_rect backdrop then 5 tapered draw_span rows for the bar
  * ------------------------------------------------------------------------ */
 void update_boss_guage(void)
 {
     int var_2, var_4, var_6;
 
-    if (boss->state == 2)
+    if (boss->status == 2)
         return;
     switch (cur_map)
     {
         case 6:
-            if (boss->x_speed != 0 && boss != 0)
+            if (boss->x_step != 0 && boss != 0)
             {
-                var_2 = 0x5A - boss->health;
+                var_2 = 0x5A - boss->aux3;
                 var_4 = 0x5A;
                 var_6 = 1;
             }
@@ -1999,16 +1999,16 @@ void update_boss_guage(void)
         case 0xC:
             var_6 = 1;
             var_4 = 0x3C;
-            if (boss->counter_26 == 4)
+            if (boss->aux2 == 4)
                 var_2 = 0x3C - boss->field_28;
             else
                 var_2 = var_4;
             break;
         case 0x15:
             var_6 = 1;
-            if (boss->target != 0)
+            if (boss->aux_act1 != 0)
             {
-                var_2 = 0x28 - boss->target->field_28;
+                var_2 = 0x28 - boss->aux_act1->field_28;
                 var_4 = 0x28;
             }
             else
@@ -2160,12 +2160,12 @@ void update_gun(void)
         }
         var_E = (loop_res far *)the_game->get_loop(s2);
         display->put_bits_masked(var_2, var_4,
-                                 var_2 + var_E->frames[0]->w,
-                                 var_4 + var_E->frames[0]->h,
-                                 var_E->frames[0]->bitmap, 0, 0, 0);
+                                 var_2 + var_E->cels[0]->width,
+                                 var_4 + var_E->cels[0]->height,
+                                 var_E->cels[0]->bitmap, 0, 0, 0);
         display->copy_bits(var_2, var_4,
-                           var_2 + var_E->frames[0]->w,
-                           var_4 + var_E->frames[0]->h,
+                           var_2 + var_E->cels[0]->width,
+                           var_4 + var_E->cels[0]->height,
                            var_2, var_4,
                            page_offsets[0], page_offsets[1], 0x140, 0x140);
     }
@@ -2247,7 +2247,7 @@ void check_guages(void)
             the_game->field_0B = 0;
     }
 
-    if (ego->state == 2)
+    if (ego->status == 2)
         kill_ego(0, 0);
     else if (air_supply == 0 || shld_supply == 0)
     {
@@ -2262,8 +2262,8 @@ void check_guages(void)
     {
         jason_count = 0;
         update_jason_guage();
-        var_2 = abs(ego->center_x - jason->center_x);
-        var_4 = abs(ego->center_y - jason->center_y);
+        var_2 = abs(ego->xw2 - jason->xw2);
+        var_4 = abs(ego->yh2 - jason->yh2);
         if (var_2 > 0x1E) goto drain;
         if (var_4 <= 0x0A) goto recharge;
 drain:
@@ -2786,9 +2786,9 @@ void show_loop(uchar far *s2, int arg_4, int arg_6, uchar arg_8, uint arg_A)
     else
         var_1 = 0;
     display->put_bits_masked(arg_4, arg_6,
-        arg_4 + var_6->frames[arg_8]->w,
-        arg_6 + var_6->frames[arg_8]->h,
-        var_6->frames[arg_8]->bitmap, arg_A, 0, 0);
+        arg_4 + var_6->cels[arg_8]->width,
+        arg_6 + var_6->cels[arg_8]->height,
+        var_6->cels[arg_8]->bitmap, arg_A, 0, 0);
     if (var_1)
         the_game->remove_loop(s2);
     display->field_07 = 0;
@@ -2798,10 +2798,21 @@ void show_loop(uchar far *s2, int arg_4, int arg_6, uchar arg_8, uint arg_A)
  * seg03f9:69B0 — de_button: any fire/confirm input held?
  *   al = gr_keys[SPACE] | gr_keys[ENTER] | the_game->field_2B
  * ------------------------------------------------------------------------ */
+/* TEMP: headless smoke-test hook — "-autofire" pulses "fire" every 40th
+ * de_button call so the prelude/menu button gates pass without input and
+ * the game loop actually runs. Zero effect without the flag. */
+static int auto_pulse;
+static long auto_t;
+
 uchar de_button(void)
 {
+    uchar r;
+
     the_game->doit();
-    return gr_keys[0x39] | gr_keys[0x1C] | the_game->field_2B;
+    r = gr_keys[0x39] | gr_keys[0x1C] | the_game->field_2B;
+    if (auto_pulse && (++auto_t % 40) == 0)
+        return 1;
+    return r;
 }
 
 /* --------------------------------------------------------------------------
@@ -2835,6 +2846,8 @@ void parse_options(int argc, uchar *argv[])
             debug_mode = 1;
         if (strcmp((char *)argv[i], "-pcsound") == 0)
             force_pc_sound = 1;
+        if (strcmp((char *)argv[i], "-autofire") == 0)   /* TEMP headless test */
+            auto_pulse = 1;
         if (strcmp((char *)argv[i], "-start") == 0)
             zoom_to_map = atoi(argv[i + 1]) - 1;
     }

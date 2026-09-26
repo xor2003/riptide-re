@@ -21,7 +21,17 @@ grep -iE "error|warn" "$work"/cc.log 2>/dev/null | head -40 || true
 for src in "$@"; do
   f=$(basename "$src" .cpp)
   obj=$(ls "$work" | grep -ix "$f\.obj" | head -1)
-  if [ -n "$obj" ]; then cp "$work/$obj" "obj/$f.obj"; echo "OK  $f.obj"
+  if [ -n "$obj" ]; then
+    # Write BOTH basenames and BOTH extensions: link.sh looks for
+    # obj/NAME.obj|NAME.OBJ (uppercase), and on a case-sensitive fs a
+    # lowercase-only copy would never match — stale objects shadowed fresh
+    # builds.  Keep every case variant in sync.
+    F=$(echo "$f" | tr 'a-z' 'A-Z')
+    cp "$work/$obj" "obj/$f.obj"
+    cp "$work/$obj" "obj/$f.OBJ"
+    cp "$work/$obj" "obj/$F.obj"
+    cp "$work/$obj" "obj/$F.OBJ"
+    echo "OK  $f.obj"
   else echo "FAIL $f.cpp (no .obj)"; fi
 done
 rm -rf "$work"

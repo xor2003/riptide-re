@@ -35,15 +35,16 @@ typedef unsigned long  dword;
 /* --------------------------------------------------------------------------
  * sprite-loop (.l) resource — an array of frame headers loaded by game_manager
  * ------------------------------------------------------------------------ */
-struct spr_frame {                          /* a sprite frame record */
+struct spr_frame {                          /* TDINFO 'cel' — a sprite frame record */
     uchar far *bitmap;                      /* 00 — also the solid-pixel mask */
-    int   h;                                /* 04 */
-    int   w;                                /* 06 */
+    int   height;                           /* 04 — orig 'height' */
+    int   width;                            /* 06 — orig 'width' */
 };
-struct loop_res {                           /* a .l sprite-loop resource */
-    byte num_frames;                        /* 00 */
-    char _pad[5];                           /* 01..05 */
-    spr_frame far *frames[];                /* 06 — frame ptr table */
+struct loop_res {                           /* TDINFO 'loop' — a .l sprite-loop resource (0x46) */
+    byte max_cel;                           /* 00 — orig 'max_cel' */
+    byte _pad_01;                           /* 01 */
+    char far *name;                         /* 02 — orig 'name' (strdup'd loop name, e.g. "egodie2.l") */
+    spr_frame far *cels[16];                /* 06 — orig 'cels' — frame ptr table */
 };
 
 /* --------------------------------------------------------------------------
@@ -59,54 +60,55 @@ class m_actor {
 public:
     int      x;             /* 00 */
     int      y;             /* 02 */
-    int      old_x;         /* 04 — right edge  = x + width  (recomputed in set_xy/new_loop) */
-    int      old_y;         /* 06 — bottom edge = y + height */
-    int      center_x;      /* 08 */
-    int      center_y;      /* 0A */
-    int      field_0C;      /* 0C — saved width  (new_loop stashes old w/h here) */
-    int      field_0E;      /* 0E — saved height */
+    int      xw;         /* 04 — right edge  = x + width  (recomputed in set_xy/new_loop) */
+    int      yh;         /* 06 — bottom edge = y + height */
+    int      xw2;      /* 08 */
+    int      yh2;      /* 0A */
+    int      field_0C;      /* 0C — orig 'old_width'  (new_loop stashes old w/h here) */
+    int      field_0E;      /* 0E — orig 'old_height' */
     int      width;         /* 10 */
     int      height;        /* 12 */
-    int      x_speed;       /* 14 */
-    int      y_speed;       /* 16 */
-    int      map_pos;       /* 18 */
-    int      field_1A;      /* 1A — width  in tiles = width/8 + 1 */
-    int      field_1C;      /* 1C — height in tiles = height/8 + 1 */
-    int      field_1E;      /* 1E */
-    int      counter_22;    /* 20 */
-    int      counter_24;    /* 22 */
-    int      counter_26;    /* 24 */
-    int      health;        /* 26  (see ctor: [26h]=0 — sketch had 28; verify) */
+    int      x_step;       /* 14 */
+    int      y_step;       /* 16 */
+    int      my_map_pos;       /* 18 */
+    int      field_1A;      /* 1A — orig 'my_map_width'  = width in tiles  = width/8 + 1 */
+    int      field_1C;      /* 1C — orig 'my_map_height' = height in tiles = height/8 + 1 */
+    int      field_1E;      /* 1E — orig 'hit_x_step' */
+    int      hit_y_step;    /* 20 */
+    int      aux1;    /* 22 */
+    int      aux2;    /* 24 */
+    int      aux3;        /* 26  (see ctor: [26h]=0 — sketch had 28; verify) */
     /* NOTE: ctor zeroes words at 1E,20,22,24,26,28,2A — order in source TBD */
-    int      field_28;      /* 28 */
-    int      field_2A;      /* 2A */
-    m_actor far *target;    /* 2C (far ptr) */
-    m_actor far *linked;    /* 30 (far ptr) */
-    byte     direction;     /* 34 */
+    int      field_28;      /* 28 — orig 'hit_count' (check_for_hit compares damage vs this) */
+    int      field_2A;      /* 2A — orig 'target_distance' */
+    m_actor far *aux_act1;    /* 2C — orig 'aux_act1' (far ptr) */
+    m_actor far *aux_act2;    /* 30 — orig 'aux_act2' (far ptr) */
+    byte     facing;     /* 34 */
     byte     type;          /* 35 */
-    byte     field_36;      /* 36 */
-    byte     field_37;      /* 37 */
-    byte     frame;         /* 38 */
-    byte     cycle_timer;   /* 39 */
+    byte     flash_color;      /* 36 */
+    byte     flash_count;      /* 37 */
+    byte     cycler;        /* 38 */
+    byte     cycle_count;   /* 39 */
     byte     cycle_speed;   /* 3A */
-    byte     num_frames;    /* 3B */
-    byte     current_loop;  /* 3C */
-    byte     state;         /* 3D */
-    actfn_t  update_func;   /* 3E (far fn ptr) */
-    movefn_t move_func;     /* 42 (far fn ptr) */
-    loop_res far *loop_data; /* 46 — active .l loop resource */
-    uchar far  *sprite_data; /* 4A — loop name string */
-    void far *field_4E;   /* 4E (far ptr) */
-    unsigned flag_0     :1; /* 52.0 — dead/marked for removal: skips update() and draw() */
-    unsigned in_window  :1; /* 52.1 — inside map window; feeds ed_list & shootable_list */
-    unsigned no_erase   :1; /* 52.2 — suppress erase once (just drawn) */
-    unsigned flag_3     :1; /* 52.3 */
-    unsigned new_sprite :1; /* 52.4 — dims changed; erase() uses saved w/h once */
-    unsigned inactive   :1; /* 52.5 — excluded from barrier/shootable lists */
-    unsigned door_open  :1; /* 52.6 — end door unlocked */
-    unsigned flag_7     :1; /* 52.7 */
-    unsigned flag_8     :1; /* 53.0 */
-    unsigned pad_flags  :7; /* 53.1-7 */
+    byte     max_cel;    /* 3B */
+    byte     cur_cel;  /* 3C */
+    byte     status;        /* 3D */
+    actfn_t  doit;   /* 3E (far fn ptr) */
+    movefn_t mover;     /* 42 (far fn ptr) */
+    loop_res far *my_loop; /* 46 — active .l loop resource */
+    uchar far  *name; /* 4A — loop name string */
+    void far *field_4E;   /* 4E — orig 'aux_char_ptr' (far ptr) */
+    unsigned deleting     :1; /* 52.0 — orig 'deleting' — marked for removal */
+    unsigned in_window  :1; /* 52.1 — orig 'in_window' — feeds ed_list & shootable_list */
+    unsigned dont_erase   :1; /* 52.2 — orig 'dont_erase' — suppress erase once */
+    unsigned hit     :1; /* 52.3 — orig 'hit' */
+    unsigned new_looping :1; /* 52.4 — orig 'new_looping' — erase() uses old_width/height once */
+    unsigned sleep   :1; /* 52.5 — orig 'sleep' — excluded from barrier/shootable lists */
+    unsigned door_open  :1; /* 52.6 — orig 'aux1' — used as door_open flag */
+    unsigned s_aux2     :1; /* 52.7 — orig 'aux2' — used as projectile bubbles flag */
+    unsigned active     :1; /* 53.0 — orig 'active' */
+    unsigned aux_bits   :6; /* 53.1-6 — orig 'aux3'..'aux8' (bits 9-14) */
+    unsigned pad_flags  :1; /* 53.7 — orig 'aux9' (bit15) */
     /* 0x54 */
 
     m_actor(uchar far *name, void far *, void far *);           /* seg1224:0006 */
@@ -128,11 +130,11 @@ public:
 /* --------------------------------------------------------------------------
  * game_cast — container of live actors. sizeof = 0x322 (ctor new(0x322))
  * ------------------------------------------------------------------------ */
-class game_cast {
+class game_cast {                            /* TDINFO 'game_cast' — 0x322 */
 public:
-    uchar    count;                 /* 00 */
+    uchar    count;                 /* 00 — orig 'size' */
     uchar    pad_01;                /* 01 */
-    m_actor far *actors[200];       /* 02 — far ptr array (0x320 bytes) */
+    m_actor far *actors[200];       /* 02 — orig 'actors' */
     /* 0x322 */
     game_cast();                                    /* seg1224:0EFD */
     ~game_cast();                                   /* seg1224:0F?? */
@@ -145,39 +147,40 @@ public:
 /* --------------------------------------------------------------------------
  * game_manager — resources, sound, player state. sizeof = 0x332
  * ------------------------------------------------------------------------ */
-struct gm_frame {                        /* one sprite frame — 8 bytes */
-    void far *data;                      /* +0 — pixel data */
-    word      h;                         /* +4 — height */
-    word      w;                         /* +6 — width */
+struct gm_frame {                        /* TDINFO 'cel' — 8 bytes */
+    uchar far *bitmap;                   /* +0 — orig 'bitmap' — pixel data */
+    word      height;                    /* +4 — orig 'height' */
+    word      width;                     /* +6 — orig 'width' */
 };
-struct gm_loop {                         /* sprite-loop (.l) record — 0x46 */
-    byte      count;                     /* +0 — frame count */
+struct gm_loop {                         /* TDINFO 'loop' — .l resource — 0x46 */
+    byte      max_cel;                   /* +0 — orig 'max_cel' */
     byte      pad_01;                    /* +1 */
-    char far *name;                      /* +2 — strdup'd element name */
-    gm_frame far *frames[16];            /* +6 — frame records */
+    char far *name;                      /* +2 — orig 'name' — strdup'd element name */
+    gm_frame far *cels[16];              /* +6 — orig 'cels' */
 };
-struct pcs_note_seq {                    /* PC-speaker note seq block — 0x0A */
-    char far *name;                      /* +0 — strdup'd element name */
-    word  far *freqs;                    /* +4 — word frequency table */
-    word      count;                     /* +8 — note count */
+struct pcs_note_seq {                    /* TDINFO 'pc_snd' — 0x0A */
+    char far *name;                      /* +0 — orig 'name' */
+    word  far *freqs;                    /* +4 — orig 'data' — int far* frequency table */
+    word      count;                     /* +8 — orig 'size' — note count */
 };
-struct voc_block {                       /* VOC data block — 0x08 */
-    char far *name;                      /* +0 — strdup'd element name */
-    void far *seq;                       /* +4 — getsequence() data */
+struct voc_block {                       /* TDINFO 'voc' — 0x08 */
+    char far *name;                      /* +0 — orig 'name' */
+    void far *seq;                       /* +4 — orig 'data' — getsequence() data */
 };
-struct gm_sound {                        /* loaded sound effect — 0x0E */
-    char far *name;                      /* +0 — element name */
-    byte      prio;                      /* +4 — priority (set by play_sound) */
-    byte      index;                     /* +5 — play cursor */
-    pcs_note_seq far *pcs;               /* +6 — PC-speaker seq block */
-    voc_block far *voc;                  /* +0A — VOC block */
+struct gm_sound {                        /* TDINFO 'snd' — 0x0E */
+    char far *name;                      /* +0 — orig 'name' */
+    byte      prio;                      /* +4 — orig 'priority' (set by play_sound) */
+    byte      index;                     /* +5 — orig 'pcs_pos' — play cursor */
+    pcs_note_seq far *pcs;               /* +6 — orig 'my_pcs' */
+    voc_block far *voc;                  /* +0A — orig 'my_voc' */
 };
 class game_manager {
 public:
-    dword field_00;        /* 00 */
-    word  field_04;        /* 04 */
-    byte  sb_present;      /* 06 — digital sound available (dspreset ok) */
-    char  adlib_present;   /* 07 — adlibdetect() result */
+    dword field_00;        /* 00 — orig 'player2_input' — void(far*)() fn ptr */
+    word  field_04;        /* 04 — orig 'sprite_storage_total' (load_loop accumulates len) */
+    byte  sb_present;      /* 06 — orig 'sb_present' — digital sound available */
+    char  adlib_present;   /* 07 — orig 'adlib_present' — adlibdetect() result */
+    /* 08..1B = orig 'game_flags[20]' — per-level/game-state flag bytes */
     byte  field_08;        /* 08 — cleared per-level in play_game */
     byte  field_09;        /* 09 — cleared per-level */
     byte  field_0A;        /* 0A — cleared in start_room */
@@ -188,30 +191,31 @@ public:
     byte  field_0F;        /* 0F — bs3 finale sequence enabled (cur_map 0x15) */
     byte  field_10;        /* 10 — chain attached to boss */
     byte  field_11[0x0B];  /* 11..1B */
-    byte  field_1C;        /* 1C — config byte 0 (sound/music on) */
+    byte  field_1C;        /* 1C — orig 'sound_on' (config byte 0: sound/music on) */
     byte  field_1D;        /* 1D */
-    void far *field_1E;    /* 1E — current CMF/VOC sequence */
-    byte  game_speed;      /* 22 */
+    void far *field_1E;    /* 1E — orig 'song' — current CMF/VOC sequence ptr */
+    byte  game_speed;      /* 22 — orig 'game_speed' */
     byte  field_23;        /* 23 */
-    byte  input_mode;      /* 24 — joystick present flag (set from config) */
-    byte  field_25;        /* 25 */
-    byte  field_26;        /* 26 */
-    byte  field_27;        /* 27 — up */
-    byte  field_28;        /* 28 — down */
-    byte  field_29;        /* 29 — left */
-    byte  field_2A;        /* 2A — right */
-    byte  field_2B;        /* 2B — fire-button held state (joystick/mouse/space/enter) */
-    byte  field_2C;        /* 2C — input ack flag (post_message wait) */
-    byte  field_2D;        /* 2D */
-    byte  field_2E;        /* 2E */
-    byte  field_2F;        /* 2F */
-    byte  field_30;        /* 30 */
-    byte  field_31[7];     /* 31..37 — gap */
-    byte  field_38;        /* 38 — loop count (max 0x96) */
-    byte  field_39;        /* 39 — sound count (max 0x27) */
-    gm_loop  far *loops[0x96];   /* 3A..291 — sprite-loop table */
-    gm_sound far *sounds[0x27];  /* 292..32D — sound-effect table */
-    byte  field_32E[4];    /* 32E..331 — tail */
+    /* 24..37 = orig 'player players[2]' — 10B each: {controller_type,
+     * but1_been_up, shot_count, up, down, left, right, but1, but2, pad} */
+    byte  input_mode;      /* 24 — players[0].controller_type — joystick present flag */
+    byte  field_25;        /* 25 — players[0].but1_been_up */
+    byte  field_26;        /* 26 — players[0].shot_count */
+    byte  field_27;        /* 27 — players[0].up */
+    byte  field_28;        /* 28 — players[0].down */
+    byte  field_29;        /* 29 — players[0].left */
+    byte  field_2A;        /* 2A — players[0].right */
+    byte  field_2B;        /* 2B — players[0].but1 — fire-button held state */
+    byte  field_2C;        /* 2C — players[0].but2 — input ack flag (post_message wait) */
+    byte  field_2D;        /* 2D — players[0] pad */
+    byte  field_2E;        /* 2E — players[1].controller_type */
+    byte  field_2F;        /* 2F — players[1].but1_been_up */
+    byte  field_30;        /* 30 — players[1].shot_count */
+    byte  field_31[7];     /* 31..37 — players[1].up..but2 + pad */
+    byte  field_38;        /* 38 — orig 'loop_count' (max 0x96) */
+    byte  field_39;        /* 39 — orig 'sound_count' (bound 0x27, array is 40) */
+    gm_loop  far *loops[0x96];   /* 3A..291 — orig 'all_loops' */
+    gm_sound far *sounds[0x28];  /* 292..331 — orig 'all_sounds' (40 entries) */
     /* 0x332 */
 
     game_manager(uchar far *rsc_name);          /* seg110e:0044 */
@@ -242,9 +246,9 @@ public:
     void remove_loop(uchar far *);
 };
 
-struct tattr {                              /* 4-byte per-tile attribute record */
-    word  attr;                             /* +0 — value compared by m_actor::on_tile */
-    word  type;                             /* +2 — &0xC0=sw &0x300=door &0x3F=barrel &0xFC00=item */
+struct tattr {                              /* TDINFO 'map_entry' — 4B per-tile record */
+    word  attr;                             /* +0 — orig 'tile_id' — value compared by m_actor::on_tile */
+    word  type;                             /* +2 — orig 'flag_bits' — &0xC0=sw &0x300=door &0x3F=barrel &0xFC00=item */
 };
 
 /* --------------------------------------------------------------------------
@@ -252,46 +256,45 @@ struct tattr {                              /* 4-byte per-tile attribute record 
  * ------------------------------------------------------------------------ */
 class tilemap {
 public:
-    int   viewport_x;      /* 00 */
-    int   viewport_y;      /* 02 */
-    int   viewport_w;      /* 04 */
-    int   viewport_h;      /* 06 */
-    int   map_x;           /* 08 */
-    int   map_y;           /* 0A */
-    int   field_0C;        /* 0C */
-    int   field_0E;        /* 0E */
-    int   field_10;        /* 10 */
-    int   field_12;        /* 12 */
-    int   map_w_pixels;    /* 14 = map_width*8 */
-    int   map_h_pixels;    /* 16 = map_height*8 */
-    int   field_18;        /* 18 */
-    int   field_1A;        /* 1A */
-    int   field_1C;        /* 1C */
-    int   field_1E;        /* 1E */
-    int   field_20;        /* 20 */
-    int   field_22;        /* 22 */
-    int   map_hdr[0x32];   /* 24..87 — 0x64-byte saved map header:
+    int   viewport_x;      /* 00 — orig 'vp_x' */
+    int   viewport_y;      /* 02 — orig 'vp_y' */
+    int   viewport_w;      /* 04 — orig 'vp_w' */
+    int   viewport_h;      /* 06 — orig 'vp_h' */
+    int   map_x;           /* 08 — orig 'x' */
+    int   map_y;           /* 0A — orig 'y' */
+    int   field_0C;        /* 0C — orig 'org_x' */
+    int   field_0E;        /* 0E — orig 'org_y' */
+    int   field_10;        /* 10 — orig 'work_x' */
+    int   field_12;        /* 12 — orig 'work_y' */
+    int   map_w_pixels;    /* 14 — orig 'width'  = t_width*8 */
+    int   map_h_pixels;    /* 16 — orig 'height' = t_height*8 */
+    int   field_18;        /* 18 — orig 'work_w' */
+    int   field_1A;        /* 1A — orig 'work_h' */
+    int   field_1C;        /* 1C — orig 'work_t_w' */
+    int   field_1E;        /* 1E — orig 'work_t_h' */
+    int   field_20;        /* 20 — orig 'vp_w4' */
+    int   field_22;        /* 22 — orig 'dst_address' */
+    int   map_hdr[0x32];   /* 24..87 — orig 'auxillery_ints[50]' scratch block:
                               [0]=start_pos  [1]=finish_tile
                               [2]=end_door   [3]=end_door_pos
                               [4]=secret     [5..9]=?
                               [0A..1D]=teleport pairs (from,to)
                               [1E..27]=message pairs (pos,id) */
-    byte  field_88;        /* 88 — palette-cycle param (add_cycle a) */
-    byte  field_89;        /* 89 — palette-cycle param (add_cycle b) */
-    byte  field_8A;        /* 8A — palette-cycle param (add_cycle c) */
+    byte  field_88;        /* 88 — orig 'the_pal_cycle.start'  (add_cycle a) */
+    byte  field_89;        /* 89 — orig 'the_pal_cycle.end'    (add_cycle b) */
+    byte  field_8A;        /* 8A — orig 'the_pal_cycle.speed'  (add_cycle c) */
     byte  field_8B;        /* 8B */
-    byte  cycling;         /* 8C — palette cycling active */
+    byte  cycling;         /* 8C — orig 'palette_cycling' */
     byte  field_8D;        /* 8D */
-    int   map_width;       /* 8E (tiles) */
-    int   map_height;      /* 90 */
-    int   field_92;        /* 92 — cached window origin (map cells) */
-    ulong map_size;        /* 94 (dword = map_width*map_height) */
-    byte  far *map_data;   /* 98 (far ptr, 0x8000 bytes) */
-    byte  palette[0x300];  /* 9C..39B */
-    byte  exploded;        /* 39C (2 = ?) */
+    int   map_width;       /* 8E — orig 't_width'  (tiles) */
+    int   map_height;      /* 90 — orig 't_height' (tiles) */
+    int   field_92;        /* 92 — orig 't_org' — cached window origin (map cells) */
+    ulong map_size;        /* 94 — orig 't_size' = t_width*t_height */
+    byte  far *map_data;   /* 98 — orig 'tiles' (far ptr, 0x8000 bytes) */
+    byte  palette[0x300];  /* 9C..39B — orig 'map_palette' */
+    byte  exploded;        /* 39C — orig 'speed' (2 = explosion done marker?) */
     byte  pad_39D;         /* 39D */
-    tattr far *tile_attr;  /* 39E — far ptr to 4-byte recs; attr word at +2:
-                              &0xC0=switch &0x300=door &0x3F=barrel &0xFC00=item */
+    tattr far *tile_attr;  /* 39E — orig 'map' — map_entry far* to 4-byte recs */
     /* 0x3A2 */
 
     tilemap(uchar far *path, int w, int h);   /* seg1783:0006 */
@@ -325,25 +328,26 @@ public:
  * ------------------------------------------------------------------------ */
 class vga_display {
 public:
-    byte  field_00;        /* 00 — ctor arg (display/page mode) */
-    byte  field_01;        /* 01 — text shadow color/enable */
-    byte  field_02;        /* 02 */
-    byte  field_03;        /* 03 */
-    byte  field_04;        /* 04 — text foreground color */
-    byte  field_05;        /* 05 — palette cycling enabled */
-    byte  field_06;        /* 06 — flag: suppress frame render? (start_room) */
-    byte  field_07;        /* 07 — flag cleared in init_game */
-    int   width;           /* 08 — 320 */
-    int   height;          /* 0A — 200 */
-    byte  field_0C;        /* 0C — cycle period (ticks per step) */
-    byte  field_0D;        /* 0D — cycle frame index */
-    byte  field_0E;        /* 0E — cycle tick counter */
-    byte  field_0F;        /* 0F — cycle frame count (color range) */
-    byte  field_10[0x300]; /* 10..30F — cycle frame LUT (field_0F rows of 0x30) */
-    word  field_310;       /* 310 — cycle start color *3 */
-    word  field_312;       /* 312 — cycle end color *3 */
-    int   field_314;       /* 314 — cycle range *3 bytes (signed → idiv) */
-    word  field_316;       /* 316 — cycle range *3 / 4 (dwords per frame) */
+    byte  field_00;        /* 00 — orig 'mode' — ctor arg (display/page mode) */
+    byte  field_01;        /* 01 — orig 'text_style' — text shadow color/enable */
+    byte  field_02;        /* 02 — orig 'back_color' */
+    byte  field_03;        /* 03 — orig 'for_color' */
+    byte  field_04;        /* 04 — orig 'text_color' — text foreground color */
+    byte  field_05;        /* 05 — orig 'cycling' — palette cycling enabled */
+    byte  field_06;        /* 06 — orig 'cycling_paused' — suppress frame render */
+    byte  field_07;        /* 07 — orig 'clipping_disabled' */
+    int   width;           /* 08 — orig 'x_bound' — 320 */
+    int   height;          /* 0A — orig 'y_bound' — 200 */
+    /* 0C..317 = orig 'my_palette_cycle' (TDINFO palette_cycle, 0x30C) */
+    byte  field_0C;        /* 0C — orig 'speed' — cycle period (ticks per step) */
+    byte  field_0D;        /* 0D — orig 'cur_shift' — cycle frame index */
+    byte  field_0E;        /* 0E — orig 'cycle_count' — cycle tick counter */
+    byte  field_0F;        /* 0F — orig 'how_many' — cycle frame count */
+    byte  field_10[0x300]; /* 10..30F — orig 'shifted_segments[48][16]' LUT */
+    word  field_310;       /* 310 — orig 'start' — cycle start color *3 */
+    word  field_312;       /* 312 — orig 'end' — cycle end color *3 */
+    int   field_314;       /* 314 — orig 'size' — cycle range *3 (signed → idiv) */
+    word  field_316;       /* 316 — orig 'movsd_size' — cycle range *3 / 4 */
     /* 0x318 */
 
     vga_display(uchar);
@@ -396,26 +400,26 @@ public:
  * ------------------------------------------------------------------------ */
 class ms_mouse {
 public:
-    byte  field_00;        /* 00 — any button pressed */
-    byte  field_01;        /* 01 — event pending (set by handler) */
-    byte  field_02;        /* 02 — cursor currently shown */
+    byte  field_00;        /* 00 — orig 'button_down' — any button pressed */
+    byte  field_01;        /* 01 — orig 'button_been_up' — event pending */
+    byte  field_02;        /* 02 — orig 'showing' — cursor currently shown */
     byte  field_03;        /* 03 */
-    uchar far *field_04;   /* 04 — cursor bitmap */
-    void  far *field_08;   /* 08 — saved bg bits */
-    int   field_0C;        /* 0C — mouse x (init 0xA0) */
-    int   field_0E;        /* 0E — mouse y (init 0x64) */
-    int   field_10;        /* 10 — hotspot x */
-    int   field_12;        /* 12 — hotspot y */
-    int   field_14;        /* 14 — saved display width */
-    int   field_16;        /* 16 — saved display height */
-    int   field_18;        /* 18 — aligned x during draw */
-    int   field_1A;        /* 1A — cursor width during draw */
-    union REGS regs;       /* 1C..2B — int86 in/out image (ax,bx,cx,dx,si,di,cflag,flags) */
-    byte  field_2C;        /* 2C — left-button flag */
-    byte  field_2D;        /* 2D — right-button flag */
-    byte  field_2E;        /* 2E — mouse-present flag */
-    byte  field_2F;        /* 2F */
-    /* sizeof = 0x30 */
+    uchar far *field_04;   /* 04 — orig 'mouse_bitmap' — cursor bitmap */
+    void  far *field_08;   /* 08 — orig 'underbits' — saved bg bits */
+    int   field_0C;        /* 0C — orig 'x' — mouse x (init 0xA0) */
+    int   field_0E;        /* 0E — orig 'y' — mouse y (init 0x64) */
+    int   field_10;        /* 10 — orig 'width' — hotspot x */
+    int   field_12;        /* 12 — orig 'height' — hotspot y */
+    int   field_14;        /* 14 — orig 'old_x_bound' — saved display width */
+    int   field_16;        /* 16 — orig 'old_y_bound' — saved display height */
+    int   field_18;        /* 18 — orig 'x4' — aligned x during draw */
+    int   field_1A;        /* 1A — orig 'w4' — cursor width during draw */
+    union REGS regs;       /* 1C..2B — orig 'regset' — int86 in/out image */
+    byte  field_2C;        /* 2C — orig 'but1' — left-button flag */
+    byte  field_2D;        /* 2D — orig 'but3' — right-button flag */
+    byte  field_2E;        /* 2E — orig 'mouse_present' */
+    byte  field_2F;        /* 2F — pad (TDINFO MS_MOUSE ends at 0x2E) */
+    /* sizeof = 0x30 (orig likely 0x2F + align) */
 
     ms_mouse();
     ~ms_mouse();
@@ -438,15 +442,15 @@ public:
  * ------------------------------------------------------------------------ */
 class gui_item {
 public:
-    word  field_02;        /* 02 — x1 / x */
-    word  field_04;        /* 04 — y1 / y */
-    word  field_06;        /* 06 — height (y-extent) */
-    word  field_08;        /* 08 — width  (x-extent) */
-    word  field_0A;        /* 0A — item count */
-    word  field_0C;        /* 0C */
-    uchar far *field_0E;   /* 0E — saved-bits buffer (get_bits) / data ptr */
-    byte  field_12;        /* 12 */
-    byte  field_13;        /* 13 */
+    word  field_02;        /* 02 — orig 'x' */
+    word  field_04;        /* 04 — orig 'y' */
+    word  field_06;        /* 06 — orig 'height' */
+    word  field_08;        /* 08 — orig 'width' */
+    word  field_0A;        /* 0A — orig 'item_count' */
+    word  field_0C;        /* 0C — orig 'status' */
+    uchar far *field_0E;   /* 0E — orig 'underbits' — saved-bits buffer */
+    byte  field_12;        /* 12 — orig 'cur_selection' */
+    byte  field_13;        /* 13 — pad (orig sizeof 0x12 + align) */
     /* sizeof = 0x14 */
 
     gui_item();
@@ -456,12 +460,12 @@ public:
     uchar poll();              /* non-virtual stub (seg0b2c:0004) — returns 0 */
 };
 
-/* pull_down item — 0xA bytes, allocated with new char[0xA] */
+/* pull_down item — 0xA bytes, new char[0xA] — TDINFO 'menu_entry' */
 struct pull_down_item {
-    uchar far *s;            /* +0 — label text */
-    byte  enabled;           /* +4 — 1 = selectable */
+    uchar far *s;            /* +0 — orig 'title' — label text */
+    byte  enabled;           /* +4 — orig 'status' — 1 = selectable */
     byte  _pad5;             /* +5 */
-    void  (far *cb)(void);   /* +6 — item callback */
+    void  (far *cb)(void);   /* +6 — orig 'call_back' */
 };
 
 class pull_down : public gui_item {
@@ -580,7 +584,7 @@ class file_box : public gui_item {
 public:
     uchar far *field_14;   /* 14 — path/mask */
     char  field_18[0x1E];  /* 18..35 — inline current-dir + mask buffer */
-    uchar far *field_36;   /* 36 — selected path (dword) */
+    uchar far *flash_color;   /* 36 — selected path (dword) */
     char  field_3A[2];     /* 3A — down-arrow glyph "\x1F" */
     char  field_3C[2];     /* 3C — up-arrow glyph "\x1E" */
     int   field_3E;        /* 3E — selection (-1) */
@@ -617,13 +621,13 @@ public:
     ~text_pager();
 };
 
-/* level descriptor table — seg2608:0228 (_all_maps), 24 entries × 20 bytes. */
+/* level descriptor table — seg2608:0228 (_all_maps), 24 × 20B — TDINFO 'game_level' */
 struct level_def {
-    uchar far *map;        /* +00  "1-1.m" ... */
-    uchar far *song;       /* +04  "1.cmf" ... */
-    uchar far *password;   /* +08  "1", "UR2GD" ... */
-    uchar far *title;      /* +0C  "Micro Menace" ... */
-    void (far *start_up)(void);   /* +10  boss init or NULL */
+    uchar far *map;        /* +00 — orig 'map_name'  "1-1.m" ... */
+    uchar far *song;       /* +04 — orig 'cmf_file'  "1.cmf" ... */
+    uchar far *password;   /* +08 — orig 'password'  "1", "UR2GD" ... */
+    uchar far *title;      /* +0C — orig 'title'     "Micro Menace" ... */
+    void (far *start_up)(void);   /* +10 — orig 'start_up' — boss init or NULL */
 };
 
 /* ==========================================================================
@@ -632,7 +636,7 @@ struct level_def {
 extern game_manager far *the_game;      /* 365A */
 extern game_cast   far *the_cast;
 extern level_def  all_maps[];
-extern byte       all_secrets[];         /* seg2608:0224 — {secret,origin} pairs */
+extern byte       all_secrets[];         /* seg2608:0224 — TDINFO 'secret_level' {room_no,trigger_level} pairs */
 extern vga_display far *display;        /* 4788 */
 extern ms_mouse    far *mouse;
 extern menu_bar    far *the_menu_bar;
@@ -704,13 +708,13 @@ extern m_actor far *barrier_list[35];
 extern byte ed_list_size;                 /* count of actors currently in-window */
 extern word tbl_mul_tw[];
 extern word word_2BA84[];
-extern word word_2BA88[];                 /* seg2608:3828 — 2-entry direction probe table */                 /* seg2608:3824 — row-offset table base (one elem before tbl_mul_tw) */                 /* tile-row -> linear map offset multiply table */
+extern word word_2BA88[];                 /* seg2608:3828 — 2-entry facing probe table */                 /* seg2608:3824 — row-offset table base (one elem before tbl_mul_tw) */                 /* tile-row -> linear map offset multiply table */
 extern word tbl_mul80[];                  /* seg2608:39B6 — i*80 row table */
 extern word tbl_tile_src[];               /* seg2608:3BB6 — tile->src offset table */
 extern byte map_exploded;                 /* seg2608:4786 — db */
 extern m_actor far *ed_list[100];
 extern byte pd_redraws;                 /* 380C — db */
-extern int  show_box_on;
+extern byte show_box_on;                /* db — int writes clobber _menu_bar_height */
 extern byte menu_bar_height;
 extern text_box far *show_box;           /* 3804 */
 extern byte maximum_text_length;        /* 380B — db */
@@ -721,16 +725,19 @@ extern uchar (far *i_external_down)(void);
 extern uchar (far *i_external_button)(void);
 extern void (far *exit_routine)(void);
 extern byte disable_exit_routine;
-extern int  resume;
+extern byte resume;                     /* db — aliases _resume byte */
 extern byte saw_title_screen;
 extern byte smart_missiles;             /* 34DE — db */
 extern byte death_type;                 /* — db */
-extern uchar src[];                     /* 0F2A — "egodie2.l" */
+extern uchar src[];                     /* 182D — "." (NOT the kill_ego loop name!) */
+extern uchar aEgodie2_l_0_[];           /* 0F2A — "egodie2.l" load_loop arg */
+extern uchar aEgodie2_l_0[];            /* 0F34 — "egodie2.l" new_loop arg */
+extern uchar aEgodie2_l_1[];            /* 0F61 — "egodie2.l" remove_loop arg */
 extern int  finish_tile, end_door_tile, secret_tile;  /* 34EC/34EE/34F0 dw */
 extern byte top_shot_count, shot_count, jason_count;  /* 34D1/34CF/34DB db */
 extern byte jason_msg, barrel_msg, gun_msg, cave_msg;
 extern uint diff_x, diff_y;  /* abs() results — orig compares unsigned (jbe/ja) */
-extern int  space_bar_been_up;
+extern byte space_bar_been_up;          /* 34BC — db; MUST stay byte: int writes clobber ego_x_speed@34BD */
 extern byte zapper_count;               /* 3515 — db */
 extern m_actor far *end_door_ptr;       /* 34AC — far ptr */
 extern m_actor far *boss;               /* 34B8 — far ptr */
@@ -740,7 +747,7 @@ extern byte spare_palette[768];
 extern void far *gun_underbits;         /* 34C2 far ptr */
 extern void far *jguage_underbits;      /* 34C6 far ptr */
 extern byte _tmp[];        /* 51CC — scratch buffer global */
-extern char _tmp2[];       /* 53C0 — second scratch buffer (ltoa target) */
+extern char _tmp2[];       /* 53C0 — second scratch buffer (ltoa aux_act1) */
 extern char s1[];         /* 1313 -> _s1 "Debug" menu title */
 extern byte _resume;      /* 3513 — menu resume flag */
 extern byte byte_2D3AC;   /* 514C — key/scan state for menu wait loops */
@@ -753,11 +760,11 @@ extern byte _m_dont_handle;             /* 380A — db, suppress mouse-handler r
 extern byte default_mouse[];            /* 2314 — default cursor bitmap */
 extern int  word_2C9EA;                 /* 478A — dw, vga page/segment arg */
 
-/* high-score table — 10 records, 16-byte stride (0xA0 bytes) */
+/* high-score table — 10 records, 16-byte stride (0xA0 bytes) — TDINFO 'score_element' */
 struct score_entry {
-    char  name[10];                     /* +00 */
-    ulong score;                        /* +0A */
-    byte  field_0E;                     /* +0E */
+    char  name[10];                     /* +00 — orig 'name[9]' + pad */
+    ulong score;                        /* +0A — orig 'score' */
+    byte  field_0E;                     /* +0E — orig 'finished' */
     byte  field_0F;                     /* +0F */
 };
 struct score_line { char s[0x14]; };    /* 20-byte display line */
@@ -802,16 +809,16 @@ void update_jason_guage(void);
 void update_boss_guage(void);                            /* seg03f9:41DD */
 void kill_ego(int,int);                                  /* seg03f9:1A65 */
 void kill_jason(void);                                   /* seg03f9:3744 */
-struct msl_def {                              /* 22-byte projectile record (seg2608:00EC) */
-    uchar far *snd;      /* +00 */
-    uchar far *spr_l;    /* +04 (direction==1) */
-    uchar far *spr_r;    /* +08 */
-    uchar v0;            /* +0C -> health */
-    uchar v1;            /* +0D -> counter_26 */
-    uchar v2;            /* +0E -> counter_24 */
+struct msl_def {                              /* TDINFO 'projectile' — 22B (seg2608:00EC) */
+    uchar far *snd;      /* +00 — orig 'sound' — firing sound name */
+    uchar far *spr_l;    /* +04 — orig 'left_image'  (facing==1) */
+    uchar far *spr_r;    /* +08 — orig 'right_image' */
+    uchar v0;            /* +0C — orig 'energy'    -> act->aux3 (damage per hit) */
+    uchar v1;            /* +0D — orig 'max_speed' -> act->aux2 (terminal x_step) */
+    uchar v2;            /* +0E — orig 'explosion' -> act->aux1 (explosion type) */
     uchar pad0F;         /* +0F */
-    void  far *link;     /* +10 -> field_4E */
-    uchar flag;          /* +14 -> flag_7 */
+    void  far *link;     /* +10 — orig 'ego_hit_voc' -> act->field_4E/aux_char_ptr */
+    uchar flag;          /* +14 — orig 'bubbles'   -> act->s_aux2 (emit bubbles) */
     uchar pad15;         /* +15 */
 };
 extern msl_def _all_projectiles[];             /* seg2608:00EC */
@@ -901,7 +908,7 @@ extern void far check_flying_death(m_actor far *);
 extern byte far check_for_hit(m_actor far *, uchar);
 extern byte far check_vertical_ray(m_actor far *, uint);
 extern byte far check_horizontal_ray(m_actor far *, uint);
-extern int  far check_new_pos(m_actor far *, int, int, int far *, int far *, int, int, int);
+extern uint far check_new_pos(m_actor far *, int, int, int far *, int far *, int, int, int);
 extern void far scroll_to(m_actor far *);                     /* seg0b2c */
 extern byte far touching(m_actor far *, m_actor far *);       /* seg0b2c */
 
@@ -1015,7 +1022,7 @@ extern "C" {
     void  far setfmvolume(int, int);                            /* 036D */
     void  far setvocvolume(int, int);                           /* 0342 */
     void  far setchannelvolume(int, int);                       /* 0795 */
-    int   far openelement(void far *name);                      /* 00D7 */
+    long  far openelement(void far *name);                      /* 00D7 — element len DX:AX */
     uint  far elementread(void far *buf, uint len);             /* 00A8 */
     void  far *far getsequence(void far *);                     /* 049B */
     void  far playcmfblock(void far *);                         /* 0699 */
@@ -1035,7 +1042,7 @@ extern "C" void  far farfree(void far *);                       /* seg0000:1C4E 
 /* seg110e — WoRx/resource globals + callbacks */
 extern byte   ticks18_2;                                        /* 3668 */
 void interrupt far pc_sound_doit(...);                          /* seg110e:03D2 isr */
-extern int   far gm_open(uchar far *name);                      /* seg110e:000E */
+extern long  far gm_open(uchar far *name);                      /* seg110e:000E — openelement len in DX:AX */
 extern ulong far gm_read(void far *buf, uint len);              /* seg110e:0023 */
 extern void  far set_external_open(void far *);                 /* seg1a1e:0109 */
 extern void  far set_external_read(void far *);                 /* seg1a1e:0116 */
