@@ -11,13 +11,16 @@ names=""
 for src in "$@"; do names="$names $(basename "$src" .cpp).cpp"; done
 # run via .BAT so DOS `>' captures BCC's diagnostics into cc.log
 printf 'D:\\BIN\\BCC.EXE -ml -3 -f -O -r- -vi- -S -ID:\\INCLUDE -LD:\\LIB %s > cc.log\r\n' "$names" > "$work/go.bat"
+# dosbox often hangs processing `exit` under --noconsole; timeout kills it and
+# would abort this script via set -e before artifacts are copied. Output files
+# are the real success signal and are checked below, so tolerate the exit code.
 SDL_VIDEODRIVER=dummy SDL_AUDIODRIVER=dummy timeout 600 dosbox \
   -c "mount c $work" \
   -c "mount d \"/home/xor/inertia_player/dos_compilers/Borland C++ v3.1\"" \
   -c "cycles max" \
   -c "c:" \
   -c "go.bat" \
-  -c "exit" --noconsole >/dev/null 2>&1
+  -c "exit" --noconsole >/dev/null 2>&1 || true
 cat "$work"/cc.log 2>/dev/null | grep -iE "error|warn" | head -40
 for src in "$@"; do
   f=$(basename "$src" .cpp)

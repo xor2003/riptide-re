@@ -34,11 +34,14 @@ done
 printf '%s,RIPTIDE.EXE,RIPTIDE.MAP,\n' \
   "$(echo $OBJS | tr 'a-z' 'A-Z' | tr ' ' '+')" > "$W/resp.txt"
 printf 'D:\\BIN\\TLINK.EXE /3 /c /m @resp.txt > link.log\r\n' > "$W/go.bat"
+# dosbox often hangs processing `exit` under --noconsole; timeout kills it and
+# would abort this script via set -e before artifacts are copied. The EXE/MAP
+# cp below is the real success signal, so tolerate the exit code.
 SDL_VIDEODRIVER=dummy SDL_AUDIODRIVER=dummy timeout 600 dosbox \
   -c "mount c $W" \
   -c "mount d \"/home/xor/inertia_player/dos_compilers/Borland C++ v3.1\"" \
   -c "cycles max" \
-  -c "c:" -c "go.bat" -c "exit" --noconsole >/dev/null 2>&1
+  -c "c:" -c "go.bat" -c "exit" --noconsole >/dev/null 2>&1 || true
 cp "$W"/RIPTIDE.EXE "$W"/RIPTIDE.MAP "$W"/link.log link/ 2>/dev/null || true
 echo "=== link.log ==="; cat "$W"/link.log 2>/dev/null | head -80
 ls -la link/ 2>/dev/null

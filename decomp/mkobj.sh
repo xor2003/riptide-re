@@ -10,13 +10,16 @@ cp "$(dirname "$1")/riptide.h" "$work/" 2>/dev/null || true
 names=""
 for src in "$@"; do names="$names $(basename "$src" .cpp).cpp"; done
 printf 'D:\\BIN\\BCC.EXE -c -ml -3 -f -O -r- -vi- -ID:\\INCLUDE -LD:\\LIB %s > cc.log\r\n' "$names" > "$work/go.bat"
+# dosbox often hangs processing `exit` under --noconsole; timeout kills it and
+# would abort this script via set -e before artifacts are copied. The .obj
+# existence check below is the real success signal, so tolerate the exit code.
 SDL_VIDEODRIVER=dummy SDL_AUDIODRIVER=dummy timeout 900 dosbox \
   -c "mount c $work" \
   -c "mount d \"/home/xor/inertia_player/dos_compilers/Borland C++ v3.1\"" \
   -c "cycles max" \
   -c "c:" \
   -c "go.bat" \
-  -c "exit" --noconsole >/dev/null 2>&1
+  -c "exit" --noconsole >/dev/null 2>&1 || true
 grep -iE "error|warn" "$work"/cc.log 2>/dev/null | head -40 || true
 for src in "$@"; do
   f=$(basename "$src" .cpp)

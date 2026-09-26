@@ -15,8 +15,8 @@ $comm	macro	name,dist,size,count
 	endif
 	?debug	V 300h
 	?debug	S "actor.cpp"
-	?debug	C E95A4B395D096163746F722E637070
-	?debug	C E95A4B395D09726970746964652E68
+	?debug	C E9B7863A5D096163746F722E637070
+	?debug	C E9B7863A5D09726970746964652E68
 	?debug	C E9253FD45C12443A5C494E434C5544455C737464696F2E68
 	?debug	C E9263FD45C12443A5C494E434C5544455C5F646566732E68
 	?debug	C E9263FD45C13443A5C494E434C5544455C5F6E66696C652E68
@@ -65,19 +65,19 @@ ACTOR_TEXT	segment byte public use16 'CODE'
 @@0:
 @1@86:
    ;	
-   ;	    update_func = (actfn_t)upd;
+   ;	    doit = (actfn_t)upd;
    ;	
 	les	bx,dword ptr [bp+6]
 	mov	eax,dword ptr [bp+18]
 	mov	dword ptr es:[bx+62],eax
    ;	
-   ;	    move_func   = (movefn_t)mv;
+   ;	    mover   = (movefn_t)mv;
    ;	
 	les	bx,dword ptr [bp+6]
 	mov	eax,dword ptr [bp+14]
 	mov	dword ptr es:[bx+66],eax
    ;	
-   ;	    field_37 = field_28 = counter_24 = counter_26 = health = field_1E = counter_22 = field_2A = 0;
+   ;	    flash_count = field_28 = aux1 = aux2 = aux3 = field_1E = hit_y_step = field_2A = 0;
    ;	
 	les	bx,dword ptr [bp+6]
 	xor	ax,ax
@@ -97,7 +97,7 @@ ACTOR_TEXT	segment byte public use16 'CODE'
 	les	bx,dword ptr [bp+6]
 	mov	byte ptr es:[bx+55],al
    ;	
-   ;	    x = y = x_speed = y_speed = 0;
+   ;	    x = y = x_step = y_step = 0;
    ;	
 	les	bx,dword ptr [bp+6]
 	xor	ax,ax
@@ -109,7 +109,7 @@ ACTOR_TEXT	segment byte public use16 'CODE'
 	les	bx,dword ptr [bp+6]
 	mov	word ptr es:[bx],ax
    ;	
-   ;	    cycle_speed = field_36 = type = state = 0;
+   ;	    cycle_speed = flash_color = type = status = 0;
    ;	
 	les	bx,dword ptr [bp+6]
 	mov	al,0
@@ -121,7 +121,7 @@ ACTOR_TEXT	segment byte public use16 'CODE'
 	les	bx,dword ptr [bp+6]
 	mov	byte ptr es:[bx+58],al
    ;	
-   ;	    if (num_frames == 1) frame = 0; else frame = 1;
+   ;	    if (max_cel == 1) cycler = 0; else cycler = 1;
    ;	
 	les	bx,dword ptr [bp+6]
 	cmp	byte ptr es:[bx+59],1
@@ -134,7 +134,7 @@ ACTOR_TEXT	segment byte public use16 'CODE'
 	mov	byte ptr es:[bx+56],1
 @1@170:
    ;	
-   ;	    flag_0 = in_window = no_erase = flag_3 = new_sprite = inactive = door_open = flag_7 = flag_8 = 0;
+   ;	    deleting = in_window = dont_erase = hit = new_looping = sleep = door_open = s_aux2 = active = 0;
    ;	
 	les	bx,dword ptr [bp+6]
 	and	byte ptr es:[bx+83],254
@@ -202,7 +202,7 @@ ACTOR_TEXT	segment byte public use16 'CODE'
 	call	far ptr @m_actor@new_loop$qnuc
 	add	sp,8
    ;	
-   ;	    target = linked = 0;
+   ;	    aux_act1 = aux_act2 = 0;
    ;	
 	les	bx,dword ptr [bp+6]
 	xor	eax,eax
@@ -257,7 +257,7 @@ ACTOR_TEXT	segment byte public use16 'CODE'
 	mov	bp,sp
    ;	
    ;	{
-   ;	    if (center_x < other->center_x && direction == 0)
+   ;	    if (xw2 < other->xw2 && facing == 0)
    ;	
 	les	bx,dword ptr [bp+6]
 	mov	ax,word ptr es:[bx+8]
@@ -275,7 +275,7 @@ ACTOR_TEXT	segment byte public use16 'CODE'
 	jmp	short @3@226
 @3@114:
    ;	
-   ;	    if (center_x > other->center_x && direction == 1)
+   ;	    if (xw2 > other->xw2 && facing == 1)
    ;	
 	les	bx,dword ptr [bp+6]
 	mov	ax,word ptr es:[bx+8]
@@ -308,11 +308,11 @@ ACTOR_TEXT	segment byte public use16 'CODE'
 	mov	bp,sp
    ;	
    ;	{
-   ;	    if (old_x >= the_map->field_0C &&
+   ;	    if (xw >= the_map->field_0C &&
    ;	
    ;	
    ;	        the_map->field_0C + the_map->field_18 >= x &&
-   ;	        old_y >= the_map->field_0E &&
+   ;	        yh >= the_map->field_0E &&
    ;	        the_map->field_0E + the_map->field_1A >= y)
    ;	
 	les	bx,dword ptr [bp+6]
@@ -381,7 +381,7 @@ ACTOR_TEXT	segment byte public use16 'CODE'
 	mov	ax,word ptr [bp+12]
 	mov	word ptr es:[bx+2],ax
    ;	
-   ;	    this->old_x = this->x + width;
+   ;	    this->xw = this->x + width;
    ;	
 	les	bx,dword ptr [bp+6]
 	push	es
@@ -392,7 +392,7 @@ ACTOR_TEXT	segment byte public use16 'CODE'
 	les	bx,dword ptr [bp+6]
 	mov	word ptr es:[bx+4],ax
    ;	
-   ;	    this->old_y = this->y + height;
+   ;	    this->yh = this->y + height;
    ;	
 	les	bx,dword ptr [bp+6]
 	mov	ax,word ptr es:[bx+2]
@@ -401,7 +401,7 @@ ACTOR_TEXT	segment byte public use16 'CODE'
 	les	bx,dword ptr [bp+6]
 	mov	word ptr es:[bx+6],ax
    ;	
-   ;	    this->center_x = this->x + (width >> 1);
+   ;	    this->xw2 = this->x + (width >> 1);
    ;	
 	les	bx,dword ptr [bp+6]
 	mov	ax,word ptr es:[bx+16]
@@ -412,7 +412,7 @@ ACTOR_TEXT	segment byte public use16 'CODE'
 	les	bx,dword ptr [bp+6]
 	mov	word ptr es:[bx+8],dx
    ;	
-   ;	    this->center_y = this->y + (height >> 1);
+   ;	    this->yh2 = this->y + (height >> 1);
    ;	
 	les	bx,dword ptr [bp+6]
 	mov	ax,word ptr es:[bx+2]
@@ -472,7 +472,7 @@ ACTOR_TEXT	segment byte public use16 'CODE'
 @5@142:
    ;	
    ;	    }
-   ;	    map_pos = tbl_mul_tw[this->y >> 3] + (this->x >> 3);
+   ;	    my_map_pos = tbl_mul_tw[this->y >> 3] + (this->x >> 3);
    ;	
 	les	bx,dword ptr [bp+6]
 	mov	ax,word ptr es:[bx]
@@ -502,13 +502,13 @@ ACTOR_TEXT	segment byte public use16 'CODE'
 	push	si
    ;	
    ;	{
-   ;	    sprite_data = s2;
+   ;	    name = s2;
    ;	
 	les	bx,dword ptr [bp+6]
 	mov	eax,dword ptr [bp+10]
 	mov	dword ptr es:[bx+74],eax
    ;	
-   ;	    new_sprite = 1;
+   ;	    new_looping = 1;
    ;	
 	les	bx,dword ptr [bp+6]
 	or	byte ptr es:[bx+82],16
@@ -527,7 +527,7 @@ ACTOR_TEXT	segment byte public use16 'CODE'
 	les	bx,dword ptr [bp+6]
 	mov	word ptr es:[bx+14],ax
    ;	
-   ;	    loop_data = (loop_res far *)the_game->get_loop(s2);
+   ;	    my_loop = (loop_res far *)the_game->get_loop(s2);
    ;	
 	push	word ptr [bp+12]
 	push	word ptr [bp+10]
@@ -539,7 +539,7 @@ ACTOR_TEXT	segment byte public use16 'CODE'
 	mov	word ptr es:[bx+72],dx
 	mov	word ptr es:[bx+70],ax
    ;	
-   ;	    if (loop_data == 0)
+   ;	    if (my_loop == 0)
    ;	
 	les	bx,dword ptr [bp+6]
 	cmp	dword ptr es:[bx+70],large 0
@@ -555,7 +555,7 @@ ACTOR_TEXT	segment byte public use16 'CODE'
 	add	sp,8
 @6@86:
    ;	
-   ;	    width  = loop_data->frames[0]->w;
+   ;	    width  = my_loop->cels[0]->width;
    ;	
 	les	bx,dword ptr [bp+6]
 	les	bx,dword ptr es:[bx+70]
@@ -564,7 +564,7 @@ ACTOR_TEXT	segment byte public use16 'CODE'
 	les	bx,dword ptr [bp+6]
 	mov	word ptr es:[bx+16],ax
    ;	
-   ;	    height = loop_data->frames[0]->h;
+   ;	    height = my_loop->cels[0]->height;
    ;	
 	les	bx,dword ptr [bp+6]
 	les	bx,dword ptr es:[bx+70]
@@ -591,7 +591,7 @@ ACTOR_TEXT	segment byte public use16 'CODE'
 	les	bx,dword ptr [bp+6]
 	mov	word ptr es:[bx+28],ax
    ;	
-   ;	    old_x = x + width;
+   ;	    xw = x + width;
    ;	
 	les	bx,dword ptr [bp+6]
 	push	es
@@ -602,7 +602,7 @@ ACTOR_TEXT	segment byte public use16 'CODE'
 	les	bx,dword ptr [bp+6]
 	mov	word ptr es:[bx+4],ax
    ;	
-   ;	    old_y = y + height;
+   ;	    yh = y + height;
    ;	
 	les	bx,dword ptr [bp+6]
 	mov	ax,word ptr es:[bx+2]
@@ -611,7 +611,7 @@ ACTOR_TEXT	segment byte public use16 'CODE'
 	les	bx,dword ptr [bp+6]
 	mov	word ptr es:[bx+6],ax
    ;	
-   ;	    center_x = x + (width >> 1);
+   ;	    xw2 = x + (width >> 1);
    ;	
 	les	bx,dword ptr [bp+6]
 	mov	ax,word ptr es:[bx+16]
@@ -622,7 +622,7 @@ ACTOR_TEXT	segment byte public use16 'CODE'
 	les	bx,dword ptr [bp+6]
 	mov	word ptr es:[bx+8],dx
    ;	
-   ;	    center_y = y + (height >> 1);
+   ;	    yh2 = y + (height >> 1);
    ;	
 	les	bx,dword ptr [bp+6]
 	mov	ax,word ptr es:[bx+2]
@@ -633,7 +633,7 @@ ACTOR_TEXT	segment byte public use16 'CODE'
 	les	bx,dword ptr [bp+6]
 	mov	word ptr es:[bx+10],ax
    ;	
-   ;	    current_loop = cycle_timer = 0;
+   ;	    cur_cel = cycle_count = 0;
    ;	
 	les	bx,dword ptr [bp+6]
 	mov	al,0
@@ -641,7 +641,7 @@ ACTOR_TEXT	segment byte public use16 'CODE'
 	les	bx,dword ptr [bp+6]
 	mov	byte ptr es:[bx+60],al
    ;	
-   ;	    num_frames   = loop_data->num_frames;
+   ;	    max_cel   = my_loop->max_cel;
    ;	
 	les	bx,dword ptr [bp+6]
 	les	bx,dword ptr es:[bx+70]
@@ -676,7 +676,7 @@ ACTOR_TEXT	segment byte public use16 'CODE'
 	jmp	@7@226
 @@1:
    ;	
-   ;	        if (no_erase) {
+   ;	        if (dont_erase) {
    ;	
 	les	bx,dword ptr [bp+6]
 	mov	al,byte ptr es:[bx+82]
@@ -685,7 +685,7 @@ ACTOR_TEXT	segment byte public use16 'CODE'
 	or	ax,ax
 	je	short @7@142
    ;	
-   ;	            no_erase = 0;
+   ;	            dont_erase = 0;
    ;	
 	les	bx,dword ptr [bp+6]
 	and	byte ptr es:[bx+82],251
@@ -697,7 +697,7 @@ ACTOR_TEXT	segment byte public use16 'CODE'
 @7@142:
    ;	
    ;	        }
-   ;	        if (new_sprite) {
+   ;	        if (new_looping) {
    ;	
 	les	bx,dword ptr [bp+6]
 	mov	al,byte ptr es:[bx+82]
@@ -729,7 +729,7 @@ ACTOR_TEXT	segment byte public use16 'CODE'
 	call	far ptr @tilemap@erase_bits$qiiii
 	add	sp,12
    ;	
-   ;	            new_sprite = 0;
+   ;	            new_looping = 0;
    ;	
 	les	bx,dword ptr [bp+6]
 	and	byte ptr es:[bx+82],239
@@ -780,7 +780,7 @@ ACTOR_TEXT	segment byte public use16 'CODE'
    ;	    uchar var_6, var_5;
    ;	    word  var_2, var_4;
    ;	
-   ;	    var_2 = map_pos;
+   ;	    var_2 = my_map_pos;
    ;	
 	les	bx,dword ptr [bp+6]
 	mov	ax,word ptr es:[bx+24]
@@ -867,7 +867,7 @@ ACTOR_TEXT	segment byte public use16 'CODE'
    ;	    uchar var_6, var_5;
    ;	    word  var_2, var_4;
    ;	
-   ;	    var_2 = map_pos;
+   ;	    var_2 = my_map_pos;
    ;	
 	les	bx,dword ptr [bp+6]
 	mov	ax,word ptr es:[bx+24]
@@ -946,7 +946,7 @@ ACTOR_TEXT	segment byte public use16 'CODE'
 	mov	bp,sp
    ;	
    ;	{
-   ;	    this->frame       = frame;
+   ;	    this->cycler       = frame;
    ;	
 	les	bx,dword ptr [bp+6]
 	mov	al,byte ptr [bp+12]
@@ -958,7 +958,7 @@ ACTOR_TEXT	segment byte public use16 'CODE'
 	mov	al,byte ptr [bp+10]
 	mov	byte ptr es:[bx+58],al
    ;	
-   ;	    this->cycle_timer = 0;
+   ;	    this->cycle_count = 0;
    ;	
 	les	bx,dword ptr [bp+6]
 	mov	byte ptr es:[bx+57],0
@@ -974,7 +974,7 @@ ACTOR_TEXT	segment byte public use16 'CODE'
 @10@86:
    ;	
    ;	    {
-   ;	        current_loop = num_frames - 1;
+   ;	        cur_cel = max_cel - 1;
    ;	
 	les	bx,dword ptr [bp+6]
 	mov	al,byte ptr es:[bx+59]
@@ -982,7 +982,7 @@ ACTOR_TEXT	segment byte public use16 'CODE'
 	les	bx,dword ptr [bp+6]
 	mov	byte ptr es:[bx+60],al
    ;	
-   ;	        width  = loop_data->frames[current_loop]->w;
+   ;	        width  = my_loop->cels[cur_cel]->width;
    ;	
 	les	bx,dword ptr [bp+6]
 	mov	al,byte ptr es:[bx+60]
@@ -996,7 +996,7 @@ ACTOR_TEXT	segment byte public use16 'CODE'
 	les	bx,dword ptr [bp+6]
 	mov	word ptr es:[bx+16],ax
    ;	
-   ;	        height = loop_data->frames[current_loop]->h;
+   ;	        height = my_loop->cels[cur_cel]->height;
    ;	
 	les	bx,dword ptr [bp+6]
 	mov	al,byte ptr es:[bx+60]
@@ -1049,7 +1049,7 @@ ACTOR_TEXT	segment byte public use16 'CODE'
    ;	    uchar far *var_18, *var_1C;
    ;	    m_actor far *var_14;
    ;	
-   ;	    if (a->flag_0 || b->flag_0)
+   ;	    if (a->deleting || b->deleting)
    ;	
 	les	bx,dword ptr [bp+6]
 	mov	al,byte ptr es:[bx+82]
@@ -1066,7 +1066,7 @@ ACTOR_TEXT	segment byte public use16 'CODE'
 @11@114:
    ;	
    ;	        return 0;
-   ;	    if (a->inactive || b->inactive)
+   ;	    if (a->sleep || b->sleep)
    ;	
 	les	bx,dword ptr [bp+6]
 	mov	al,byte ptr es:[bx+82]
@@ -1280,7 +1280,7 @@ ACTOR_TEXT	segment byte public use16 'CODE'
 @11@758:
 	mov	word ptr [bp-28],ax
    ;	
-   ;	    var_18 = a->loop_data->frames[a->current_loop]->bitmap;
+   ;	    var_18 = a->my_loop->cels[a->cur_cel]->bitmap;
    ;	
 	les	bx,dword ptr [bp+6]
 	mov	al,byte ptr es:[bx+60]
@@ -1295,7 +1295,7 @@ ACTOR_TEXT	segment byte public use16 'CODE'
 	mov	word ptr [bp-38],ax
 	mov	word ptr [bp-40],dx
    ;	
-   ;	    var_1C = b->loop_data->frames[b->current_loop]->bitmap;
+   ;	    var_1C = b->my_loop->cels[b->cur_cel]->bitmap;
    ;	
 	les	bx,dword ptr [bp+10]
 	mov	al,byte ptr es:[bx+60]
@@ -1664,7 +1664,7 @@ ACTOR_TEXT	segment byte public use16 'CODE'
 	mov	bp,sp
    ;	
    ;	{
-   ;	    if (frame == 0)
+   ;	    if (cycler == 0)
    ;	
 	les	bx,dword ptr [bp+6]
 	cmp	byte ptr es:[bx+56],0
@@ -1673,7 +1673,7 @@ ACTOR_TEXT	segment byte public use16 'CODE'
 @@3:
    ;	
    ;	        return;
-   ;	    if (inactive)
+   ;	    if (sleep)
    ;	
 	les	bx,dword ptr [bp+6]
 	mov	al,byte ptr es:[bx+82]
@@ -1685,7 +1685,7 @@ ACTOR_TEXT	segment byte public use16 'CODE'
 @@4:
    ;	
    ;	        return;
-   ;	    if (cycle_timer++ != cycle_speed)
+   ;	    if (cycle_count++ != cycle_speed)
    ;	
 	les	bx,dword ptr [bp+6]
 	mov	al,byte ptr es:[bx+57]
@@ -1697,12 +1697,12 @@ ACTOR_TEXT	segment byte public use16 'CODE'
 @@5:
    ;	
    ;	        return;
-   ;	    cycle_timer = 0;
+   ;	    cycle_count = 0;
    ;	
 	les	bx,dword ptr [bp+6]
 	mov	byte ptr es:[bx+57],0
    ;	
-   ;	    switch (frame)
+   ;	    switch (cycler)
    ;	
 	les	bx,dword ptr [bp+6]
 	mov	al,byte ptr es:[bx+56]
@@ -1719,7 +1719,7 @@ ACTOR_TEXT	segment byte public use16 'CODE'
    ;	
    ;	    {
    ;	    case 1:
-   ;	        ++current_loop;
+   ;	        ++cur_cel;
    ;	
 	les	bx,dword ptr [bp+6]
 	mov	al,byte ptr es:[bx+60]
@@ -1727,7 +1727,7 @@ ACTOR_TEXT	segment byte public use16 'CODE'
 	les	bx,dword ptr [bp+6]
 	mov	byte ptr es:[bx+60],al
    ;	
-   ;	        if (current_loop == num_frames) current_loop = 0;
+   ;	        if (cur_cel == max_cel) cur_cel = 0;
    ;	
 	les	bx,dword ptr [bp+6]
 	mov	al,byte ptr es:[bx+60]
@@ -1747,7 +1747,7 @@ ACTOR_TEXT	segment byte public use16 'CODE'
 @16@310:
    ;	
    ;	    case 2:
-   ;	        if (current_loop++ == num_frames - 2) flag_0 = 1;
+   ;	        if (cur_cel++ == max_cel - 2) deleting = 1;
    ;	
 	les	bx,dword ptr [bp+6]
 	mov	al,byte ptr es:[bx+60]
@@ -1772,7 +1772,7 @@ ACTOR_TEXT	segment byte public use16 'CODE'
    ;	
    ;	    case 3:
    ;	    case 4:
-   ;	        ++current_loop;
+   ;	        ++cur_cel;
    ;	
 	les	bx,dword ptr [bp+6]
 	mov	al,byte ptr es:[bx+60]
@@ -1780,7 +1780,7 @@ ACTOR_TEXT	segment byte public use16 'CODE'
 	les	bx,dword ptr [bp+6]
 	mov	byte ptr es:[bx+60],al
    ;	
-   ;	        if (current_loop == num_frames) {
+   ;	        if (cur_cel == max_cel) {
    ;	
 	les	bx,dword ptr [bp+6]
 	mov	al,byte ptr es:[bx+60]
@@ -1790,7 +1790,7 @@ ACTOR_TEXT	segment byte public use16 'CODE'
 	jmp	@16@1066
 @@9:
    ;	
-   ;	            if (frame == 4) current_loop = num_frames - 1;
+   ;	            if (cycler == 4) cur_cel = max_cel - 1;
    ;	
 	les	bx,dword ptr [bp+6]
 	cmp	byte ptr es:[bx+56],4
@@ -1805,8 +1805,8 @@ ACTOR_TEXT	segment byte public use16 'CODE'
 	jmp	short @16@590
 	jmp	short @16@618
    ;	
-   ;	            else            current_loop = 0;
-   ;	            frame = 0;
+   ;	            else            cur_cel = 0;
+   ;	            cycler = 0;
    ;	        }
    ;	        break;
    ;	
@@ -1814,7 +1814,7 @@ ACTOR_TEXT	segment byte public use16 'CODE'
 @16@562:
    ;	
    ;	    case 5:
-   ;	        if (current_loop-- == 0) { current_loop = 0; frame = 0; }
+   ;	        if (cur_cel-- == 0) { cur_cel = 0; cycler = 0; }
    ;	
 	les	bx,dword ptr [bp+6]
 	mov	al,byte ptr es:[bx+60]
@@ -1837,7 +1837,7 @@ ACTOR_TEXT	segment byte public use16 'CODE'
 @16@674:
    ;	
    ;	    case 6:
-   ;	        ++current_loop;
+   ;	        ++cur_cel;
    ;	
 	les	bx,dword ptr [bp+6]
 	mov	al,byte ptr es:[bx+60]
@@ -1845,7 +1845,7 @@ ACTOR_TEXT	segment byte public use16 'CODE'
 	les	bx,dword ptr [bp+6]
 	mov	byte ptr es:[bx+60],al
    ;	
-   ;	        if (current_loop == num_frames) { current_loop = num_frames - 2; frame = 7; }
+   ;	        if (cur_cel == max_cel) { cur_cel = max_cel - 2; cycler = 7; }
    ;	
 	les	bx,dword ptr [bp+6]
 	mov	al,byte ptr es:[bx+60]
@@ -1869,7 +1869,7 @@ ACTOR_TEXT	segment byte public use16 'CODE'
 @16@758:
    ;	
    ;	    case 7:
-   ;	        if (current_loop-- == 0) { current_loop = 1; frame = 6; }
+   ;	        if (cur_cel-- == 0) { cur_cel = 1; cycler = 6; }
    ;	
 	les	bx,dword ptr [bp+6]
 	mov	al,byte ptr es:[bx+60]
@@ -1888,7 +1888,7 @@ ACTOR_TEXT	segment byte public use16 'CODE'
 @16@842:
    ;	
    ;	    case 8:
-   ;	        --current_loop;
+   ;	        --cur_cel;
    ;	
 	les	bx,dword ptr [bp+6]
 	mov	al,byte ptr es:[bx+60]
@@ -1896,7 +1896,7 @@ ACTOR_TEXT	segment byte public use16 'CODE'
 	les	bx,dword ptr [bp+6]
 	mov	byte ptr es:[bx+60],al
    ;	
-   ;	        if (current_loop == 0xFF) current_loop = num_frames - 1;
+   ;	        if (cur_cel == 0xFF) cur_cel = max_cel - 1;
    ;	
 	les	bx,dword ptr [bp+6]
 	cmp	byte ptr es:[bx+60],255
@@ -1912,7 +1912,7 @@ ACTOR_TEXT	segment byte public use16 'CODE'
 @16@926:
    ;	
    ;	    case 9:
-   ;	        ++current_loop;
+   ;	        ++cur_cel;
    ;	
 	les	bx,dword ptr [bp+6]
 	mov	al,byte ptr es:[bx+60]
@@ -1920,7 +1920,7 @@ ACTOR_TEXT	segment byte public use16 'CODE'
 	les	bx,dword ptr [bp+6]
 	mov	byte ptr es:[bx+60],al
    ;	
-   ;	        if (current_loop == 2) current_loop = 0;
+   ;	        if (cur_cel == 2) cur_cel = 0;
    ;	
 	les	bx,dword ptr [bp+6]
 	cmp	byte ptr es:[bx+60],2
@@ -1933,7 +1933,7 @@ ACTOR_TEXT	segment byte public use16 'CODE'
 @16@1010:
    ;	
    ;	    case 10:
-   ;	        current_loop = random(num_frames);
+   ;	        cur_cel = random(max_cel);
    ;	
 	les	bx,dword ptr [bp+6]
 	mov	al,byte ptr es:[bx+59]
@@ -1950,7 +1950,7 @@ ACTOR_TEXT	segment byte public use16 'CODE'
 @16@1066:
    ;	
    ;	    }
-   ;	    width  = loop_data->frames[current_loop]->w;
+   ;	    width  = my_loop->cels[cur_cel]->width;
    ;	
 	les	bx,dword ptr [bp+6]
 	mov	al,byte ptr es:[bx+60]
@@ -1964,7 +1964,7 @@ ACTOR_TEXT	segment byte public use16 'CODE'
 	les	bx,dword ptr [bp+6]
 	mov	word ptr es:[bx+16],ax
    ;	
-   ;	    height = loop_data->frames[current_loop]->h;
+   ;	    height = my_loop->cels[cur_cel]->height;
    ;	
 	les	bx,dword ptr [bp+6]
 	mov	al,byte ptr es:[bx+60]
@@ -2023,7 +2023,7 @@ ACTOR_TEXT	segment byte public use16 'CODE'
    ;	
    ;	{
    ;	    int var_2, var_4;
-   ;	    if (flag_0)
+   ;	    if (deleting)
    ;	
 	les	bx,dword ptr [bp+6]
 	mov	al,byte ptr es:[bx+82]
@@ -2034,13 +2034,13 @@ ACTOR_TEXT	segment byte public use16 'CODE'
 @@12:
    ;	
    ;	        return;
-   ;	    if (update_func)
+   ;	    if (doit)
    ;	
 	les	bx,dword ptr [bp+6]
 	cmp	dword ptr es:[bx+62],large 0
 	je	short @17@114
    ;	
-   ;	        update_func(this);
+   ;	        doit(this);
    ;	
 	push	word ptr [bp+8]
 	push	word ptr [bp+6]
@@ -2049,13 +2049,13 @@ ACTOR_TEXT	segment byte public use16 'CODE'
 	add	sp,4
 @17@114:
    ;	
-   ;	    if (move_func) {
+   ;	    if (mover) {
    ;	
 	les	bx,dword ptr [bp+6]
 	cmp	dword ptr es:[bx+66],large 0
 	je	short @17@170
    ;	
-   ;	        var_2 = x + x_speed;
+   ;	        var_2 = x + x_step;
    ;	
 	les	bx,dword ptr [bp+6]
 	push	es
@@ -2065,7 +2065,7 @@ ACTOR_TEXT	segment byte public use16 'CODE'
 	add	ax,word ptr es:[bx+20]
 	mov	word ptr [bp-2],ax
    ;	
-   ;	        var_4 = y + y_speed;
+   ;	        var_4 = y + y_step;
    ;	
 	les	bx,dword ptr [bp+6]
 	mov	ax,word ptr es:[bx+2]
@@ -2073,7 +2073,7 @@ ACTOR_TEXT	segment byte public use16 'CODE'
 	add	ax,word ptr es:[bx+22]
 	mov	word ptr [bp-4],ax
    ;	
-   ;	        move_func(this, &var_2, &var_4);
+   ;	        mover(this, &var_2, &var_4);
    ;	
 	push	ss
 	lea	ax,word ptr [bp-4]
@@ -2104,14 +2104,14 @@ ACTOR_TEXT	segment byte public use16 'CODE'
 	jmp	short @17@198
 @17@170:
    ;	
-   ;	        x += x_speed;
+   ;	        x += x_step;
    ;	
 	les	bx,dword ptr [bp+6]
 	mov	ax,word ptr es:[bx+20]
 	les	bx,dword ptr [bp+6]
 	add	word ptr es:[bx],ax
    ;	
-   ;	        y += y_speed;
+   ;	        y += y_step;
    ;	
 	les	bx,dword ptr [bp+6]
 	mov	ax,word ptr es:[bx+22]
@@ -2120,7 +2120,7 @@ ACTOR_TEXT	segment byte public use16 'CODE'
 @17@198:
    ;	
    ;	    }
-   ;	    old_x = x + width;
+   ;	    xw = x + width;
    ;	
 	les	bx,dword ptr [bp+6]
 	push	es
@@ -2131,7 +2131,7 @@ ACTOR_TEXT	segment byte public use16 'CODE'
 	les	bx,dword ptr [bp+6]
 	mov	word ptr es:[bx+4],ax
    ;	
-   ;	    old_y = y + height;
+   ;	    yh = y + height;
    ;	
 	les	bx,dword ptr [bp+6]
 	mov	ax,word ptr es:[bx+2]
@@ -2140,7 +2140,7 @@ ACTOR_TEXT	segment byte public use16 'CODE'
 	les	bx,dword ptr [bp+6]
 	mov	word ptr es:[bx+6],ax
    ;	
-   ;	    center_x = x + (width  >> 1);
+   ;	    xw2 = x + (width  >> 1);
    ;	
 	les	bx,dword ptr [bp+6]
 	mov	ax,word ptr es:[bx+16]
@@ -2151,7 +2151,7 @@ ACTOR_TEXT	segment byte public use16 'CODE'
 	les	bx,dword ptr [bp+6]
 	mov	word ptr es:[bx+8],dx
    ;	
-   ;	    center_y = y + (height >> 1);
+   ;	    yh2 = y + (height >> 1);
    ;	
 	les	bx,dword ptr [bp+6]
 	mov	ax,word ptr es:[bx+2]
@@ -2162,7 +2162,7 @@ ACTOR_TEXT	segment byte public use16 'CODE'
 	les	bx,dword ptr [bp+6]
 	mov	word ptr es:[bx+10],ax
    ;	
-   ;	    map_pos = tbl_mul_tw[y >> 3] + (x >> 3);
+   ;	    my_map_pos = tbl_mul_tw[y >> 3] + (x >> 3);
    ;	
 	les	bx,dword ptr [bp+6]
 	mov	ax,word ptr es:[bx]
@@ -2247,7 +2247,7 @@ ACTOR_TEXT	segment byte public use16 'CODE'
 	mov	bp,sp
    ;	
    ;	{
-   ;	    if (new_sprite == 1)
+   ;	    if (new_looping == 1)
    ;	
 	les	bx,dword ptr [bp+6]
 	mov	al,byte ptr es:[bx+82]
@@ -2256,7 +2256,7 @@ ACTOR_TEXT	segment byte public use16 'CODE'
 	cmp	ax,1
 	jne	short @18@86
    ;	
-   ;	        new_sprite = 0;
+   ;	        new_looping = 0;
    ;	
 	les	bx,dword ptr [bp+6]
 	and	byte ptr es:[bx+82],239
@@ -2274,7 +2274,7 @@ ACTOR_TEXT	segment byte public use16 'CODE'
 @@13:
    ;	
    ;	        return;
-   ;	    if (flag_0 == 1)
+   ;	    if (deleting == 1)
    ;	
 	les	bx,dword ptr [bp+6]
 	mov	al,byte ptr es:[bx+82]
@@ -2288,7 +2288,7 @@ ACTOR_TEXT	segment byte public use16 'CODE'
    ;	    the_map->put_bits_masked(x, y, width, height,
    ;	
    ;	
-   ;	        loop_data->frames[current_loop]->bitmap, 0, field_36);
+   ;	        my_loop->cels[cur_cel]->bitmap, 0, flash_color);
    ;	
 	les	bx,dword ptr [bp+6]
 	mov	al,byte ptr es:[bx+54]
@@ -2317,14 +2317,14 @@ ACTOR_TEXT	segment byte public use16 'CODE'
 	call	far ptr @tilemap@put_bits_masked$qiiiinucuiuc
 	add	sp,20
    ;	
-   ;	    if (field_36 == 0)
+   ;	    if (flash_color == 0)
    ;	
 	les	bx,dword ptr [bp+6]
 	cmp	byte ptr es:[bx+54],0
 	je	short @18@226
    ;	
    ;	        return;
-   ;	    if (field_37++ == 1) {
+   ;	    if (flash_count++ == 1) {
    ;	
 	les	bx,dword ptr [bp+6]
 	mov	al,byte ptr es:[bx+55]
@@ -2332,7 +2332,7 @@ ACTOR_TEXT	segment byte public use16 'CODE'
 	cmp	al,1
 	jne	short @18@226
    ;	
-   ;	        field_37 = field_36 = 0;
+   ;	        flash_count = flash_color = 0;
    ;	
 	les	bx,dword ptr [bp+6]
 	mov	al,0
@@ -2393,7 +2393,7 @@ ACTOR_TEXT	segment byte public use16 'CODE'
 	mov	word ptr [bp-6],ax
    ;	
    ;	    }
-   ;	    var_4 = map_pos + arg8;
+   ;	    var_4 = my_map_pos + arg8;
    ;	
 	les	bx,dword ptr [bp+6]
 	mov	ax,word ptr es:[bx+24]
@@ -2452,7 +2452,7 @@ ACTOR_TEXT	segment byte public use16 'CODE'
 	jb	short @19@170
    ;	
    ;	    }
-   ;	    var_4 = map_pos + arg8;
+   ;	    var_4 = my_map_pos + arg8;
    ;	
 	les	bx,dword ptr [bp+6]
 	mov	ax,word ptr es:[bx+24]
@@ -2551,23 +2551,27 @@ ACTOR_TEXT	segment byte public use16 'CODE'
 	jmp	short @20@114
 @20@86:
    ;	
-   ;	        while (var_2 < ed_list_size)
-   ;	            ed_list[var_2++]->erase();
+   ;	        while (var_2 < ed_list_size) {
+   ;	            ed_list[var_2]->erase();
    ;	
 	mov	bx,word ptr [bp-2]
-	inc	word ptr [bp-2]
 	shl	bx,2
 	push	word ptr DGROUP:_ed_list[bx+2]
 	push	word ptr DGROUP:_ed_list[bx]
 	push	cs
 	call	near ptr @m_actor@erase$qv
 	add	sp,4
+   ;	
+   ;	            var_2++;
+   ;	
+	inc	word ptr [bp-2]
 @20@114:
 	mov	al,byte ptr DGROUP:_ed_list_size
 	mov	ah,0
 	cmp	ax,word ptr [bp-2]
 	jg	short @20@86
    ;	
+   ;	        }
    ;	    } else {
    ;	
 	jmp	short @20@254
@@ -2580,14 +2584,14 @@ ACTOR_TEXT	segment byte public use16 'CODE'
 @20@198:
    ;	
    ;	        while (var_2 < ed_list_size) {
-   ;	            ed_list[var_2]->new_sprite = 0;
+   ;	            ed_list[var_2]->new_looping = 0;
    ;	
 	mov	bx,word ptr [bp-2]
 	shl	bx,2
 	les	bx,dword ptr DGROUP:_ed_list[bx]
 	and	byte ptr es:[bx+82],239
    ;	
-   ;	            ed_list[var_2]->no_erase = 0;
+   ;	            ed_list[var_2]->dont_erase = 0;
    ;	
 	mov	bx,word ptr [bp-2]
 	shl	bx,2
@@ -2617,7 +2621,7 @@ ACTOR_TEXT	segment byte public use16 'CODE'
 @20@282:
    ;	
    ;	    while (var_2 < count) {
-   ;	        if (actors[var_2]->flag_0 == 1)
+   ;	        if (actors[var_2]->deleting == 1)
    ;	
 	mov	ax,word ptr [bp-2]
 	shl	ax,2
@@ -3124,23 +3128,27 @@ ACTOR_TEXT	segment byte public use16 'CODE'
 	jmp	short @20@618
 @20@590:
    ;	
-   ;	    while (var_2 < ed_list_size)
-   ;	        ed_list[var_2++]->draw();
+   ;	    while (var_2 < ed_list_size) {
+   ;	        ed_list[var_2]->draw();
    ;	
 	mov	bx,word ptr [bp-2]
-	inc	word ptr [bp-2]
 	shl	bx,2
 	push	word ptr DGROUP:_ed_list[bx+2]
 	push	word ptr DGROUP:_ed_list[bx]
 	push	cs
 	call	near ptr @m_actor@draw$qv
 	add	sp,4
+   ;	
+   ;	        var_2++;
+   ;	
+	inc	word ptr [bp-2]
 @20@618:
 	mov	al,byte ptr DGROUP:_ed_list_size
 	mov	ah,0
 	cmp	ax,word ptr [bp-2]
 	jg	short @20@590
    ;	
+   ;	    }
    ;	}
    ;	
 	leave	

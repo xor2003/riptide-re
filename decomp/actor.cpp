@@ -467,8 +467,10 @@ void game_cast::update(uchar arg4)
     if (arg4 == 0) {
         ego->erase();
         var_2 = 0;
-        while (var_2 < ed_list_size)
-            ed_list[var_2++]->erase();
+        while (var_2 < ed_list_size) {
+            ed_list[var_2]->erase();
+            var_2++;
+        }
     } else {
         var_2 = 0;
         while (var_2 < ed_list_size) {
@@ -517,6 +519,8 @@ void game_cast::update(uchar arg4)
     }
     ego->draw();
     var_2 = 0;
-    while (var_2 < ed_list_size)
-        ed_list[var_2++]->draw();
+    while (var_2 < ed_list_size) {
+        ed_list[var_2]->draw();
+        var_2++;
+    }
 }
