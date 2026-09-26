@@ -232,7 +232,7 @@ void far cb_password(void)
     strupr(pw);
     var_5 = 0;
     while (var_5 < 0x18) {
-        if (strcmp(pw, all_maps[var_5].password) == 0) {
+        if (strcmp(all_maps[var_5].password, pw) == 0) {
             the_game->play_sound_file((uchar *)"charge");
             stop_room = 2;
             zoom_to_map = var_5;
@@ -504,7 +504,7 @@ void far cb_about_de(void)
 void far cb_debug_info(void)
 {
     strset((char far *)_tmp, 0);
-    strcpy((char far *)_tmp, (char far *)"Bytes\tfree  :\t");
+    strcpy((char far *)_tmp, (char far *)"Bytes free  : ");
     strcat((char far *)_tmp, ltoa(farcoreleft(), (char far *)_tmp2, 0x0A));
     strcat((char far *)_tmp, (char far *)"\n");
     strcat((char far *)_tmp, (char far *)"\nMap width   : ");
@@ -515,7 +515,7 @@ void far cb_debug_info(void)
     strcat((char far *)_tmp, itoa(the_cast->count, (char far *)_tmp2, 0x0A));
     strcat((char far *)_tmp, (char far *)"\nSprt storage: ");
     strcat((char far *)_tmp, ultoa(the_game->field_04, (char far *)_tmp2, 0x0A));
-    strcat((char far *)_tmp, (char far *)"\nEgo X,Y     :\t");
+    strcat((char far *)_tmp, (char far *)"\nEgo X,Y     : ");
     strcat((char far *)_tmp, itoa(ego->x, (char far *)_tmp2, 0x0A));
     strcat((char far *)_tmp, (char far *)" ");
     strcat((char far *)_tmp, itoa(ego->y, (char far *)_tmp2, 0x0A));

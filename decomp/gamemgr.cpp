@@ -228,7 +228,7 @@ void game_manager::remove_sound(uchar far *s1)
     if (vocplaying() != 0)
         stopvoc();
     for (var_2 = 0; var_2 < field_39; ++var_2) {
-        if (strcmp(sounds[var_2]->name, s1) == 0)
+        if (strcmp(s1, sounds[var_2]->name) == 0)
             break;
     }
     if (var_2 == field_39)
