@@ -38,3 +38,5 @@ reko/
 # --- python cache ---
 __pycache__/
 *.pyc
+# Z3 SSA comparator artifacts (large generated JSON)
+tools/z3cmp/
