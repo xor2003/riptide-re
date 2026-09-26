@@ -2720,7 +2720,7 @@ void show_stats(void)
  * ------------------------------------------------------------------------ */
 void show_prelude(void)
 {
-    int var_4;
+    long var_4;
 
     display->blank_palette();
     the_game->reset_sound();
