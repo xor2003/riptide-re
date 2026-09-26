@@ -26,11 +26,18 @@ ORIG_FUNCS = os.path.join(ROOT, "tools", "z3cmp", "orig_funcs.json")
 RECON_FUNCS = os.path.join(ROOT, "tools", "z3cmp", "recon_funcs.json")
 
 
-def load_results(batches_dir):
+def load_results(batches_dirs):
+    """Load results from one or more batch dirs (comma-separated or glob)."""
     results = []
-    for path in sorted(glob.glob(os.path.join(batches_dir, "compare.batch*.json"))):
-        doc = json.load(open(path))
-        results.extend(doc.get("results", []))
+    seen = set()
+    for spec in batches_dirs.split(","):
+        for batches_dir in sorted(glob.glob(spec)) or [spec]:
+            for path in sorted(glob.glob(os.path.join(batches_dir, "compare.batch*.json"))):
+                if path in seen:
+                    continue
+                seen.add(path)
+                doc = json.load(open(path))
+                results.extend(doc.get("results", []))
     return results
 
 
@@ -72,7 +79,11 @@ def _function_hash(exe_path, image_byte, bounds):
 
 def main():
     root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-    batches_dir = sys.argv[1] if len(sys.argv) > 1 else os.path.join(root, "tools", "z3cmp", "batches")
+    batches_dir = (
+        sys.argv[1]
+        if len(sys.argv) > 1
+        else os.path.join(root, "tools", "z3cmp", "batches*")
+    )
     out_dir = sys.argv[2] if len(sys.argv) > 2 else os.path.join(root, "tools", "z3cmp")
 
     results = load_results(batches_dir)
@@ -130,7 +141,7 @@ def main():
             exe_sha256 = {}
             if oracle_lin:
                 exe_sha256["orig"] = exe_hash(ORIG_EXE, orig_bounds, oracle_lin)
-                proven_exe[oracle_lin] = {
+                proven_exe["0x%05x" % int(oracle_lin, 0)] = {
                     "orig": exe_sha256.get("orig"),
                     "candidate_entry": candidate_lin,
                     "recon": exe_hash(RECON_EXE, recon_bounds, candidate_lin)

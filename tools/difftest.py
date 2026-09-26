@@ -130,7 +130,8 @@ def _exe_bounds(funcs_json):
 
 def _function_exe_sha(exe, funcs_json, ssa_linear):
     """mkproven-compatible hash: [entry, next catalog entry) of the image."""
-    image_byte = int(ssa_linear, 0) - 0x1000
+    image_byte = int(ssa_linear) if isinstance(ssa_linear, int) else int(ssa_linear, 0)
+    image_byte -= 0x1000
     image = _exe_image(exe)
     if image_byte < 0 or image_byte >= len(image):
         return None
