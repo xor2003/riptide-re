@@ -190,7 +190,7 @@ void far story_call_up(uchar arg)
     int var_2, var_4, var_6;
 
     display->cls(0, 0);
-    var_4 = var_2 = 0;
+    var_2 = var_4 = 0;
     display->field_07 = 1;
     for (var_6 = 0; var_6 < 200; var_6++) {
         var_2 = (var_6 % 0x14) << 4;
