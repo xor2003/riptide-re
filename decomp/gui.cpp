@@ -507,10 +507,10 @@ void pull_down::draw()
 
 uchar pull_down::activate()
 {
+    uchar save_bg, save_fg;
     int x1 = field_02;
     int x2 = field_02 + field_68 + 0x12;
-    uchar save_bg, save_fg;
-    int  y, i;
+    int  i, y;
 
     mouse->hide();
     field_0E = (uchar far *)display->get_bits(x1, 0, x1 + field_08,

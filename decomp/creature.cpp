@@ -148,10 +148,10 @@ uint far check_new_pos(m_actor far *a, int arg4, int arg6,
         while (var_B < barrier_count) {
             act = barrier_list[var_B];
             if (act != a && touching(a, act)) {
-                if (a->x >= act->x)
-                    var_E = 0x20;
-                else
+                if (a->x < act->x)
                     var_E = 0x80;
+                else
+                    var_E = 0x20;
                 break;
             }
             var_B++;
@@ -778,7 +778,10 @@ void far do_probe(m_actor far *a)
 
 turn:
     a->status = 0;
-    a->new_loop(a->facing ? (uchar *)"prober.l" : (uchar *)"probel.l");
+    if (a->facing == 0)
+        a->new_loop((uchar *)"probel.l");
+    else
+        a->new_loop((uchar *)"prober.l");
     a->facing ^= 1;
 }
 

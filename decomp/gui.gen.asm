@@ -15,8 +15,8 @@ $comm	macro	name,dist,size,count
 	endif
 	?debug	V 300h
 	?debug	S "gui.cpp"
-	?debug	C E92856395D076775692E637070
-	?debug	C E92856395D09726970746964652E68
+	?debug	C E9FD013C5D076775692E637070
+	?debug	C E9FD013C5D09726970746964652E68
 	?debug	C E9253FD45C12443A5C494E434C5544455C737464696F2E68
 	?debug	C E9263FD45C12443A5C494E434C5544455C5F646566732E68
 	?debug	C E9263FD45C13443A5C494E434C5544455C5F6E66696C652E68
@@ -61,9 +61,9 @@ GUI_TEXT	segment byte public use16 'CODE'
 	mov	word ptr [bp+8],dx
 	mov	word ptr [bp+6],ax
 	or	ax,dx
-	jne short	@@0
+	jne short	@@119
 	jmp	@1@254
-@@0:
+@@119:
 @1@86:
    ;	
    ;	    REGPACK preg;
@@ -759,9 +759,9 @@ GUI_TEXT	segment byte public use16 'CODE'
    ;	
 	les	bx,dword ptr DGROUP:_display
 	cmp	byte ptr es:[bx],0
-	jne short	@@1
+	jne short	@@120
 	jmp	@12@394
-@@1:
+@@120:
    ;	
    ;	        return;                                 /*   the fields already */
    ;	    regs.x.ax = 3;                                   /* fn 3 — get pos + buttons */
@@ -874,9 +874,9 @@ GUI_TEXT	segment byte public use16 'CODE'
    ;	    if (_m_dont_handle)
    ;	
 	cmp	byte ptr DGROUP:__m_dont_handle,0
-	je short	@@2
+	je short	@@121
 	jmp	@13@254
-@@2:
+@@121:
    ;	
    ;	        return;
    ;	    b = _BX;                                    /* incoming bx = buttons */
@@ -1212,7 +1212,7 @@ GUI_TEXT	segment byte public use16 'CODE'
    ;	
    ;	    show_box_on        = 0;
    ;	
-	mov	word ptr DGROUP:_show_box_on,0
+	mov	byte ptr DGROUP:_show_box_on,0
    ;	
    ;	    menu_bar_height    = 9;
    ;	
@@ -1690,7 +1690,7 @@ GUI_TEXT	segment byte public use16 'CODE'
 @23@226:
    ;	
    ;	    }
-   ;	    if (tb->field_18->field_36 != 0 && tb->buttons[0]->field_20 == 0)
+   ;	    if (tb->field_18->flash_color != 0 && tb->buttons[0]->field_20 == 0)
    ;	
 	les	bx,dword ptr [bp-4]
 	les	bx,dword ptr es:[bx+24]
@@ -1702,7 +1702,7 @@ GUI_TEXT	segment byte public use16 'CODE'
 	cmp	word ptr es:[bx+32],0
 	jne	short @23@310
    ;	
-   ;	        strcpy((char far *)dest, (char far *)tb->field_18->field_36);
+   ;	        strcpy((char far *)dest, (char far *)tb->field_18->flash_color);
    ;	
 	les	bx,dword ptr [bp-4]
 	les	bx,dword ptr es:[bx+24]
@@ -2040,7 +2040,7 @@ GUI_TEXT	segment byte public use16 'CODE'
    ;	{
    ;	    if (show_box_on == 0) {
    ;	
-	cmp	word ptr DGROUP:_show_box_on,0
+	cmp	byte ptr DGROUP:_show_box_on,0
 	jne	short @26@142
    ;	
    ;	        show_box = new text_box(arg_C);
@@ -2096,7 +2096,7 @@ GUI_TEXT	segment byte public use16 'CODE'
    ;	
    ;	        show_box_on = 1;
    ;	
-	mov	word ptr DGROUP:_show_box_on,1
+	mov	byte ptr DGROUP:_show_box_on,1
 @26@142:
    ;	
    ;	    }
@@ -2116,12 +2116,12 @@ GUI_TEXT	segment byte public use16 'CODE'
    ;	{
    ;	    if (show_box_on != 0) {
    ;	
-	cmp	word ptr DGROUP:_show_box_on,0
+	cmp	byte ptr DGROUP:_show_box_on,0
 	je	short @27@142
    ;	
    ;	        show_box_on = 0;
    ;	
-	mov	word ptr DGROUP:_show_box_on,0
+	mov	byte ptr DGROUP:_show_box_on,0
    ;	
    ;	        if (arg_0 != 0)
    ;	
@@ -2193,9 +2193,9 @@ GUI_TEXT	segment byte public use16 'CODE'
 	les	bx,dword ptr [bp+10]
 	add	bx,word ptr [bp-14]
 	cmp	byte ptr es:[bx],0
-	je short	@@3
+	je short	@@122
 	jmp	@28@142
-@@3:
+@@122:
 @28@114:
    ;	
    ;	            end = s + i;
@@ -2280,9 +2280,9 @@ GUI_TEXT	segment byte public use16 'CODE'
 	call	far ptr _strlen
 	add	sp,4
 	cmp	ax,word ptr [bp-14]
-	jb short	@@4
+	jb short	@@123
 	jmp	@28@58
-@@4:
+@@123:
    ;	
    ;	    }
    ;	}
@@ -2669,11 +2669,12 @@ GUI_TEXT	segment byte public use16 'CODE'
 	enter	10,0
    ;	
    ;	{
+   ;	    uchar save_bg, save_fg;
    ;	    int x1 = field_02;
    ;	
 	les	bx,dword ptr [bp+6]
 	mov	ax,word ptr es:[bx+2]
-	mov	word ptr [bp-2],ax
+	mov	word ptr [bp-4],ax
    ;	
    ;	    int x2 = field_02 + field_68 + 0x12;
    ;	
@@ -2684,10 +2685,9 @@ GUI_TEXT	segment byte public use16 'CODE'
 	mov	dx,word ptr es:[bx+2]
 	add	dx,ax
 	add	dx,18
-	mov	word ptr [bp-4],dx
+	mov	word ptr [bp-6],dx
    ;	
-   ;	    uchar save_bg, save_fg;
-   ;	    int  y, i;
+   ;	    int  i, y;
    ;	
    ;	    mouse->hide();
    ;	
@@ -2710,11 +2710,11 @@ GUI_TEXT	segment byte public use16 'CODE'
 	add	ax,2
 	push	ax
 	les	bx,dword ptr [bp+6]
-	mov	ax,word ptr [bp-2]
+	mov	ax,word ptr [bp-4]
 	add	ax,word ptr es:[bx+8]
 	push	ax
 	push	0
-	push	word ptr [bp-2]
+	push	word ptr [bp-4]
 	push	word ptr DGROUP:_display+2
 	push	word ptr DGROUP:_display
 	call	far ptr @vga_display@get_bits$qiiii
@@ -2742,9 +2742,9 @@ GUI_TEXT	segment byte public use16 'CODE'
 	mov	al,byte ptr DGROUP:_menu_bar_height
 	mov	ah,0
 	push	ax
-	push	word ptr [bp-4]
+	push	word ptr [bp-6]
 	push	0
-	push	word ptr [bp-2]
+	push	word ptr [bp-4]
 	push	cs
 	call	near ptr @high_light$qiiiinuciiuc
 	add	sp,18
@@ -2760,7 +2760,7 @@ GUI_TEXT	segment byte public use16 'CODE'
 	add	ax,word ptr es:[bx+6]
 	add	ax,2
 	push	ax
-	mov	ax,word ptr [bp-2]
+	mov	ax,word ptr [bp-4]
 	add	ax,-2
 	les	bx,dword ptr [bp+6]
 	add	ax,word ptr es:[bx+8]
@@ -2768,7 +2768,7 @@ GUI_TEXT	segment byte public use16 'CODE'
 	mov	al,byte ptr DGROUP:_menu_bar_height
 	mov	ah,0
 	push	ax
-	push	word ptr [bp-2]
+	push	word ptr [bp-4]
 	push	cs
 	call	near ptr @draw_shadow_box$qiiii
 	add	sp,8
@@ -2778,17 +2778,17 @@ GUI_TEXT	segment byte public use16 'CODE'
 	mov	al,byte ptr DGROUP:_menu_bar_height
 	mov	ah,0
 	add	ax,3
-	mov	word ptr [bp-8],ax
+	mov	word ptr [bp-10],ax
    ;	
    ;	    for (i = 0; i < field_0A; i++) {
    ;	
-	mov	word ptr [bp-10],0
+	mov	word ptr [bp-8],0
 	jmp	@36@254
 @36@58:
    ;	
    ;	        if (items[i]->enabled == 1) {
    ;	
-	mov	ax,word ptr [bp-10]
+	mov	ax,word ptr [bp-8]
 	shl	ax,2
 	les	bx,dword ptr [bp+6]
 	add	bx,ax
@@ -2799,15 +2799,15 @@ GUI_TEXT	segment byte public use16 'CODE'
    ;	            display->print_at_xy(x1 + 8, y, items[i]->s, 0);
    ;	
 	push	0
-	mov	ax,word ptr [bp-10]
+	mov	ax,word ptr [bp-8]
 	shl	ax,2
 	les	bx,dword ptr [bp+6]
 	add	bx,ax
 	les	bx,dword ptr es:[bx+20]
 	push	word ptr es:[bx+2]
 	push	word ptr es:[bx]
-	push	word ptr [bp-8]
-	mov	ax,word ptr [bp-2]
+	push	word ptr [bp-10]
+	mov	ax,word ptr [bp-4]
 	add	ax,8
 	push	ax
 	push	word ptr DGROUP:_display+2
@@ -2824,13 +2824,13 @@ GUI_TEXT	segment byte public use16 'CODE'
    ;	
 	les	bx,dword ptr DGROUP:_display
 	mov	al,byte ptr es:[bx+1]
-	mov	byte ptr [bp-5],al
+	mov	byte ptr [bp-1],al
    ;	
    ;	            save_fg = display->field_04;
    ;	
 	les	bx,dword ptr DGROUP:_display
 	mov	al,byte ptr es:[bx+4]
-	mov	byte ptr [bp-6],al
+	mov	byte ptr [bp-2],al
    ;	
    ;	            display->field_04 = display->field_03;
    ;	
@@ -2841,7 +2841,7 @@ GUI_TEXT	segment byte public use16 'CODE'
    ;	
    ;	            if (save_bg != 0)
    ;	
-	cmp	byte ptr [bp-5],0
+	cmp	byte ptr [bp-1],0
 	je	short @36@170
    ;	
    ;	                display->field_01 = 1;
@@ -2853,15 +2853,15 @@ GUI_TEXT	segment byte public use16 'CODE'
    ;	            display->print_at_xy(x1 + 8, y, items[i]->s, 0);
    ;	
 	push	0
-	mov	ax,word ptr [bp-10]
+	mov	ax,word ptr [bp-8]
 	shl	ax,2
 	les	bx,dword ptr [bp+6]
 	add	bx,ax
 	les	bx,dword ptr es:[bx+20]
 	push	word ptr es:[bx+2]
 	push	word ptr es:[bx]
-	push	word ptr [bp-8]
-	mov	ax,word ptr [bp-2]
+	push	word ptr [bp-10]
+	mov	ax,word ptr [bp-4]
 	add	ax,8
 	push	ax
 	push	word ptr DGROUP:_display+2
@@ -2872,28 +2872,28 @@ GUI_TEXT	segment byte public use16 'CODE'
    ;	            display->field_04 = save_fg;
    ;	
 	les	bx,dword ptr DGROUP:_display
-	mov	al,byte ptr [bp-6]
+	mov	al,byte ptr [bp-2]
 	mov	byte ptr es:[bx+4],al
    ;	
    ;	            display->field_01 = save_bg;
    ;	
 	les	bx,dword ptr DGROUP:_display
-	mov	al,byte ptr [bp-5]
+	mov	al,byte ptr [bp-1]
 	mov	byte ptr es:[bx+1],al
 @36@198:
    ;	
    ;	        }
    ;	        y += 0xC;
    ;	
-	add	word ptr [bp-8],12
-	inc	word ptr [bp-10]
+	add	word ptr [bp-10],12
+	inc	word ptr [bp-8]
 @36@254:
 	les	bx,dword ptr [bp+6]
 	mov	ax,word ptr es:[bx+10]
-	cmp	ax,word ptr [bp-10]
-	jbe short	@@5
+	cmp	ax,word ptr [bp-8]
+	jbe short	@@124
 	jmp	@36@58
-@@5:
+@@124:
    ;	
    ;	    }
    ;	    field_6A = 0;
@@ -3466,9 +3466,9 @@ GUI_TEXT	segment byte public use16 'CODE'
    ;	
 	les	bx,dword ptr DGROUP:_mouse
 	cmp	byte ptr es:[bx],0
-	je short	@@6
+	je short	@@125
 	jmp	@42@646
-@@6:
+@@125:
    ;	
    ;	            if (dragging != 0 && over_drop != 0)
    ;	
@@ -3492,9 +3492,9 @@ GUI_TEXT	segment byte public use16 'CODE'
    ;	            if (i_external_left != 0) {
    ;	
 	cmp	dword ptr DGROUP:_i_external_left,large 0
-	jne short	@@7
+	jne short	@@126
 	jmp	@42@1066
-@@7:
+@@126:
    ;	
    ;	                if (i_external_left()) {
    ;	
@@ -3569,9 +3569,9 @@ GUI_TEXT	segment byte public use16 'CODE'
    ;	
 	call	dword ptr DGROUP:_i_external_button
 	or	al,al
-	jne short	@@8
+	jne short	@@127
 	jmp	@42@1066
-@@8:
+@@127:
 	jmp	short @42@758
    ;	
    ;	                    done++;
@@ -3584,9 +3584,9 @@ GUI_TEXT	segment byte public use16 'CODE'
    ;	            if (over_title != 0)
    ;	
 	cmp	byte ptr [bp-11],0
-	je short	@@9
+	je short	@@128
 	jmp	@42@1066
-@@9:
+@@128:
    ;	
    ;	                continue;
    ;	            if (over_drop == 0 && mouse->field_0E < menu_bar_height) {
@@ -3618,16 +3618,16 @@ GUI_TEXT	segment byte public use16 'CODE'
    ;	            if (dragging == 0) {
    ;	
 	cmp	word ptr [bp-4],0
-	je short	@@10
+	je short	@@129
 	jmp	@42@926
-@@10:
+@@129:
    ;	
    ;	                if (over_drop != 0) {
    ;	
 	cmp	byte ptr [bp-12],0
-	jne short	@@11
+	jne short	@@130
 	jmp	@42@1066
-@@11:
+@@130:
    ;	
    ;	                    midx = (mouse->field_0E - menu_bar_height) / 0xC;
    ;	
@@ -3651,9 +3651,9 @@ GUI_TEXT	segment byte public use16 'CODE'
 	add	bx,ax
 	les	bx,dword ptr es:[bx+20]
 	cmp	byte ptr es:[bx+4],1
-	je short	@@12
+	je short	@@131
 	jmp	@42@1066
-@@12:
+@@131:
    ;	
    ;	                        mouse->hide();
    ;	
@@ -3739,9 +3739,9 @@ GUI_TEXT	segment byte public use16 'CODE'
 	add	sp,4
 @42@1066:
 	cmp	word ptr [bp-2],0
-	jne short	@@13
+	jne short	@@132
 	jmp	@42@58
-@@13:
+@@132:
    ;	
    ;	            }
    ;	        }
@@ -4027,9 +4027,9 @@ GUI_TEXT	segment byte public use16 'CODE'
    ;	
 	les	bx,dword ptr [bp+6]
 	cmp	byte ptr es:[bx+104],0
-	je short	@@14
+	je short	@@133
 	jmp	@45@170
-@@14:
+@@133:
    ;	
    ;	        return;
    ;	    field_68 = 1;
@@ -4270,9 +4270,9 @@ GUI_TEXT	segment byte public use16 'CODE'
 	mov	al,byte ptr es:[bx+20]
 	mov	ah,0
 	test	ax,128
-	je short	@@15
+	je short	@@134
 	jmp	@47@730
-@@15:
+@@134:
    ;	
    ;	            field_16 = -1;
    ;	
@@ -4368,9 +4368,9 @@ GUI_TEXT	segment byte public use16 'CODE'
 	les	bx,dword ptr [bp+6]
 	mov	ax,word ptr es:[bx+10]
 	cmp	ax,word ptr [bp-2]
-	jbe short	@@16
+	jbe short	@@135
 	jmp	@47@282
-@@16:
+@@135:
 @47@394:
    ;	
    ;	            }
@@ -4379,9 +4379,9 @@ GUI_TEXT	segment byte public use16 'CODE'
    ;	
 	les	bx,dword ptr [bp+6]
 	test	byte ptr es:[bx+20],128
-	jne short	@@17
+	jne short	@@136
 	jmp	@47@730
-@@17:
+@@136:
    ;	
    ;	            field_16 = i;
    ;	
@@ -4485,9 +4485,9 @@ GUI_TEXT	segment byte public use16 'CODE'
 	mov	al,byte ptr es:[bx+20]
 	mov	ah,0
 	test	ax,3
-	je short	@@18
+	je short	@@137
 	jmp	@47@478
-@@18:
+@@137:
    ;	
    ;	    }
    ;	    return 0;
@@ -4534,9 +4534,9 @@ GUI_TEXT	segment byte public use16 'CODE'
 	call	far ptr _strcmp
 	add	sp,8
 	or	ax,ax
-	je short	@@19
+	je short	@@138
 	jmp	@48@226
-@@19:
+@@138:
    ;	
    ;	            j = 0;
    ;	
@@ -4606,9 +4606,9 @@ GUI_TEXT	segment byte public use16 'CODE'
 	add	bx,dx
 	les	bx,dword ptr es:[bx+24]
 	cmp	ax,word ptr es:[bx+10]
-	jae short	@@20
+	jae short	@@139
 	jmp	@48@114
-@@20:
+@@139:
 @48@226:
    ;	
    ;	            }
@@ -4627,9 +4627,9 @@ GUI_TEXT	segment byte public use16 'CODE'
 	mov	ah,0
 	les	bx,dword ptr [bp+6]
 	cmp	ax,word ptr es:[bx+10]
-	jae short	@@21
+	jae short	@@140
 	jmp	@48@58
-@@21:
+@@140:
 @48@310:
    ;	
    ;	    }
@@ -4837,18 +4837,18 @@ GUI_TEXT	segment byte public use16 'CODE'
 	call	near ptr @ms_mouse@in_box$qiiii
 	add	sp,12
 	or	al,al
-	jne short	@@22
+	jne short	@@141
 	jmp	@51@198
-@@22:
+@@141:
 	cmp	dword ptr DGROUP:_i_external_button,large 0
-	jne short	@@23
+	jne short	@@142
 	jmp	@51@198
-@@23:
+@@142:
 	call	dword ptr DGROUP:_i_external_button
 	or	al,al
-	jne short	@@24
+	jne short	@@143
 	jmp	@51@198
-@@24:
+@@143:
    ;	
    ;	        mouse->hide();
    ;	
@@ -4992,9 +4992,9 @@ GUI_TEXT	segment byte public use16 'CODE'
 	call	near ptr @ms_mouse@pressed_in_box$qiiii
 	add	sp,12
 	or	al,al
-	jne short	@@25
+	jne short	@@144
 	jmp	@51@310
-@@25:
+@@144:
    ;	
    ;	        if (field_20 != 1) {
    ;	
@@ -5068,17 +5068,17 @@ GUI_TEXT	segment byte public use16 'CODE'
    ;	
 	les	bx,dword ptr [bp+6]
 	cmp	word ptr es:[bx+32],1
-	je short	@@26
+	je short	@@145
 	jmp	@51@478
-@@26:
+@@145:
    ;	
    ;	        if (mouse->field_00 == 0) {
    ;	
 	les	bx,dword ptr DGROUP:_mouse
 	cmp	byte ptr es:[bx],0
-	je short	@@27
+	je short	@@146
 	jmp	@51@450
-@@27:
+@@146:
    ;	
    ;	            mouse->hide();
    ;	
@@ -5311,9 +5311,9 @@ GUI_TEXT	segment byte public use16 'CODE'
 	mov	word ptr [bp+8],dx
 	mov	word ptr [bp+6],ax
 	or	ax,dx
-	jne short	@@28
+	jne short	@@147
 	jmp	@53@114
-@@28:
+@@147:
 @53@86:
 	push	word ptr [bp+8]
 	push	word ptr [bp+6]
@@ -5423,9 +5423,9 @@ GUI_TEXT	segment byte public use16 'CODE'
    ;	{
    ;	
 	cmp	dword ptr [bp+6],large 0
-	jne short	@@29
+	jne short	@@148
 	jmp	@54@282
-@@29:
+@@148:
 	les	bx,dword ptr [bp+6]
 	mov	word ptr es:[bx],offset @@text_box@
    ;	
@@ -6096,9 +6096,9 @@ GUI_TEXT	segment byte public use16 'CODE'
 	les	bx,dword ptr [bp+6]
 	mov	ax,word ptr es:[bx+10]
 	cmp	ax,word ptr [bp-16]
-	jbe short	@@30
+	jbe short	@@149
 	jmp	@59@282
-@@30:
+@@149:
    ;	
    ;	    }
    ;	    for (i = 0; i < field_76; i++)
@@ -6305,9 +6305,9 @@ GUI_TEXT	segment byte public use16 'CODE'
    ;	    if (i_external_left != 0) {
    ;	
 	cmp	dword ptr DGROUP:_i_external_left,large 0
-	jne short	@@31
+	jne short	@@150
 	jmp	@60@450
-@@31:
+@@150:
    ;	
    ;	        if (i_external_left() != 0) {
    ;	
@@ -6423,9 +6423,9 @@ GUI_TEXT	segment byte public use16 'CODE'
    ;	
 	les	bx,dword ptr [bp+6]
 	cmp	byte ptr es:[bx+119],0
-	je short	@@32
+	je short	@@151
 	jmp	@61@198
-@@32:
+@@151:
    ;	
    ;	        if (mouse->field_02 != 0) {
    ;	
@@ -6604,9 +6604,9 @@ GUI_TEXT	segment byte public use16 'CODE'
    ;	{
    ;	
 	cmp	dword ptr [bp+6],large 0
-	jne short	@@33
+	jne short	@@152
 	jmp	@63@198
-@@33:
+@@152:
 	les	bx,dword ptr [bp+6]
 	mov	word ptr es:[bx],offset @@prompt_box@
    ;	
@@ -7117,9 +7117,9 @@ GUI_TEXT	segment byte public use16 'CODE'
 	mov	al,byte ptr [bp-2]
 	mov	ah,0
 	or	ax,ax
-	jne short	@@34
+	jne short	@@153
 	jmp	@65@142
-@@34:
+@@153:
    ;	
    ;	            }
    ;	        }
@@ -7316,9 +7316,9 @@ GUI_TEXT	segment byte public use16 'CODE'
 	mov	word ptr [bp+8],dx
 	mov	word ptr [bp+6],ax
 	or	ax,dx
-	jne short	@@35
+	jne short	@@154
 	jmp	@67@226
-@@35:
+@@154:
 @67@86:
 	push	word ptr [bp+8]
 	push	word ptr [bp+6]
@@ -7766,9 +7766,9 @@ GUI_TEXT	segment byte public use16 'CODE'
 	mov	ah,0
 	add	ax,10
 	cmp	ax,word ptr [bp-8]
-	jle short	@@36
+	jle short	@@155
 	jmp	@71@58
-@@36:
+@@155:
    ;	
    ;	        }
    ;	    }
@@ -7955,9 +7955,9 @@ GUI_TEXT	segment byte public use16 'CODE'
 	call	near ptr @ms_mouse@pressed_in_box$qiiii
 	add	sp,12
 	or	al,al
-	jne short	@@37
+	jne short	@@156
 	jmp	@73@198
-@@37:
+@@156:
    ;	
    ;	        if (field_450 - 1 > 0) {
    ;	
@@ -7965,9 +7965,9 @@ GUI_TEXT	segment byte public use16 'CODE'
 	mov	al,byte ptr es:[bx+1104]
 	mov	ah,0
 	dec	ax
-	jg short	@@38
+	jg short	@@157
 	jmp	@73@254
-@@38:
+@@157:
    ;	
    ;	            if (!field_451) {
    ;	
@@ -8120,9 +8120,9 @@ GUI_TEXT	segment byte public use16 'CODE'
 	call	near ptr @ms_mouse@pressed_in_box$qiiii
 	add	sp,12
 	or	al,al
-	jne short	@@39
+	jne short	@@158
 	jmp	@73@422
-@@39:
+@@158:
    ;	
    ;	        if (field_450 + 0xB < field_0A) {
    ;	
@@ -8132,9 +8132,9 @@ GUI_TEXT	segment byte public use16 'CODE'
 	add	ax,11
 	les	bx,dword ptr [bp+6]
 	cmp	ax,word ptr es:[bx+10]
-	jb short	@@40
+	jb short	@@159
 	jmp	@73@478
-@@40:
+@@159:
    ;	
    ;	            if (!field_452) {
    ;	
@@ -8292,7 +8292,7 @@ GUI_TEXT	segment byte public use16 'CODE'
 	jne	short @74@86
 @74@58:
    ;	
-   ;	        field_36 = 0;
+   ;	        flash_color = 0;
    ;	
 	les	bx,dword ptr [bp+6]
 	mov	dword ptr es:[bx+54],large 0
@@ -8338,9 +8338,9 @@ GUI_TEXT	segment byte public use16 'CODE'
    ;	        if (i > 0xA)
    ;	
 	cmp	word ptr [bp-2],10
-	jle short	@@41
+	jle short	@@160
 	jmp	@74@646
-@@41:
+@@160:
    ;	
    ;	            break;
    ;	        if (field_0A < i)
@@ -8348,9 +8348,9 @@ GUI_TEXT	segment byte public use16 'CODE'
 	les	bx,dword ptr [bp+6]
 	mov	ax,word ptr es:[bx+10]
 	cmp	ax,word ptr [bp-2]
-	jae short	@@42
+	jae short	@@161
 	jmp	@74@646
-@@42:
+@@161:
    ;	
    ;	            break;
    ;	        x1 = field_02 + 1;
@@ -8397,29 +8397,29 @@ GUI_TEXT	segment byte public use16 'CODE'
 	call	near ptr @ms_mouse@pressed_in_box$qiiii
 	add	sp,12
 	or	al,al
-	jne short	@@43
+	jne short	@@162
 	jmp	@74@590
-@@43:
+@@162:
    ;	
    ;	            if (field_3E != -1 && field_3E != i && field_0A > i) {
    ;	
 	les	bx,dword ptr [bp+6]
 	cmp	word ptr es:[bx+62],-1
-	jne short	@@44
+	jne short	@@163
 	jmp	@74@366
-@@44:
+@@163:
 	les	bx,dword ptr [bp+6]
 	mov	ax,word ptr es:[bx+62]
 	cmp	ax,word ptr [bp-2]
-	jne short	@@45
+	jne short	@@164
 	jmp	@74@366
-@@45:
+@@164:
 	les	bx,dword ptr [bp+6]
 	mov	ax,word ptr es:[bx+10]
 	cmp	ax,word ptr [bp-2]
-	ja short	@@46
+	ja short	@@165
 	jmp	@74@366
-@@46:
+@@165:
    ;	
    ;	                mouse->hide();
    ;	
@@ -8495,9 +8495,9 @@ GUI_TEXT	segment byte public use16 'CODE'
 	les	bx,dword ptr [bp+6]
 	mov	ax,word ptr es:[bx+62]
 	cmp	ax,word ptr [bp-2]
-	jne short	@@47
+	jne short	@@166
 	jmp	@74@450
-@@47:
+@@166:
 	les	bx,dword ptr [bp+6]
 	mov	ax,word ptr es:[bx+10]
 	cmp	ax,word ptr [bp-2]
@@ -8601,9 +8601,9 @@ GUI_TEXT	segment byte public use16 'CODE'
 	inc	word ptr [bp-2]
 @74@618:
 	cmp	word ptr [bp-2],10
-	jge short	@@48
+	jge short	@@167
 	jmp	@74@170
-@@48:
+@@167:
 @74@646:
    ;	
    ;	            }
@@ -8617,9 +8617,9 @@ GUI_TEXT	segment byte public use16 'CODE'
 	jmp	@74@58
 @74@702:
    ;	
-   ;	        field_36 = 0;
+   ;	        flash_color = 0;
    ;	    else
-   ;	        field_36 = field_50[field_450 + field_3E];
+   ;	        flash_color = field_50[field_450 + field_3E];
    ;	
 	les	bx,dword ptr [bp+6]
 	mov	al,byte ptr es:[bx+1104]
@@ -8660,9 +8660,9 @@ GUI_TEXT	segment byte public use16 'CODE'
 	mov	word ptr [bp+8],dx
 	mov	word ptr [bp+6],ax
 	or	ax,dx
-	jne short	@@49
+	jne short	@@168
 	jmp	@75@1486
-@@49:
+@@168:
 @75@86:
 	push	word ptr [bp+8]
 	push	word ptr [bp+6]
@@ -8826,9 +8826,9 @@ GUI_TEXT	segment byte public use16 'CODE'
 	pop	eax
 	add	sp,6
 	cmp	eax,large 1
-	je short	@@50
+	je short	@@169
 	jmp	@75@1178
-@@50:
+@@169:
 @75@506:
 	cmp	byte ptr [bp-10],10
 	jne	short @75@478
@@ -8866,9 +8866,9 @@ GUI_TEXT	segment byte public use16 'CODE'
 	inc	word ptr [bp-12]
 @75@562:
 	cmp	word ptr [bp-12],19
-	jge short	@@51
+	jge short	@@170
 	jmp	@75@394
-@@51:
+@@170:
    ;	
    ;	        }
    ;	        block = new button((uchar far *)"More >>", 0, 0);
@@ -9076,9 +9076,9 @@ GUI_TEXT	segment byte public use16 'CODE'
    ;	            if (i_external_left) {
    ;	
 	cmp	dword ptr DGROUP:_i_external_left,large 0
-	jne short	@@52
+	jne short	@@171
 	jmp	@75@814
-@@52:
+@@171:
    ;	
    ;	                if (i_external_left() && field_13 != 1) {
    ;	
@@ -9123,14 +9123,14 @@ GUI_TEXT	segment byte public use16 'CODE'
    ;	
 	call	dword ptr DGROUP:_i_external_right
 	or	al,al
-	jne short	@@53
+	jne short	@@172
 	jmp	@75@814
-@@53:
+@@172:
 	les	bx,dword ptr [bp+6]
 	cmp	byte ptr es:[bx+19],0
-	jne short	@@54
+	jne short	@@173
 	jmp	@75@814
-@@54:
+@@173:
    ;	
    ;	                    field_13--;
    ;	
@@ -9469,7 +9469,7 @@ GUI_TEXT	ends
 	extrn	_maximum_text_length:byte
 	extrn	_show_box:dword
 	extrn	_menu_bar_height:byte
-	extrn	_show_box_on:word
+	extrn	_show_box_on:byte
 	extrn	_pd_redraws:byte
 	extrn	_gr_keys:byte
 	extrn	_the_menu_bar:dword
