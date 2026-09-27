@@ -403,7 +403,7 @@ void far cb_control(void)
             the_game->joy_update();
         i_hide_box(0);
         if (gr_keys[1] != 0)
-            i_inform((uchar far *)"Joystick\tcalibration aborted.", 0,
+            i_inform((uchar far *)"Joystick calibration aborted.", 0,
                      (uchar far *)0);
         else
             the_game->input_mode = 1;
