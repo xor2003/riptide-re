@@ -361,7 +361,7 @@ void far cb_sound(void)
     else
         strcat((char far *)_tmp, (char far *)"OFF.");
     tb->add_string((uchar far *)_tmp);
-    tb->add_string((uchar far *)"New\tsetting?");
+    tb->add_string((uchar far *)"New setting?");
     tb->add_button((uchar far *)"Off", (void far *)0);
     tb->add_button((uchar far *)"On", (void far *)0);
     tb->draw();
@@ -397,7 +397,7 @@ void far cb_control(void)
     delete tb;
     if (tb->buttons[0]->field_20 != 0) {          /* Joy selected */
         the_game->joy_update();
-        i_show_box((uchar far *)"Center joystick and press\nfire button.",
+        i_show_box((uchar far *)"Center joystick and press\nfire button...",
                    0, 0, (uchar far *)0, (uchar far *)0);
         while (joystickbutton(0) == 0 && gr_keys[1] == 0)
             the_game->joy_update();
@@ -463,16 +463,16 @@ void far cb_about_de(void)
     show_loop((uchar far *)"fish1r.l", 0x46, 0x78, 0, 0);
     show_loop((uchar far *)"bs1_bdl.l", 0xE6, 0x5F, 1, 0);
     i_set_text(0x10, 2, 0x1C, 0x9F);
-    display->print_at_xy(0x14, 0x0A, (uchar far *)"In Search of Dr.\tRiptide", 1);
+    display->print_at_xy(0x14, 0x0A, (uchar far *)"In Search of Dr. Riptide", 1);
     display->print_at_xy(0x14, 0x14, (uchar far *)"R E G I S T E R E D", 1);
     i_set_text(0x80, 2, 0x87, 0x9F);
     display->print_at_xy(0x14, 0x32, (uchar far *)"Design and Programming:", 1);
     i_set_text(0x30, 2, 0x18, 0x1D);
-    display->print_at_xy(0x14, 0x3C, (uchar far *)"Raoul\tSaid", 1);
+    display->print_at_xy(0x14, 0x3C, (uchar far *)"Raoul Said", 1);
     i_set_text(0x80, 2, 0x87, 0x9F);
     display->print_at_xy(0x14, 0x5A, (uchar far *)"Producer:", 1);
     i_set_text(0x30, 2, 0x18, 0x1D);
-    display->print_at_xy(0x14, 0x64, (uchar far *)"Avery\tPack", 1);
+    display->print_at_xy(0x14, 0x64, (uchar far *)"Avery Pack", 1);
     i_set_text(0x80, 2, 0x87, 0x9F);
     display->print_at_xy(0x14, 0x78, (uchar far *)"Artwork:", 1);
     i_set_text(0x30, 2, 0x18, 0x1D);
@@ -480,10 +480,10 @@ void far cb_about_de(void)
     i_set_text(0x80, 2, 0x87, 0x9F);
     display->print_at_xy(0x14, 0x96, (uchar far *)"Composer/Sound Effects:", 1);
     i_set_text(0x30, 2, 0x18, 0x1D);
-    display->print_at_xy(0x14, 0xA0, (uchar far *)"Dan\tFroelich", 1);
+    display->print_at_xy(0x14, 0xA0, (uchar far *)"Dan Froelich", 1);
     i_set_text(0x68, 3, 0x1C, 0x9B);
     display->print_at_xy(0x14, 0xB4, (uchar far *)"Copyright (C) 1994 MindStorm Software", 1);
-    display->print_at_xy(0x14, 0xBE, (uchar far *)"and Pack\tMedia Company, Inc.", 1);
+    display->print_at_xy(0x14, 0xBE, (uchar far *)"and Pack Media Company, Inc.", 1);
     display->set_palette();
     the_game->play_sound_file((uchar far *)"scream");
     while (the_game->field_2B != 0 || mouse->field_00 != 0)
@@ -632,7 +632,7 @@ void far cb_debug_shot_size(void)
     uchar var_5;
 
     tb = new text_box((uchar far *)"Shot size");
-    tb->add_string((uchar far *)"\t Enter new shot\tsize:  ");
+    tb->add_string((uchar far *)"  Enter new shot size:  ");
     tb->add_button((uchar far *)"Small", (void far *)0);
     tb->add_button((uchar far *)"Medium", (void far *)0);
     tb->add_button((uchar far *)"Huge", (void far *)0);

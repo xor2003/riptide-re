@@ -34,9 +34,9 @@ void init_game(void)
 
     gr_start_kbd_grab();
     clrscr();
-    printf("%s\n", "Riptide (Registered) 1.0\t(C) 1994 MindStorm Software");
+    printf("%s\n", "Riptide (Registered) 1.0 (C) 1994 MindStorm Software");
     if (debug_mode == 1)
-        printf(">> DEBUG\tMODE ENABLED <<\n");
+        printf(">> DEBUG MODE ENABLED <<\n");
     if (force_pc_sound == 1)
         printf(">>  FORCING PC SOUND  <<\n");
 
@@ -52,7 +52,7 @@ void init_game(void)
         if (free_mem < need) {
             delete the_game;
             if (the_game->sb_present)
-                terminate((uchar *)"Riptide requires 600k with digital sound.", 0);
+                terminate((uchar *)"Riptide requires 600k with digital sound.  Increase memory or run\nwith the -pcsound option.", 0);
             else
                 terminate((uchar *)"Riptide requires 500k running pc sound.", 0);
         }
@@ -801,7 +801,7 @@ void end_game(void)
     is_rec = is_record(score);
     if (is_rec) {
         if (cheat_mode == 1) {
-            i_inform((uchar far *)"You made the top 10!  Unfortunately\nyou are a big cheater, so no cigar.", 0, (uchar far *)0);
+            i_inform((uchar far *)"You made the top 10!  Unfortunately\nyou used the cheat code...  Sorry!", 0, (uchar far *)0);
             is_rec = 0;
         } else {
             name = i_get_string((uchar far *)"Enter Name",
@@ -1913,7 +1913,7 @@ no_input:
         if (gr_keys[0x19] && displayed_page == 0)
         {
             display->dump_pcx();
-            i_inform((uchar far *)"Riptide.pcx has been written", 0, 0);
+            i_inform((uchar far *)"'riptide.pcx' has been dumped.", 0, 0);
         }
         if (gr_keys[0x2C])
             stop_room = 1;
@@ -2180,13 +2180,13 @@ void activate_menu_bar(void)
     i_set_text(0x30, 2, 0x18, 0x1D);
     if (game_in_progress != 0)
     {
-        the_menu_bar->toggle_item((uchar far *)s1, (uchar far *)"Run Benchmark", 1);
+        the_menu_bar->toggle_item((uchar far *)s1, (uchar far *)"Run benchmark", 1);
         the_menu_bar->toggle_item((uchar far *)"Game", (uchar far *)"Resume", 1);
         the_game->pause_song();
     }
     else
     {
-        the_menu_bar->toggle_item((uchar far *)"Debug", (uchar far *)"Run Benchmark", 0);
+        the_menu_bar->toggle_item((uchar far *)"Debug", (uchar far *)"Run benchmark", 0);
         the_menu_bar->toggle_item((uchar far *)"Game", (uchar far *)"Resume", 0);
     }
     the_menu_bar->draw();
@@ -2501,7 +2501,7 @@ row_check:
     if (var_2 < 0x0A)
         goto row_body;
     i_set_text(0x30, 2, 0x18, 0x1D);
-    strcpy(_tmp, "Your Score");
+    strcpy(_tmp, "Your score: ");
     strcat(_tmp, ltoa(score, _tmp2, 0x0A));
     display->print_at_xy(var_4 - 0x0A, var_6 + 0x78, (uchar far *)_tmp, 0);
     i_set_text(0x30, 2, 0x18, 0x1D);
@@ -2622,7 +2622,7 @@ void show_stats(void)
     var_1C = 0xF9;
     var_E = 0xA0;
     if (!enemy_count || !goody_count)
-        terminate((uchar far *)"Attempt to divide by zero in show_stats",
+        terminate((uchar far *)"Attempt to divide by zero in show_stats.",
                   (uchar far *)0);
     var_10 = (int)(goodies_found / (float)goody_count * 100.0);
     value = (int)(enemies_killed / (float)enemy_count * 100.0);
@@ -2642,12 +2642,12 @@ void show_stats(void)
     strcat((char *)_tmp, itoa(value, _tmp2, 0x0A));
     strcat((char *)_tmp, "%");
     display->print_at_xy(var_6, var_8 - 0x1E, (uchar far *)_tmp, 0);
-    strcpy((char *)_tmp, "Goodies\t\t  : ");
+    strcpy((char *)_tmp, "Goodies           : ");
     strcat((char *)_tmp, itoa(var_10, _tmp2, 0x0A));
     strcat((char *)_tmp, "%");
     display->print_at_xy(var_6, var_8 - 0x14, (uchar far *)_tmp, 0);
-    display->print_at_xy(var_6, var_8, (uchar far *)"Bonus X 50\t  :", 0);
-    display->print_at_xy(var_A, var_C, (uchar far *)"Bonus X 100\t  :", 0);
+    display->print_at_xy(var_6, var_8, (uchar far *)"Bonus X 50        :", 0);
+    display->print_at_xy(var_A, var_C, (uchar far *)"Bonus X 100       :", 0);
     display->set_palette();
     block = (uchar far *)display->get_bits(var_6 + var_E, var_8,
                                            var_6 + var_E + 0x28, var_8 + 0x0A);

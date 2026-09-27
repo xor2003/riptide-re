@@ -3216,7 +3216,7 @@ aReset		db 'Reset',0            ; DATA XREF: show_high_scores(uchar)+20Ao
 aOk		db 'Ok',0               ; DATA XREF: show_high_scores(uchar)+226o
 ; char aAreYouSureYouW[]
 aAreYouSureYouW	db 'Are you sure you want to',0Ah ; DATA XREF: show_high_scores(uchar)+335o
-		db 'reset the high scoresq',0
+		db 'reset the high scores?',0
 aStats_cmf	db 'stats.cmf',0        ; DATA XREF: show_stats(void)+41o
 ; char aAdd[]
 aAdd		db 'add',0              ; DATA XREF: show_stats(void)+57o
@@ -3367,7 +3367,7 @@ aBs3_prpr_l_2	db 'bs3_prpr.l',0       ; DATA XREF: seg0b2c:4708o
 aBs3_facl_l_2	db 'bs3_facl.l',0       ; DATA XREF: seg0b2c:47B0o
 aBs3_facr_l_2	db 'bs3_facr.l',0       ; DATA XREF: seg0b2c:47B6o
 ; char aPrinterError_C[]
-aPrinterError_C	db 'Printer error.  Continueq',0 ; DATA XREF: print_form(uchar *,uchar)+7Eo
+aPrinterError_C	db 'Printer error.  Continue?',0 ; DATA XREF: print_form(uchar *,uchar)+7Eo
 ; char asc_29EFE[]
 asc_29EFE	db '        ',0         ; DATA XREF: print_form(uchar *,uchar)+CFo
 aTurn_l_2	db 'turn.l',0           ; DATA XREF: seg0fa9:0289o
@@ -3387,8 +3387,8 @@ aCopyrightC1994	db 'Copyright (C) 1994 MindStorm Software',0 ; DATA XREF: seg0fa
 aAndPackMediaCo	db 'and Pack Media Company, Inc.',0 ; DATA XREF: seg0fa9:0490o
 aScream		db 'scream',0           ; DATA XREF: seg0fa9:04B9o
 aT_cat_txt	db 't_cat.txt',0        ; DATA XREF: seg0fa9:0621o
-aStartGameFromB	db 'Start game from beginingq',0 ; DATA XREF: seg0fa9:0659o
-aEndCurrentGame	db 'End current gameq',0 ; DATA XREF: seg0fa9:0688o
+aStartGameFromB	db 'Start game from begining?',0 ; DATA XREF: seg0fa9:0659o
+aEndCurrentGame	db 'End current game?',0 ; DATA XREF: seg0fa9:0688o
 aPassword_0	db 'Password',0         ; DATA XREF: seg0fa9:06C3o
 aEnterPasswordB	db 'Enter password below:',0 ; DATA XREF: seg0fa9:06BFo
 aCharge		db 'charge',0           ; DATA XREF: seg0fa9:071Do
@@ -3407,7 +3407,7 @@ aT_inst_txt	db 't_inst.txt',0       ; DATA XREF: seg0fa9:08BCo
 aPat1_l_1	db 'pat1.l',0           ; DATA XREF: seg0fa9:094Co
 aT_story_txt	db 't_story.txt',0      ; DATA XREF: seg0fa9:097Do
 aAreYouSureYo_0	db 'Are you sure you want to',0Ah ; DATA XREF: seg0fa9:09EFo
-		db 'leaveq',0
+		db 'leave?',0
 aConfig_rip	db 'config.rip',0       ; DATA XREF: seg0fa9:0A3Fo
 aWb		db 'wb+',0              ; DATA XREF: seg0fa9:0A3Bo
 aT_exit_txt	db 't_exit.txt',0       ; DATA XREF: seg0fa9:0ABCo
@@ -3415,7 +3415,7 @@ aGameSound	db 'Game Sound',0       ; DATA XREF: seg0fa9:0AE7o
 aGameSoundsAreC	db 'Game sounds are currently ',0 ; DATA XREF: seg0fa9:0AFDo
 aOn_		db 'ON.',0              ; DATA XREF: seg0fa9:0B18o
 aOff_		db 'OFF.',0             ; DATA XREF: seg0fa9:0B1Eo
-aNewSettingq	db 'New settingq',0     ; DATA XREF: seg0fa9:0B40o
+aNewSettingq	db 'New setting?',0     ; DATA XREF: seg0fa9:0B40o
 aOff		db 'Off',0              ; DATA XREF: seg0fa9:0B56o
 aOn		db 'On',0               ; DATA XREF: seg0fa9:0B6Co
 aGameControl	db 'Game Control',0     ; DATA XREF: seg0fa9:0C0Do
