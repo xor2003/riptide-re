@@ -15,8 +15,8 @@ $comm	macro	name,dist,size,count
 	endif
 	?debug	V 300h
 	?debug	S "vgadisp.cpp"
-	?debug	C E9324D395D0B766761646973702E637070
-	?debug	C E9324D395D09726970746964652E68
+	?debug	C E991103C5D0B766761646973702E637070
+	?debug	C E991103C5D09726970746964652E68
 	?debug	C E9253FD45C12443A5C494E434C5544455C737464696F2E68
 	?debug	C E9263FD45C12443A5C494E434C5544455C5F646566732E68
 	?debug	C E9263FD45C13443A5C494E434C5544455C5F6E66696C652E68
@@ -1696,10 +1696,11 @@ VGADISP_TEXT	segment byte public use16 'CODE'
 	enter	26,0
    ;	
    ;	{
-   ;	    long  var_1A;
-   ;	    uchar far *src, *dest;
-   ;	    int   var_12, var_10, var_E, var_C, var_A, var_8;
    ;	    byte  var_1;
+   ;	    uchar far *src;
+   ;	    int   var_8, var_A, var_C, var_E, var_10, var_12;
+   ;	    uchar far *dest;
+   ;	    long  var_1A;
    ;	
    ;	    arg_A /= 0x50;
    ;	
@@ -1718,11 +1719,11 @@ VGADISP_TEXT	segment byte public use16 'CODE'
 	push	ax
 	pop	eax
 	add	sp,4
-	mov	dword ptr [bp-4],eax
+	mov	dword ptr [bp-26],eax
    ;	
    ;	    if (var_1A == -1L)
    ;	
-	cmp	dword ptr [bp-4],large -1
+	cmp	dword ptr [bp-26],large -1
 	jne short	@@1
 	jmp	@31@814
 @@1:
@@ -1730,15 +1731,15 @@ VGADISP_TEXT	segment byte public use16 'CODE'
    ;	        goto open_fail;
    ;	    src = (uchar far *)new char[var_1A];
    ;	
-	push	word ptr [bp-4]
+	push	word ptr [bp-26]
 	call	far ptr @$bnew$qui
 	pop	cx
-	mov	word ptr [bp-6],dx
-	mov	word ptr [bp-8],ax
+	mov	word ptr [bp-4],dx
+	mov	word ptr [bp-6],ax
    ;	
    ;	    if (src == 0)
    ;	
-	cmp	dword ptr [bp-8],large 0
+	cmp	dword ptr [bp-6],large 0
 	jne	short @31@114
    ;	
    ;	        no_heap((uchar far *)"Loading pcx file.");
@@ -1751,15 +1752,15 @@ VGADISP_TEXT	segment byte public use16 'CODE'
    ;	
    ;	    if ((long)g_element_read(src, (uint)var_1A) != var_1A)
    ;	
+	push	word ptr [bp-26]
 	push	word ptr [bp-4]
 	push	word ptr [bp-6]
-	push	word ptr [bp-8]
 	call	far ptr @g_element_read$qnvui
 	push	dx
 	push	ax
 	pop	eax
 	add	sp,6
-	cmp	eax,dword ptr [bp-4]
+	cmp	eax,dword ptr [bp-26]
 	je short	@@2
 	jmp	@31@786
 @@2:
@@ -1774,12 +1775,12 @@ VGADISP_TEXT	segment byte public use16 'CODE'
 	push	128
 	call	far ptr @$bnew$qui
 	pop	cx
-	mov	word ptr [bp-10],dx
-	mov	word ptr [bp-12],ax
+	mov	word ptr [bp-20],dx
+	mov	word ptr [bp-22],ax
    ;	
    ;	    if (dest == 0)
    ;	
-	cmp	dword ptr [bp-12],large 0
+	cmp	dword ptr [bp-22],large 0
 	jne	short @31@198
    ;	
    ;	        no_heap((uchar far *)"Creating PCX header.");
@@ -1793,10 +1794,10 @@ VGADISP_TEXT	segment byte public use16 'CODE'
    ;	    memcpy(dest, src, 0x80);
    ;	
 	push	128
+	push	word ptr [bp-4]
 	push	word ptr [bp-6]
-	push	word ptr [bp-8]
-	push	word ptr [bp-10]
-	push	word ptr [bp-12]
+	push	word ptr [bp-20]
+	push	word ptr [bp-22]
 	call	far ptr _memcpy
 	add	sp,10
    ;	
@@ -1807,9 +1808,9 @@ VGADISP_TEXT	segment byte public use16 'CODE'
    ;	
    ;	        var_E = *(uint far *)(dest + 0x0A) - *(uint far *)(dest + 0x06) + 1;
    ;	
-	les	bx,dword ptr [bp-12]
+	les	bx,dword ptr [bp-22]
 	mov	ax,word ptr es:[bx+10]
-	les	bx,dword ptr [bp-12]
+	les	bx,dword ptr [bp-22]
 	sub	ax,word ptr es:[bx+6]
 	inc	ax
 	jmp	short @31@282
@@ -1820,43 +1821,43 @@ VGADISP_TEXT	segment byte public use16 'CODE'
    ;	
 	mov	ax,word ptr [bp+18]
 @31@282:
-	mov	word ptr [bp-18],ax
+	mov	word ptr [bp-14],ax
    ;	
    ;	    var_10 = *(uint far *)(dest + 0x42);
    ;	
-	les	bx,dword ptr [bp-12]
+	les	bx,dword ptr [bp-22]
 	mov	ax,word ptr es:[bx+66]
 	mov	word ptr [bp-16],ax
    ;	
    ;	    var_12 = 0x80;
    ;	
-	mov	word ptr [bp-14],128
+	mov	word ptr [bp-18],128
    ;	
    ;	    for (var_8 = arg_A; var_8 < arg_A + var_E; ++var_8) {
    ;	
 	mov	ax,word ptr [bp+16]
-	mov	word ptr [bp-24],ax
+	mov	word ptr [bp-8],ax
 	jmp	@31@506
 @31@338:
    ;	
    ;	        var_A = 0;
    ;	
-	mov	word ptr [bp-22],0
+	mov	word ptr [bp-10],0
 	jmp	short @31@450
 @31@366:
    ;	
    ;	        while (var_A < var_10) {
    ;	            var_1 = src[var_12++];
    ;	
-	les	bx,dword ptr [bp-8]
-	add	bx,word ptr [bp-14]
+	les	bx,dword ptr [bp-6]
+	add	bx,word ptr [bp-18]
 	mov	al,byte ptr es:[bx]
-	mov	byte ptr [bp-25],al
-	inc	word ptr [bp-14]
+	mov	byte ptr [bp-1],al
+	inc	word ptr [bp-18]
    ;	
    ;	            if ((var_1 & 0xC0) == 0xC0) {
    ;	
-	mov	al,byte ptr [bp-25]
+	mov	al,byte ptr [bp-1]
 	mov	ah,0
 	and	ax,192
 	cmp	ax,192
@@ -1864,23 +1865,23 @@ VGADISP_TEXT	segment byte public use16 'CODE'
    ;	
    ;	                var_C = var_1 & 0x3F;
    ;	
-	mov	al,byte ptr [bp-25]
+	mov	al,byte ptr [bp-1]
 	mov	ah,0
 	and	ax,63
-	mov	word ptr [bp-20],ax
+	mov	word ptr [bp-12],ax
    ;	
    ;	                draw_span(var_A, var_8, src[var_12++], var_C, 0);
    ;	
 	push	0
-	push	word ptr [bp-20]
-	mov	ax,word ptr [bp-14]
-	inc	word ptr [bp-14]
-	les	bx,dword ptr [bp-8]
+	push	word ptr [bp-12]
+	mov	ax,word ptr [bp-18]
+	inc	word ptr [bp-18]
+	les	bx,dword ptr [bp-6]
 	add	bx,ax
 	mov	al,byte ptr es:[bx]
 	push	ax
-	push	word ptr [bp-24]
-	push	word ptr [bp-22]
+	push	word ptr [bp-8]
+	push	word ptr [bp-10]
 	push	word ptr [bp+8]
 	push	word ptr [bp+6]
 	push	cs
@@ -1889,8 +1890,8 @@ VGADISP_TEXT	segment byte public use16 'CODE'
    ;	
    ;	                var_A += var_C;
    ;	
-	mov	ax,word ptr [bp-20]
-	add	word ptr [bp-22],ax
+	mov	ax,word ptr [bp-12]
+	add	word ptr [bp-10],ax
    ;	
    ;	            } else {
    ;	
@@ -1899,11 +1900,11 @@ VGADISP_TEXT	segment byte public use16 'CODE'
    ;	
    ;	                set_pix(var_A++, var_8, var_1);
    ;	
-	mov	al,byte ptr [bp-25]
+	mov	al,byte ptr [bp-1]
 	push	ax
-	push	word ptr [bp-24]
-	mov	ax,word ptr [bp-22]
-	inc	word ptr [bp-22]
+	push	word ptr [bp-8]
+	mov	ax,word ptr [bp-10]
+	inc	word ptr [bp-10]
 	push	ax
 	push	word ptr [bp+8]
 	push	word ptr [bp+6]
@@ -1911,14 +1912,14 @@ VGADISP_TEXT	segment byte public use16 'CODE'
 	call	near ptr @vga_display@set_pix$qiiuc
 	add	sp,10
 @31@450:
-	mov	ax,word ptr [bp-22]
+	mov	ax,word ptr [bp-10]
 	cmp	ax,word ptr [bp-16]
 	jl	short @31@366
-	inc	word ptr [bp-24]
+	inc	word ptr [bp-8]
 @31@506:
 	mov	ax,word ptr [bp+16]
-	add	ax,word ptr [bp-18]
-	cmp	ax,word ptr [bp-24]
+	add	ax,word ptr [bp-14]
+	cmp	ax,word ptr [bp-8]
 	jbe short	@@3
 	jmp	@31@338
 @@3:
@@ -1928,27 +1929,27 @@ VGADISP_TEXT	segment byte public use16 'CODE'
    ;	    }
    ;	    ++var_12;
    ;	
-	inc	word ptr [bp-14]
+	inc	word ptr [bp-18]
    ;	
    ;	    for (var_8 = 0; var_8 < 0x300; ++var_8)
    ;	
-	mov	word ptr [bp-24],0
+	mov	word ptr [bp-8],0
 	jmp	short @31@618
 @31@562:
    ;	
    ;	        palette[var_8] = src[var_12++] >> 2;
    ;	
-	les	bx,dword ptr [bp-8]
-	add	bx,word ptr [bp-14]
+	les	bx,dword ptr [bp-6]
+	add	bx,word ptr [bp-18]
 	mov	al,byte ptr es:[bx]
 	mov	ah,0
 	sar	ax,2
-	mov	bx,word ptr [bp-24]
+	mov	bx,word ptr [bp-8]
 	mov	byte ptr DGROUP:_palette[bx],al
-	inc	word ptr [bp-14]
-	inc	word ptr [bp-24]
+	inc	word ptr [bp-18]
+	inc	word ptr [bp-8]
 @31@618:
-	cmp	word ptr [bp-24],768
+	cmp	word ptr [bp-8],768
 	jl	short @31@562
    ;	
    ;	    if (arg_8 != 0)
@@ -1967,15 +1968,15 @@ VGADISP_TEXT	segment byte public use16 'CODE'
    ;	
    ;	    delete dest;
    ;	
-	push	word ptr [bp-10]
-	push	word ptr [bp-12]
+	push	word ptr [bp-20]
+	push	word ptr [bp-22]
 	call	far ptr @$bdele$qnv
 	add	sp,4
    ;	
    ;	    delete src;
    ;	
+	push	word ptr [bp-4]
 	push	word ptr [bp-6]
-	push	word ptr [bp-8]
 	call	far ptr @$bdele$qnv
 @31@730:
 	add	sp,4
@@ -2024,10 +2025,10 @@ VGADISP_TEXT	segment byte public use16 'CODE'
 	enter	20,0
    ;	
    ;	{
-   ;	    uchar far *block;
-   ;	    int   handle;
-   ;	    uint  var_10, var_E, buf, var_A, var_8, var_6;
    ;	    byte  var_1;
+   ;	    int   handle;
+   ;	    uint  var_6, var_8, var_A, buf, var_E, var_10;
+   ;	    uchar far *block;
    ;	
    ;	    handle = open("riptide.pcx", 0x8304, 0x180);
    ;	
@@ -2037,11 +2038,11 @@ VGADISP_TEXT	segment byte public use16 'CODE'
 	push	offset DGROUP:s@+134
 	call	far ptr _open
 	add	sp,8
-	mov	word ptr [bp-6],ax
+	mov	word ptr [bp-4],ax
    ;	
    ;	    if (handle == -1)
    ;	
-	cmp	word ptr [bp-6],-1
+	cmp	word ptr [bp-4],-1
 	jne short	@@4
 	jmp	@32@842
 @@4:
@@ -2052,12 +2053,12 @@ VGADISP_TEXT	segment byte public use16 'CODE'
 	push	128
 	call	far ptr @$bnew$qui
 	pop	cx
-	mov	word ptr [bp-2],dx
-	mov	word ptr [bp-4],ax
+	mov	word ptr [bp-18],dx
+	mov	word ptr [bp-20],ax
    ;	
    ;	    if (block == 0)
    ;	
-	cmp	dword ptr [bp-4],large 0
+	cmp	dword ptr [bp-20],large 0
 	jne	short @32@114
    ;	
    ;	        no_heap((uchar far *)"Creating PCX header.");
@@ -2070,75 +2071,75 @@ VGADISP_TEXT	segment byte public use16 'CODE'
    ;	
    ;	    block[0] = 0x0A;
    ;	
-	les	bx,dword ptr [bp-4]
+	les	bx,dword ptr [bp-20]
 	mov	byte ptr es:[bx],10
    ;	
    ;	    block[1] = 5;
    ;	
-	les	bx,dword ptr [bp-4]
+	les	bx,dword ptr [bp-20]
 	mov	byte ptr es:[bx+1],5
    ;	
    ;	    block[2] = 1;
    ;	
-	les	bx,dword ptr [bp-4]
+	les	bx,dword ptr [bp-20]
 	mov	byte ptr es:[bx+2],1
    ;	
    ;	    block[3] = 8;
    ;	
-	les	bx,dword ptr [bp-4]
+	les	bx,dword ptr [bp-20]
 	mov	byte ptr es:[bx+3],8
    ;	
    ;	    *(word far *)(block + 4) = 0;
    ;	
-	les	bx,dword ptr [bp-4]
+	les	bx,dword ptr [bp-20]
 	mov	word ptr es:[bx+4],0
    ;	
    ;	    *(word far *)(block + 6) = 0;
    ;	
-	les	bx,dword ptr [bp-4]
+	les	bx,dword ptr [bp-20]
 	mov	word ptr es:[bx+6],0
    ;	
    ;	    *(word far *)(block + 8) = 0x13F;
    ;	
-	les	bx,dword ptr [bp-4]
+	les	bx,dword ptr [bp-20]
 	mov	word ptr es:[bx+8],319
    ;	
    ;	    *(word far *)(block + 0x0A) = 0xC7;
    ;	
-	les	bx,dword ptr [bp-4]
+	les	bx,dword ptr [bp-20]
 	mov	word ptr es:[bx+10],199
    ;	
    ;	    *(word far *)(block + 0x0C) = 0x140;
    ;	
-	les	bx,dword ptr [bp-4]
+	les	bx,dword ptr [bp-20]
 	mov	word ptr es:[bx+12],320
    ;	
    ;	    *(word far *)(block + 0x0E) = 0xC8;
    ;	
-	les	bx,dword ptr [bp-4]
+	les	bx,dword ptr [bp-20]
 	mov	word ptr es:[bx+14],200
    ;	
    ;	    block[0x41] = 1;
    ;	
-	les	bx,dword ptr [bp-4]
+	les	bx,dword ptr [bp-20]
 	mov	byte ptr es:[bx+65],1
    ;	
    ;	    *(word far *)(block + 0x44) = 0;
    ;	
-	les	bx,dword ptr [bp-4]
+	les	bx,dword ptr [bp-20]
 	mov	word ptr es:[bx+68],0
    ;	
    ;	    *(word far *)(block + 0x42) = 0x140;
    ;	
-	les	bx,dword ptr [bp-4]
+	les	bx,dword ptr [bp-20]
 	mov	word ptr es:[bx+66],320
    ;	
    ;	    if (write(handle, block, 0x80) != 0x80)
    ;	
 	push	128
-	push	word ptr [bp-2]
+	push	word ptr [bp-18]
+	push	word ptr [bp-20]
 	push	word ptr [bp-4]
-	push	word ptr [bp-6]
 	call	far ptr _write
 	add	sp,8
 	cmp	ax,128
@@ -2149,33 +2150,33 @@ VGADISP_TEXT	segment byte public use16 'CODE'
    ;	        goto fail;
    ;	    var_E = *(word far *)(block + 0x0A) - *(word far *)(block + 0x06) + 1;
    ;	
-	les	bx,dword ptr [bp-4]
+	les	bx,dword ptr [bp-20]
 	mov	ax,word ptr es:[bx+10]
-	les	bx,dword ptr [bp-4]
+	les	bx,dword ptr [bp-20]
 	sub	ax,word ptr es:[bx+6]
 	inc	ax
-	mov	word ptr [bp-10],ax
+	mov	word ptr [bp-14],ax
    ;	
    ;	    var_10 = *(word far *)(block + 0x42);
    ;	
-	les	bx,dword ptr [bp-4]
+	les	bx,dword ptr [bp-20]
 	mov	ax,word ptr es:[bx+66]
-	mov	word ptr [bp-8],ax
+	mov	word ptr [bp-16],ax
    ;	
    ;	    var_6 = 0;
    ;	
-	mov	word ptr [bp-18],0
+	mov	word ptr [bp-6],0
    ;	
    ;	    for (var_8 = var_6; var_8 < var_6 + var_E; ++var_8) {
    ;	
-	mov	ax,word ptr [bp-18]
-	mov	word ptr [bp-16],ax
+	mov	ax,word ptr [bp-6]
+	mov	word ptr [bp-8],ax
 	jmp	@32@646
 @32@170:
    ;	
    ;	        var_A = 0;
    ;	
-	mov	word ptr [bp-14],0
+	mov	word ptr [bp-10],0
 	jmp	@32@590
 @32@198:
    ;	
@@ -2186,14 +2187,14 @@ VGADISP_TEXT	segment byte public use16 'CODE'
    ;	
    ;	            var_1 = read_pix(var_A, var_8);
    ;	
-	push	word ptr [bp-16]
-	push	word ptr [bp-14]
+	push	word ptr [bp-8]
+	push	word ptr [bp-10]
 	push	word ptr [bp+8]
 	push	word ptr [bp+6]
 	push	cs
 	call	near ptr @vga_display@read_pix$qii
 	add	sp,8
-	mov	byte ptr [bp-19],al
+	mov	byte ptr [bp-1],al
 	jmp	short @32@254
 @32@226:
    ;	
@@ -2203,8 +2204,8 @@ VGADISP_TEXT	segment byte public use16 'CODE'
    ;	
 	inc	word ptr [bp-12]
 @32@254:
-	push	word ptr [bp-16]
-	mov	ax,word ptr [bp-14]
+	push	word ptr [bp-8]
+	mov	ax,word ptr [bp-10]
 	add	ax,word ptr [bp-12]
 	push	ax
 	push	word ptr [bp+8]
@@ -2212,13 +2213,13 @@ VGADISP_TEXT	segment byte public use16 'CODE'
 	push	cs
 	call	near ptr @vga_display@read_pix$qii
 	add	sp,8
-	cmp	al,byte ptr [bp-19]
+	cmp	al,byte ptr [bp-1]
 	jne	short @32@338
 	cmp	word ptr [bp-12],63
 	jae	short @32@338
-	mov	ax,word ptr [bp-14]
+	mov	ax,word ptr [bp-10]
 	add	ax,word ptr [bp-12]
-	cmp	ax,word ptr [bp-8]
+	cmp	ax,word ptr [bp-16]
 	jb	short @32@226
 @32@338:
    ;	
@@ -2230,7 +2231,7 @@ VGADISP_TEXT	segment byte public use16 'CODE'
    ;	                var_A += buf;
    ;	
 	mov	ax,word ptr [bp-12]
-	add	word ptr [bp-14],ax
+	add	word ptr [bp-10],ax
    ;	
    ;	                buf |= 0xC0;
    ;	
@@ -2242,7 +2243,7 @@ VGADISP_TEXT	segment byte public use16 'CODE'
 	push	ss
 	lea	ax,word ptr [bp-12]
 	push	ax
-	push	word ptr [bp-6]
+	push	word ptr [bp-4]
 	call	far ptr _write
 	add	sp,8
 	cmp	ax,1
@@ -2255,9 +2256,9 @@ VGADISP_TEXT	segment byte public use16 'CODE'
    ;	
 	push	1
 	push	ss
-	lea	ax,word ptr [bp-19]
+	lea	ax,word ptr [bp-1]
 	push	ax
-	push	word ptr [bp-6]
+	push	word ptr [bp-4]
 	call	far ptr _write
 	add	sp,8
 	cmp	ax,1
@@ -2274,7 +2275,7 @@ VGADISP_TEXT	segment byte public use16 'CODE'
    ;	
    ;	                if ((var_1 & 0xC0) == 0xC0)
    ;	
-	mov	al,byte ptr [bp-19]
+	mov	al,byte ptr [bp-1]
 	mov	ah,0
 	and	ax,192
 	cmp	ax,192
@@ -2285,7 +2286,7 @@ VGADISP_TEXT	segment byte public use16 'CODE'
 	push	1
 	push	0
 	push	193
-	push	word ptr [bp-6]
+	push	word ptr [bp-4]
 	call	far ptr _write
 	add	sp,8
 	cmp	ax,1
@@ -2299,9 +2300,9 @@ VGADISP_TEXT	segment byte public use16 'CODE'
    ;	
 	push	1
 	push	ss
-	lea	ax,word ptr [bp-19]
+	lea	ax,word ptr [bp-1]
 	push	ax
-	push	word ptr [bp-6]
+	push	word ptr [bp-4]
 	call	far ptr _write
 	add	sp,8
 	cmp	ax,1
@@ -2312,18 +2313,18 @@ VGADISP_TEXT	segment byte public use16 'CODE'
    ;	                    goto fail;
    ;	                ++var_A;
    ;	
-	inc	word ptr [bp-14]
+	inc	word ptr [bp-10]
 @32@590:
-	mov	ax,word ptr [bp-14]
-	cmp	ax,word ptr [bp-8]
+	mov	ax,word ptr [bp-10]
+	cmp	ax,word ptr [bp-16]
 	jae short	@@9
 	jmp	@32@198
 @@9:
-	inc	word ptr [bp-16]
+	inc	word ptr [bp-8]
 @32@646:
-	mov	ax,word ptr [bp-18]
-	add	ax,word ptr [bp-10]
-	cmp	ax,word ptr [bp-16]
+	mov	ax,word ptr [bp-6]
+	add	ax,word ptr [bp-14]
+	cmp	ax,word ptr [bp-8]
 	jbe short	@@10
 	jmp	@32@170
 @@10:
@@ -2333,15 +2334,15 @@ VGADISP_TEXT	segment byte public use16 'CODE'
    ;	    }
    ;	    var_1 = 0x0C;
    ;	
-	mov	byte ptr [bp-19],12
+	mov	byte ptr [bp-1],12
    ;	
    ;	    if (write(handle, &var_1, 1) == -1)
    ;	
 	push	1
 	push	ss
-	lea	ax,word ptr [bp-19]
+	lea	ax,word ptr [bp-1]
 	push	ax
-	push	word ptr [bp-6]
+	push	word ptr [bp-4]
 	call	far ptr _write
 	add	sp,8
 	cmp	ax,-1
@@ -2350,45 +2351,45 @@ VGADISP_TEXT	segment byte public use16 'CODE'
    ;	        goto fail;
    ;	    for (var_8 = 0; var_8 < 0x300; ++var_8) {
    ;	
-	mov	word ptr [bp-16],0
+	mov	word ptr [bp-8],0
 	jmp	short @32@786
 @32@730:
    ;	
    ;	        var_1 = palette[var_8] << 2;
    ;	
-	mov	bx,word ptr [bp-16]
+	mov	bx,word ptr [bp-8]
 	mov	al,byte ptr DGROUP:_palette[bx]
 	shl	al,2
-	mov	byte ptr [bp-19],al
+	mov	byte ptr [bp-1],al
    ;	
    ;	        if (write(handle, &var_1, 1) == -1)
    ;	
 	push	1
 	push	ss
-	lea	ax,word ptr [bp-19]
+	lea	ax,word ptr [bp-1]
 	push	ax
-	push	word ptr [bp-6]
+	push	word ptr [bp-4]
 	call	far ptr _write
 	add	sp,8
 	cmp	ax,-1
 	je	short @32@842
-	inc	word ptr [bp-16]
+	inc	word ptr [bp-8]
 @32@786:
-	cmp	word ptr [bp-16],768
+	cmp	word ptr [bp-8],768
 	jb	short @32@730
    ;	
    ;	            goto fail;
    ;	    }
    ;	    delete block;
    ;	
-	push	word ptr [bp-2]
-	push	word ptr [bp-4]
+	push	word ptr [bp-18]
+	push	word ptr [bp-20]
 	call	far ptr @$bdele$qnv
 	add	sp,4
    ;	
    ;	    close(handle);
    ;	
-	push	word ptr [bp-6]
+	push	word ptr [bp-4]
 	call	far ptr _close
 	pop	cx
    ;	
@@ -2400,7 +2401,7 @@ VGADISP_TEXT	segment byte public use16 'CODE'
    ;	fail:
    ;	    close(handle);
    ;	
-	push	word ptr [bp-6]
+	push	word ptr [bp-4]
 	call	far ptr _close
 	pop	cx
    ;	

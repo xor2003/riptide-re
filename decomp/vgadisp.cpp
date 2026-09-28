@@ -403,10 +403,11 @@ void vga_display::put_bits_masked(int arg_4, int arg_6, int arg_8, int arg_A,
  * ------------------------------------------------------------------------ */
 void vga_display::show_pcx(uchar far *path, uchar arg_8, uint arg_A, int arg_C)
 {
-    long  var_1A;
-    uchar far *src, *dest;
-    int   var_12, var_10, var_E, var_C, var_A, var_8;
     byte  var_1;
+    uchar far *src;
+    int   var_8, var_A, var_C, var_E, var_10, var_12;
+    uchar far *dest;
+    long  var_1A;
 
     arg_A /= 0x50;
     var_1A = (long)g_open_element(path);
@@ -465,10 +466,10 @@ open_fail:
  * ------------------------------------------------------------------------ */
 void vga_display::dump_pcx()
 {
-    uchar far *block;
-    int   handle;
-    uint  var_10, var_E, buf, var_A, var_8, var_6;
     byte  var_1;
+    int   handle;
+    uint  var_6, var_8, var_A, buf, var_E, var_10;
+    uchar far *block;
 
     handle = open("riptide.pcx", 0x8304, 0x180);
     if (handle == -1)
