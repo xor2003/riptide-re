@@ -351,8 +351,10 @@ void game_manager::play_song(uchar far *src)
     if (sb_present != 0) {
         stop_song();
         field_1E = getsequence(src);
+        /* shareware-DAT tolerance: absent .cmf just stays silent
+         * (original terminated with "Can't find song"). */
         if (field_1E == 0)
-            terminate((uchar far *)"Can't find song ", src);
+            return;
         if (field_1C != 0)
             playcmfblock(field_1E);
     }
@@ -399,7 +401,7 @@ void game_manager::continue_song()
  * ------------------------------------------------------------------------ */
 void game_manager::play_voc(uchar far *arg_4)
 {
-    if (field_1C != 0 && sb_present != 0)
+    if (arg_4 != 0 && field_1C != 0 && sb_present != 0)
         playvocblock((void far *)arg_4);
 }
 
@@ -413,6 +415,10 @@ void game_manager::play_voc_file(uchar far *src)
             stopvoc();
         strcpy(_tmp, src);
         strcat(_tmp, ".voc");
+        if ((long)g_open_element(_tmp) == -1L) {
+            g_close_element();
+            return;
+        }
         playvocfile(_tmp);
         while (vocplaying() != 0)
             ;
@@ -442,8 +448,8 @@ voc_block far *game_manager::load_voc(uchar far *src)
     strcat(_tmp, ".voc");
     block = (voc_block far *)new voc_block;
     var_8 = getsequence(_tmp);
-    if (var_8 == 0)
-        terminate((uchar far *)"Voc not found: ", _tmp);
+    /* shareware-DAT tolerance: absent .voc keeps the record with seq=0
+     * (original terminated here); play paths below skip null seq. */
     block->name = strdup(_tmp);
     block->seq = var_8;
     return block;

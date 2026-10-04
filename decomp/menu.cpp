@@ -62,6 +62,20 @@ void far cb_start(void)
  * ------------------------------------------------------------------------ */
 void far cb_start_act_2(void)
 {
+    /* shareware-DAT mode: no ep-2 maps -> show the t_order.txt nag pager
+     * (present in the shareware archive) instead of crashing on 2-1.m. */
+    if ((long)g_open_element((uchar far *)"2-1.m") == -1L) {
+        text_pager far *tp;
+        g_close_element();
+        prepare_new_screen();
+        tp = new text_pager((uchar far *)"t_order.txt", 0, story_call_up);
+        delete tp;
+        restore_old_screen();
+        if (game_in_progress)
+            _resume = 1;
+        return;
+    }
+    g_close_element();
     if (game_in_progress != 0) {
         if ((int)i_yes_cancel((uchar far *)"End current game?", 0) == 0)
             stop_room = 2;
