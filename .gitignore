@@ -17,6 +17,7 @@ CATALOG.*
 *.SCR
 CONFIG.RIP
 HIGH.SCR
+*Registered*.zip
 
 # --- analysis noise / logs ---
 LOGCPU*.TXT
