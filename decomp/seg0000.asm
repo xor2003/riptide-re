@@ -929,7 +929,7 @@ sub_24D9	proc near		; DATA XREF: seg2608:347Eo
 		push	di
 		mov	ax, 44h	; 'D'
 		mov	ss:0Eh,	ax
-		add	ax, 0C0h ; 'À'
+		add	ax, word ptr 0C0h; 'À'
 		mov	ss:10h,	ax
 		mov	ax, __ldt
 		mov	ss:0Ah,	ax
@@ -1116,7 +1116,7 @@ loc_2627::				; CODE XREF: sub_2624+6j
 		jz	loc_265B
 		mov	ax, word ptr __version
 		xchg	ah, al
-		cmp	ax, 1403h
+		cmp	ax, word ptr 1403h
 		jnz	loc_265B
 		mov	ax, 2575h
 		push	cs
@@ -1129,7 +1129,8 @@ loc_2627::				; CODE XREF: sub_2624+6j
 		assume ds:seg2608
 
 loc_265B::				; CODE XREF: sub_2624+21j sub_2624+2Bj
-		fninit			; (emulator call)
+	int	037h			; (emulator call) fninit
+	db	0e3h	; fninit
 		mov	word ptr ss:20h, 0
 		mov	word ptr ss:22h, 0
 		mov	ds, bx
@@ -1140,7 +1141,8 @@ loc_265B::				; CODE XREF: sub_2624+21j sub_2624+2Bj
 		or	word ptr [bp-8], 2
 
 loc_267F::				; CODE XREF: sub_2624+55j
-		fldcw	word ptr [bp-8]	; (emulator call)
+	int	035h			; (emulator call) fldcw	word ptr [bp-8]
+	db	06eh,0f8h	; fldcw	word ptr [bp-8]
 		mov	ax, [bp-8]
 		and	ss:2, ax
 		xor	ax, ax
@@ -1157,7 +1159,8 @@ sub_2624	endp
 		mov	ds, ax
 		cmp	__8087,	0
 		jl	loc_26C8
-		fninit			; (emulator call)
+	int	037h			; (emulator call) fninit
+	db	0e3h	; fninit
 		mov	ax, 2534h
 		mov	bx, offset word_2476
 		mov	cx, 0Bh
@@ -1256,7 +1259,7 @@ arg_E		= word ptr  12h
 		push	di
 		push	es
 		mov	ax, [bp+arg_A]
-		cmp	ax, 28h	; '('
+		cmp	ax, word ptr 28h	; '('
 		jbe	loc_2708
 		mov	ax, 28h	; '('
 		mov	[bp+arg_A], ax
@@ -1478,9 +1481,9 @@ loc_2850::				; CODE XREF: sub_26F1+159j
 		stosb
 		xchg	ax, bx
 		mov	cx, '00'
-		cmp	ax, 99
+		cmp	ax, word ptr 99
 		jbe	loc_2873
-		cmp	ax, 999
+		cmp	ax, word ptr 999
 		jbe	loc_2869
 		cwd
 		mov	bx, 1000
@@ -1574,23 +1577,26 @@ loc_28BB::				; CODE XREF: sub_4120+4Ap
 
 loc_28C1::				; CODE XREF: __xcvt+2Bj
 					; __xcvt:loc_28BBj
-		fld	dword ptr es:[di] ; (emulator call)
+	int	03ch			; (emulator call) fld	dword ptr es:[di]
+	fld	dword ptr [di]
 		jmp	loc_28DE
 ; ---------------------------------------------------------------------------
 
 loc_28C7::				; CODE XREF: __xcvt+2Bj
-		fld	qword ptr es:[di] ; (emulator call)
+	int	03ch			; (emulator call) fld	qword ptr es:[di]
+	fld	qword ptr [di]
 		jmp	loc_28DE
 ; ---------------------------------------------------------------------------
 
 loc_28CD::				; CODE XREF: __xcvt+2Bj
 		and	ax, es:[di+8]
-		cmp	ax, 7FFFh
+		cmp	ax, word ptr 7FFFh
 		jz	loc_28DA
 		and	byte ptr es:[di], 0F0h
 
 loc_28DA::				; CODE XREF: __xcvt+49j
-		fld	tbyte ptr es:[di] ; (emulator call)
+	int	03ch			; (emulator call) fld	tbyte ptr es:[di]
+	fld	tbyte ptr [di]
 
 loc_28DE::				; CODE XREF: __xcvt+3Aj __xcvt+40j
 		xor	bx, bx
@@ -1598,9 +1604,11 @@ loc_28DE::				; CODE XREF: __xcvt+3Aj __xcvt+40j
 		rcl	bx, 1
 		les	di, [bp+arg_6]
 		mov	es:[di], bx
-		fxam			; (emulator call)
-		fnstsw	[bp+var_6]	; (emulator call)
-		wait			; (emulator call)
+	int	035h			; (emulator call) fxam
+	db	0e5h	; fxam
+	int	039h			; (emulator call) fnstsw	[bp+var_6]
+	db	07eh,0fah	; fnstsw	[bp+var_6]
+	int	03dh			; (emulator call) wait
 		mov	ax, [bp+var_6]
 		and	ah, 47h
 		cmp	ah, 40h	; '@'
@@ -1644,16 +1652,19 @@ loc_292B::				; CODE XREF: __xcvt+9Bj
 		stosb
 
 loc_2934::				; CODE XREF: __xcvt+82j __xcvt+87j
-		fstp	st		; (emulator call)
+	int	039h			; (emulator call) fstp	st
+	db	0d8h	; fstp	st
 		jmp	loc_2A7F
 ; ---------------------------------------------------------------------------
 
 loc_293A::				; CODE XREF: __xcvt+7Dj
-		fld	st		; (emulator call)
-		fstp	[bp+var_10]	; (emulator call)
-		wait			; (emulator call)
+	int	035h			; (emulator call) fld	st
+	db	0c0h	; fld	st
+	int	037h			; (emulator call) fstp	[bp+var_10]
+	db	07eh,0f0h	; fstp	[bp+var_10]
+	int	03dh			; (emulator call) wait
 		mov	ax, word ptr [bp+var_10+8]
-		sub	ax, 16383
+		sub	ax, word ptr 16383
 		mov	dx, 19728
 		imul	dx
 		xchg	ax, bx
@@ -1673,7 +1684,7 @@ loc_293A::				; CODE XREF: __xcvt+7Dj
 		jl	loc_2914
 
 loc_296F::				; CODE XREF: __xcvt+DCj
-		cmp	ax, 12h
+		cmp	ax, word ptr 12h
 		jle	loc_2977
 		mov	ax, 12h
 
@@ -1688,7 +1699,7 @@ loc_297B::				; CODE XREF: __xcvt+110j __xcvt+118j
 		neg	ax
 
 loc_2983::				; CODE XREF: __xcvt+F4j
-		cmp	ax, 1344h
+		cmp	ax, word ptr 1344h
 		jle	loc_298B
 		mov	ax, 1344h
 
@@ -1700,13 +1711,15 @@ loc_298B::				; CODE XREF: __xcvt+FBj
 		pop	ax
 		or	si, si
 		jg	loc_299D
-		fdivp	st(1), st	; (emulator call)
+	int	03ah			; (emulator call) fdivp	st(1), st
+	db	0f9h	; fdivp	st(1), st
 		add	ax, si
 		jmp	loc_297B
 ; ---------------------------------------------------------------------------
 
 loc_299D::				; CODE XREF: __xcvt+109j
-		fmulp	st(1), st	; (emulator call)
+	int	03ah			; (emulator call) fmulp	st(1), st
+	db	0c9h	; fmulp	st(1), st
 		xchg	ax, si
 		sub	ax, si
 		jmp	loc_297B
@@ -1718,9 +1731,11 @@ loc_29A5::				; CODE XREF: __xcvt:loc_297Bj
 		push	cs
 		call	near ptr _pow10
 		pop	ax
-		fcomp	st(1)		; (emulator call)
-		fnstsw	[bp+var_6]	; (emulator call)
-		wait			; (emulator call)
+	int	034h			; (emulator call) fcomp	st(1)
+	db	0d9h	; fcomp	st(1)
+	int	039h			; (emulator call) fnstsw	[bp+var_6]
+	db	07eh,0fah	; fnstsw	[bp+var_6]
+	int	03dh			; (emulator call) wait
 		test	byte ptr [bp+var_6+1], 45h
 		jz	loc_29CF
 		inc	dx
@@ -1731,7 +1746,8 @@ loc_29A5::				; CODE XREF: __xcvt:loc_297Bj
 		jle	loc_29F5
 
 loc_29C8::				; CODE XREF: __xcvt+135j
-		fidiv	[bp+var_4]	; (emulator call)
+	int	03ah			; (emulator call) fidiv	[bp+var_4]
+	db	076h,0fch	; fidiv	[bp+var_4]
 		dec	bx
 		jmp	loc_29F5
 ; ---------------------------------------------------------------------------
@@ -1744,23 +1760,28 @@ loc_29CF::				; CODE XREF: __xcvt+12Ej
 		push	cs
 		call	near ptr _pow10
 		pop	ax
-		fcomp	st(1)		; (emulator call)
-		fnstsw	[bp+var_6]	; (emulator call)
-		wait			; (emulator call)
+	int	034h			; (emulator call) fcomp	st(1)
+	db	0d9h	; fcomp	st(1)
+	int	039h			; (emulator call) fnstsw	[bp+var_6]
+	db	07eh,0fah	; fnstsw	[bp+var_6]
+	int	03dh			; (emulator call) wait
 		test	byte ptr [bp+var_6+1], 41h
 		jnz	loc_29F5
 		dec	dx
 		dec	bx
 		cmp	[bp+arg_A], 0
 		jle	loc_29F5
-		fimul	[bp+var_4]	; (emulator call)
+	int	03ah			; (emulator call) fimul	[bp+var_4]
+	db	04eh,0fch	; fimul	[bp+var_4]
 		inc	bx
 
 loc_29F5::				; CODE XREF: __xcvt+13Bj __xcvt+142j ...
 		or	bx, bx
 		jl	loc_2A1E
-		frndint			; (emulator call)
-		fbstp	[bp+var_10]	; (emulator call)
+	int	035h			; (emulator call) frndint
+	db	0fch	; frndint
+	int	03bh			; (emulator call) fbstp	[bp+var_10]
+	db	076h,0f0h	; fbstp	[bp+var_10]
 		les	di, [bp+arg_2]
 		add	di, bx
 		push	di
@@ -1769,7 +1790,7 @@ loc_29F5::				; CODE XREF: __xcvt+13Bj __xcvt+142j ...
 		stosb
 		lea	si, [bp+var_10]
 		mov	cx, 4
-		wait			; (emulator call)
+	int	03dh			; (emulator call) wait
 		or	bx, bx
 		jnz	loc_2A25
 		mov	ch, ss:[si]
@@ -1777,7 +1798,8 @@ loc_29F5::				; CODE XREF: __xcvt+13Bj __xcvt+142j ...
 		jz	loc_2A40
 
 loc_2A1E::				; CODE XREF: __xcvt+16Cj
-		fldz			; (emulator call)
+	int	035h			; (emulator call) fldz
+	db	0eeh	; fldz
 		pop	di
 		jmp	loc_2914
 ; ---------------------------------------------------------------------------
@@ -1788,7 +1810,7 @@ loc_2A25::				; CODE XREF: __xcvt+189j __xcvt+1B3j
 		mov	ah, al
 		shr	ah, cl
 		and	al, 0Fh
-		add	ax, '00'
+		add	ax, word ptr '00'
 		stosb
 		or	ch, al
 		dec	bx
@@ -1965,23 +1987,26 @@ arg_0		= word ptr  4
 		mov	bp, sp
 		push	si
 		mov	ax, [bp+arg_0]
-		cmp	ax, 0ECBCh
+		cmp	ax, word ptr 0ECBCh
 		jge	loc_2B5A
-		fldz			; (emulator call)
+	int	035h			; (emulator call) fldz
+	db	0eeh	; fldz
 		jmp	loc_2C0C
 ; ---------------------------------------------------------------------------
 
 loc_2B5A::				; CODE XREF: __pow10+Aj
-		cmp	ax, 1344h
+		cmp	ax, word ptr 1344h
 		jle	loc_2B67
-		fld	flt_2AFEC	; (emulator call)
+	int	035h			; (emulator call) fld	flt_2AFEC
+	db	006h,08ch,02dh	; fld	flt_2AFEC
 		jmp	loc_2C0C
 ; ---------------------------------------------------------------------------
 
 loc_2B67::				; CODE XREF: __pow10+15j
 		or	ax, ax
 		jnz	loc_2B71
-		fld1			; (emulator call)
+	int	035h			; (emulator call) fld1
+	db	0e8h	; fld1
 		jmp	loc_2C0C
 ; ---------------------------------------------------------------------------
 
@@ -1995,13 +2020,15 @@ loc_2B77::				; CODE XREF: __pow10+2Bj
 		and	si, ax
 		shl	si, 1
 		shl	si, 1
-		fld	flt_2AF70[si]	; (emulator call)
+	int	035h			; (emulator call) fld	flt_2AF70[si]
+	db	084h,010h,02dh	; fld	flt_2AF70[si]
 		shr	ax, 1
 		shr	ax, 1
 		shr	ax, 1
 		shr	ax, 1
 		jnb	loc_2B94
-		fmul	flt_2AF90	; (emulator call)
+	int	034h			; (emulator call) fmul	flt_2AF90
+	db	00eh,030h,02dh	; fmul	flt_2AF90
 
 loc_2B94::				; CODE XREF: __pow10+45j
 		jnz	loc_2B98
@@ -2011,60 +2038,78 @@ loc_2B94::				; CODE XREF: __pow10+45j
 loc_2B98::				; CODE XREF: __pow10:loc_2B94j
 		shr	ax, 1
 		jnb	loc_2BA1
-		fmul	dbl_2AF94	; (emulator call)
+	int	038h			; (emulator call) fmul	dbl_2AF94
+	db	00eh,034h,02dh	; fmul	dbl_2AF94
 
 loc_2BA1::				; CODE XREF: __pow10+52j
 		shr	ax, 1
 		jnb	loc_2BAD
-		fld	tbyte_2AF9C	; (emulator call)
-		fmulp	st(1), st	; (emulator call)
+	int	037h			; (emulator call) fld	tbyte_2AF9C
+	db	02eh,03ch,02dh	; fld	tbyte_2AF9C
+	int	03ah			; (emulator call) fmulp	st(1), st
+	db	0c9h	; fmulp	st(1), st
 
 loc_2BAD::				; CODE XREF: __pow10+5Bj
 		shr	ax, 1
 		jnb	loc_2BB9
-		fld	tbyte_2AFA6	; (emulator call)
-		fmulp	st(1), st	; (emulator call)
+	int	037h			; (emulator call) fld	tbyte_2AFA6
+	db	02eh,046h,02dh	; fld	tbyte_2AFA6
+	int	03ah			; (emulator call) fmulp	st(1), st
+	db	0c9h	; fmulp	st(1), st
 
 loc_2BB9::				; CODE XREF: __pow10+67j
 		shr	ax, 1
 		jnb	loc_2BC5
-		fld	tbyte_2AFB0	; (emulator call)
-		fmulp	st(1), st	; (emulator call)
+	int	037h			; (emulator call) fld	tbyte_2AFB0
+	db	02eh,050h,02dh	; fld	tbyte_2AFB0
+	int	03ah			; (emulator call) fmulp	st(1), st
+	db	0c9h	; fmulp	st(1), st
 
 loc_2BC5::				; CODE XREF: __pow10+73j
 		shr	ax, 1
 		jnb	loc_2BD1
-		fld	tbyte_2AFBA	; (emulator call)
-		fmulp	st(1), st	; (emulator call)
+	int	037h			; (emulator call) fld	tbyte_2AFBA
+	db	02eh,05ah,02dh	; fld	tbyte_2AFBA
+	int	03ah			; (emulator call) fmulp	st(1), st
+	db	0c9h	; fmulp	st(1), st
 
 loc_2BD1::				; CODE XREF: __pow10+7Fj
 		shr	ax, 1
 		jnb	loc_2BDD
-		fld	tbyte_2AFC4	; (emulator call)
-		fmulp	st(1), st	; (emulator call)
+	int	037h			; (emulator call) fld	tbyte_2AFC4
+	db	02eh,064h,02dh	; fld	tbyte_2AFC4
+	int	03ah			; (emulator call) fmulp	st(1), st
+	db	0c9h	; fmulp	st(1), st
 
 loc_2BDD::				; CODE XREF: __pow10+8Bj
 		shr	ax, 1
 		jnb	loc_2BE9
-		fld	tbyte_2AFCE	; (emulator call)
-		fmulp	st(1), st	; (emulator call)
+	int	037h			; (emulator call) fld	tbyte_2AFCE
+	db	02eh,06eh,02dh	; fld	tbyte_2AFCE
+	int	03ah			; (emulator call) fmulp	st(1), st
+	db	0c9h	; fmulp	st(1), st
 
 loc_2BE9::				; CODE XREF: __pow10+97j
 		shr	ax, 1
 		jnb	loc_2BF5
-		fld	tbyte_2AFD8	; (emulator call)
-		fmulp	st(1), st	; (emulator call)
+	int	037h			; (emulator call) fld	tbyte_2AFD8
+	db	02eh,078h,02dh	; fld	tbyte_2AFD8
+	int	03ah			; (emulator call) fmulp	st(1), st
+	db	0c9h	; fmulp	st(1), st
 
 loc_2BF5::				; CODE XREF: __pow10+A3j
 		shr	ax, 1
 		jnb	loc_2C01
-		fld	tbyte_2AFE2	; (emulator call)
-		fmulp	st(1), st	; (emulator call)
+	int	037h			; (emulator call) fld	tbyte_2AFE2
+	db	02eh,082h,02dh	; fld	tbyte_2AFE2
+	int	03ah			; (emulator call) fmulp	st(1), st
+	db	0c9h	; fmulp	st(1), st
 
 loc_2C01::				; CODE XREF: __pow10+4Ej __pow10+AFj
 		test	byte ptr [bp+arg_0+1], 80h
 		jz	loc_2C0C
-		fdivr	flt_2AF70	; (emulator call)
+	int	034h			; (emulator call) fdivr	flt_2AF70
+	db	03eh,010h,02dh	; fdivr	flt_2AF70
 
 loc_2C0C::				; CODE XREF: __pow10+Fj __pow10+1Cj ...
 		pop	si
@@ -2104,14 +2149,18 @@ var_2		= word ptr -2
 		push	bp
 		mov	bp, sp
 		sub	sp, 0Ah
-		fnstcw	[bp+var_2]	; (emulator call)
-		wait			; (emulator call)
+	int	035h			; (emulator call) fnstcw	[bp+var_2]
+	db	07eh,0feh	; fnstcw	[bp+var_2]
+	int	03dh			; (emulator call) wait
 		mov	al, byte ptr [bp+var_2+1]
 		or	byte ptr [bp+var_2+1], 0Ch
-		fldcw	[bp+var_2]	; (emulator call)
-		fistp	[bp+var_A]	; (emulator call)
+	int	035h			; (emulator call) fldcw	[bp+var_2]
+	db	06eh,0feh	; fldcw	[bp+var_2]
+	int	03bh			; (emulator call) fistp	[bp+var_A]
+	db	07eh,0f6h	; fistp	[bp+var_A]
 		mov	byte ptr [bp+var_2+1], al
-		fldcw	[bp+var_2]	; (emulator call)
+	int	035h			; (emulator call) fldcw	[bp+var_2]
+	db	06eh,0feh	; fldcw	[bp+var_2]
 		mov	ax, word ptr [bp+var_A]
 		mov	dx, word ptr [bp+var_A+2]
 		mov	sp, bp
@@ -2785,7 +2834,7 @@ loc_2EAE::				; CODE XREF: n_padd@+15j
 		shr	ax, cl
 		add	dx, ax
 		mov	al, ch
-		and	ax, 0Fh
+		and	ax, word ptr 0Fh
 		retf
 ; ---------------------------------------------------------------------------
 
@@ -2820,7 +2869,7 @@ loc_2EDD::				; CODE XREF: n_padd@+44j
 		shr	ax, cl
 		add	dx, ax
 		mov	al, ch
-		and	ax, 0Fh
+		and	ax, word ptr 0Fh
 		retf
 n_padd@		endp ; sp-analysis failed
 
@@ -2943,7 +2992,7 @@ handle		= word ptr  6
 		int	21h		; DOS -	2+ - IOCTL - GET DEVICE	INFORMATION
 					; BX = file or device handle
 		xchg	ax, dx
-		and	ax, 80h
+		and	ax, word ptr 80h
 		pop	bp
 		retf
 _isatty		endp
@@ -3386,7 +3435,7 @@ n_pcmp@		proc near		; CODE XREF: __brk+11p	__brk+24p ...
 		pop	cx
 		add	cx, bx
 		mov	bl, ah
-		and	ax, 0Fh
+		and	ax, word ptr 0Fh
 		and	bx, 0Fh
 		cmp	dx, cx
 		jnz	locret_319B
@@ -3428,13 +3477,13 @@ _rand		proc far		; CODE XREF: random(int)+3P
 		mov	dx, 15Ah
 		mov	ax, 4E35h
 		call	n_lxmul@
-		add	ax, 1
+		add	ax, word ptr 1
 		adc	dx, 0
 		mov	word_2B328, dx
 		mov	word_2B326, ax
 		mov	ax, word_2B328
 		cwd
-		and	ax, 7FFFh
+		and	ax, word ptr 7FFFh
 		retf
 _rand		endp
 
@@ -3539,7 +3588,7 @@ loc_322B::				; CODE XREF: __setupio+3Fj
 		mov	ax, cx
 		mov	dx, 14h
 		imul	dx
-		add	ax, offset __streams
+		add	ax, word ptr offset __streams
 		push	ax
 		mov	ax, cx
 		mov	dx, 14h
@@ -3786,7 +3835,7 @@ sub_333C	proc near		; CODE XREF: __vprinter+86p
 		push	di
 		push	word ptr [bp+0Ch]
 		push	word ptr [bp+0Ah]
-		call	ss:off_2826E[bp]
+		call	word ptr [bp+0Eh]	; (orig encodes disp8: ff 56 0e; IDA showed 0x0e as off_2826E)
 		assume es:seg2b53
 		or	ax, ax
 		jnz	loc_335F
@@ -4317,7 +4366,7 @@ loc_3672::				; CODE XREF: __vprinter+29Fj
 		mov	bx, [bp+var_8]
 		mov	ax, 5
 		and	ax, [bp+var_2]
-		cmp	ax, 5
+		cmp	ax, word ptr 5
 		jnz	loc_3698
 		mov	ah, [bp+var_5]
 		cmp	ah, 6Fh	; 'o'
@@ -4917,7 +4966,7 @@ loc_3942::				; CODE XREF: __cputn+108j
 		mov	al, es:[bx]
 		mov	[bp+var_5], al
 		mov	ah, 0
-		sub	ax, 7
+		sub	ax, word ptr 7
 		mov	bx, ax
 		cmp	bx, 6		; switch 7 cases
 		ja	loc_3988	; jumptable 0001177C default case
@@ -5609,7 +5658,7 @@ sub_3CFA	proc near		; CODE XREF: _farfree+18p
 
 loc_3D15::				; CODE XREF: sub_3CFA+12j
 		mov	ax, ds
-		cmp	ax, cs:___first
+		cmp	ax, word ptr cs:___first
 		jz	loc_3D33
 		mov	ax, ds:8
 		mov	cs:___last, ax
@@ -5692,7 +5741,7 @@ loc_3DA6::				; CODE XREF: sub_3D5D+3Dj sub_3D5D+44j
 		pop	es
 		assume es:nothing
 		mov	ax, es
-		add	ax, es:0
+		add	ax, word ptr es:0
 		mov	ds, ax
 		assume ds:nothing
 		cmp	word ptr ds:2, 0
@@ -5830,7 +5879,7 @@ sub_3E57	proc near		; CODE XREF: _farmalloc:loc_3F97p
 		call	__sbrk
 		assume es:nothing
 		add	sp, 4
-		and	ax, 0Fh
+		and	ax, word ptr 0Fh
 		jz	loc_3E80
 		mov	dx, 10h
 		sub	dx, ax
@@ -5857,7 +5906,7 @@ loc_3E84::				; CODE XREF: sub_219F3+1Dp
 		call	__sbrk
 		add	sp, 4
 		pop	bx
-		cmp	ax, 0FFFFh
+		cmp	ax, word ptr 0FFFFh
 		jz	loc_3EB7
 		mov	cs:___first, dx
 		mov	cs:___last, dx
@@ -5895,9 +5944,9 @@ sub_3EBB	proc near		; CODE XREF: _farmalloc:loc_3F92p
 		assume es:nothing
 		add	sp, 4
 		pop	bx
-		cmp	ax, 0FFFFh
+		cmp	ax, word ptr 0FFFFh
 		jz	loc_3F11
-		and	ax, 0Fh
+		and	ax, word ptr 0Fh
 		jnz	loc_3EF6
 
 loc_3EDE::				; CODE XREF: sub_3EBB+54j
@@ -5916,7 +5965,7 @@ loc_3EF6::				; CODE XREF: sub_3EBB+21j
 		push	bx
 		push	dx
 		neg	ax
-		add	ax, 10h
+		add	ax, word ptr 10h
 		xor	bx, bx
 		push	bx
 		push	ax
@@ -5924,7 +5973,7 @@ loc_3EF6::				; CODE XREF: sub_3EBB+21j
 		add	sp, 4
 		pop	dx
 		pop	bx
-		cmp	ax, 0FFFFh
+		cmp	ax, word ptr 0FFFFh
 		jz	loc_3F11
 		inc	dx
 		jmp	loc_3EDE
@@ -6002,7 +6051,7 @@ loc_3F4B::				; CODE XREF: _malloc+8j
 		push	di
 		mov	cs:word_3CF4, ds
 		jz	loc_3FB6
-		add	ax, 13h
+		add	ax, word ptr 13h
 		adc	dx, 0
 		jb	loc_3FA1
 		test	dx, 0FFF0h
@@ -6140,11 +6189,11 @@ loc_400C::				; CODE XREF: sub_3FBF+48j
 		sub	dx, 1000h
 		jbe	loc_402A
 		mov	ax, es
-		add	ax, 1000h
+		add	ax, word ptr 1000h
 		mov	es, ax
 		assume es:nothing
 		mov	ax, ds
-		add	ax, 1000h
+		add	ax, word ptr 1000h
 		mov	ds, ax
 		assume ds:nothing
 		jmp	loc_3FFD
@@ -6258,7 +6307,7 @@ loc_40AC::				; CODE XREF: _realloc+5j
 		mov	cx, ax
 		or	cx, dx
 		jz	loc_410B
-		add	ax, 13h
+		add	ax, word ptr 13h
 		adc	dx, 0
 		jb	loc_4114
 		test	dx, 0FFF0h
@@ -6354,7 +6403,7 @@ loc_414B::				; CODE XREF: sub_4120+17j
 		shl	si, cl
 		mov	dx, word ptr __heaptop+2
 		mov	ax, si
-		add	ax, __psp
+		add	ax, word ptr __psp
 		cmp	ax, dx
 		jbe	loc_4163
 		mov	si, dx
@@ -6462,7 +6511,7 @@ arg_2		= word ptr  6
 		cmp	dx, 0Fh
 		jl	loc_4206
 		jg	loc_41FE
-		cmp	ax, 0FFFFh
+		cmp	ax, word ptr 0FFFFh
 		jbe	loc_4206
 
 loc_41FE::				; CODE XREF: __sbrk+22j sub_420D+1Aj ...
@@ -7371,7 +7420,7 @@ arg_6		= dword	ptr  0Ah
 		mov	[bp+var_8], ax
 		mov	[bp+var_6], ax
 		mov	ax, word ptr [bp+arg_6+2]
-		cmp	ax, word_2B3A3
+		cmp	ax, word ptr word_2B3A3
 		jnz	loc_46A9
 		mov	ax, 1
 		jmp	loc_46AB
@@ -7391,7 +7440,7 @@ loc_46AB::				; CODE XREF: sub_4687+20j
 
 loc_46BE::				; CODE XREF: sub_4687+29j
 		mov	ax, word ptr [bp+arg_2+2]
-		cmp	ax, word_2B3A3
+		cmp	ax, word ptr word_2B3A3
 		jnz	loc_46CC
 		mov	ax, 1
 		jmp	loc_46CE
@@ -7868,7 +7917,7 @@ loc_49BE::				; CODE XREF: unknown_libname_3+39j
 		mov	ax, cx
 		add	ax, bx
 		inc	ax
-		and	ax, 0FFFEh
+		and	ax, word ptr 0FFFEh
 		mov	di, sp
 		sub	di, ax
 		jb	loc_4A2D
@@ -8409,7 +8458,7 @@ handle		= word ptr  6
 		mov	bp, sp
 		sub	sp, 4
 		mov	ax, [bp+handle]
-		cmp	ax, __nfile
+		cmp	ax, word ptr __nfile
 		jb	loc_4C14
 		mov	ax, 6
 		push	ax
@@ -8610,7 +8659,7 @@ stream		= dword	ptr  6
 		nop
 		push	cs
 		call	near ptr _flushall
-		jmp	loc_4DF6
+		jmp	near ptr loc_4DF6
 ; ---------------------------------------------------------------------------
 
 loc_4D42::				; CODE XREF: _fflush+Aj
@@ -8636,7 +8685,7 @@ loc_4D54::				; CODE XREF: _fflush+1Ej
 		add	dx, 5
 		cmp	ax, word ptr [bp+stream+2]
 		jz	loc_4D77
-		jmp	loc_4DF6
+		jmp	near ptr loc_4DF6	; (orig encodes e9 7f 00 near, not eb 7f)
 ; ---------------------------------------------------------------------------
 
 loc_4D77::				; CODE XREF: _fflush+44j
@@ -9011,7 +9060,7 @@ loc_4F5D::				; CODE XREF: sub_4EDE+77j
 
 loc_4F68::				; CODE XREF: sub_4EDE+82j
 		mov	ax, __fmode
-		and	ax, 0C000h
+		and	ax, word ptr 0C000h
 		or	dx, ax
 
 loc_4F70::
@@ -9196,7 +9245,7 @@ loc_5079::				; CODE XREF: __getfp+2Ej
 		mov	ax, __nfile
 		mov	dx, 14h
 		imul	dx
-		add	ax, offset __streams
+		add	ax, word ptr offset __streams
 		pop	dx
 		cmp	dx, ax
 		jb	loc_5079
@@ -9438,7 +9487,7 @@ loc_51C1::				; CODE XREF: _fseek+20j _fseek+29j
 		add	sp, 8
 		cmp	dx, 0FFFFh
 		jnz	loc_5203
-		cmp	ax, 0FFFFh
+		cmp	ax, word ptr 0FFFFh
 		jnz	loc_5203
 		mov	ax, 0FFFFh
 		jmp	loc_5205
@@ -9489,7 +9538,7 @@ loc_520E::
 		mov	word ptr [bp+offset___], ax
 		cmp	dx, 0FFFFh
 		jnz	loc_523C
-		cmp	ax, 0FFFFh
+		cmp	ax, word ptr 0FFFFh
 		jnz	loc_523C
 		jmp	loc_52DE
 ; ---------------------------------------------------------------------------
@@ -9526,7 +9575,7 @@ loc_5248::				; CODE XREF: _ftell+3Bj
 		mov	[bp+var_8], ax
 		cmp	dx, 0FFFFh
 		jnz	loc_5284
-		cmp	ax, 0FFFFh
+		cmp	ax, word ptr 0FFFFh
 		jz	loc_52E4
 
 loc_5284::				; CODE XREF: _ftell+75j
@@ -9544,7 +9593,7 @@ loc_5284::				; CODE XREF: _ftell+75j
 		add	sp, 8
 		cmp	dx, 0FFFFh
 		jnz	loc_52B0
-		cmp	ax, 0FFFFh
+		cmp	ax, word ptr 0FFFFh
 		jnz	loc_52B0
 		mov	dx, 0FFFFh
 		mov	ax, 0FFFFh
@@ -9607,8 +9656,8 @@ stream		= dword	ptr -4
 loc_52FC::				; CODE XREF: sub_52E8+37j
 		les	bx, [bp+stream]
 		mov	ax, es:[bx+2]
-		and	ax, 300h
-		cmp	ax, 300h
+		and	ax, word ptr 300h
+		cmp	ax, word ptr 300h
 		jnz	loc_5316
 		push	word ptr [bp+stream+2]
 		push	bx		; stream
@@ -9682,8 +9731,8 @@ loc_5371::				; CODE XREF: sub_5326+40j
 		cmp	word ptr es:[bx], 0
 		jnz	loc_538A
 		mov	ax, es:[bx+2]
-		and	ax, 0FE7Fh
-		or	ax, 20h
+		and	ax, word ptr 0FE7Fh
+		or	ax, word ptr 20h
 		mov	es:[bx+2], ax
 		jmp	loc_5397
 ; ---------------------------------------------------------------------------
@@ -9827,7 +9876,7 @@ loc_5431::				; CODE XREF: _fgetc+76j
 		push	cs
 		call	near ptr _eof
 		pop	cx
-		cmp	ax, 1
+		cmp	ax, word ptr 1
 		jz	loc_546E
 
 loc_5463::				; CODE XREF: _fgetc+3Cj _fgetc+44j ...
@@ -9839,8 +9888,8 @@ loc_5463::				; CODE XREF: _fgetc+3Cj _fgetc+44j ...
 loc_546E::				; CODE XREF: _fgetc+ABj
 		les	bx, [bp+stream]
 		mov	ax, es:[bx+2]
-		and	ax, 0FE7Fh
-		or	ax, 20h
+		and	ax, word ptr 0FE7Fh
+		or	ax, word ptr 20h
 		mov	es:[bx+2], ax
 		jmp	loc_53C2
 ; ---------------------------------------------------------------------------
@@ -9978,7 +10027,7 @@ radix		= word ptr  0Eh
 		push	word ptr [bp+string+2]
 		push	word ptr [bp+string]
 		push	ax
-		cmp	ax, 0Ah
+		cmp	ax, word ptr 0Ah
 		jnz	loc_5515
 		mov	ax, 1
 		jmp	loc_5517
@@ -10188,7 +10237,7 @@ arg_6		= word ptr  0Ch
 		test	si, 0C000h
 		jnz	loc_55D0
 		mov	ax, __fmode
-		and	ax, 0C000h
+		and	ax, word ptr 0C000h
 		or	si, ax
 
 loc_55D0::				; CODE XREF: _open+12j
@@ -10309,8 +10358,8 @@ loc_566D::				; CODE XREF: _open+36j	_open+78j ...
 		or	si, 2000h
 		test	si, 8000h
 		jz	loc_56C2
-		and	ax, 0FFh
-		or	ax, 20h
+		and	ax, word ptr 0FFh
+		or	ax, word ptr 20h
 		xor	dx, dx
 		push	dx
 		push	ax
@@ -10430,8 +10479,8 @@ loc_573E::				; CODE XREF: __open+Fj	__open+17j
 		jb	loc_576A
 		mov	[bp+var_2], ax
 		mov	ax, [bp+oflags]
-		and	ax, 0B8FFh
-		or	ax, 8000h
+		and	ax, word ptr 0B8FFh
+		or	ax, word ptr 8000h
 		mov	bx, [bp+var_2]
 		shl	bx, 1
 		mov	__openfd[bx], ax
@@ -10466,7 +10515,7 @@ s		= dword	ptr  6
 		mov	bp, sp
 		sub	sp, 4
 		mov	ax, _errno
-		cmp	ax, _sys_nerr
+		cmp	ax, word ptr _sys_nerr
 		jge	loc_57A0
 		cmp	_errno,	0
 		jl	loc_57A0
@@ -10736,7 +10785,7 @@ loc_5933::				; CODE XREF: _fputc+115j
 		push	cs
 		call	near ptr __write
 		add	sp, 8
-		cmp	ax, 1
+		cmp	ax, word ptr 1
 		jnz	loc_5980
 
 loc_5961::				; CODE XREF: _fputc+137j _fputc+142j
@@ -10753,7 +10802,7 @@ loc_5961::				; CODE XREF: _fputc+137j _fputc+142j
 		push	cs
 		call	near ptr __write
 		add	sp, 8
-		cmp	ax, 1
+		cmp	ax, word ptr 1
 		jz	loc_598E
 
 loc_5980::				; CODE XREF: _fputc+15Ej
@@ -10835,7 +10884,7 @@ loc_59C5::				; CODE XREF: __fputn+42j
 		push	cs
 		call	near ptr _fputc
 		add	sp, 6
-		cmp	ax, 0FFFFh
+		cmp	ax, word ptr 0FFFFh
 		jnz	loc_59E7	; CODE XREF: sub_23069+A7p
 					; sub_2433E+6p	...
 
@@ -11063,7 +11112,7 @@ loc_5B5B::				; CODE XREF: __fputn+18Fj
 		add	sp, 6
 
 loc_5B72::				; CODE XREF: __fputn+1AFj
-		cmp	ax, 0FFFFh
+		cmp	ax, word ptr 0FFFFh
 		jnz	loc_5B7A
 		jmp	loc_59E2
 ; ---------------------------------------------------------------------------
@@ -11127,7 +11176,7 @@ len		= word ptr  0Ch
 		push	si
 		push	di
 		mov	ax, [bp+handle]
-		cmp	ax, __nfile
+		cmp	ax, word ptr __nfile
 		jb	loc_5BC8
 		mov	ax, 6
 		push	ax
@@ -11138,7 +11187,7 @@ len		= word ptr  0Ch
 loc_5BC8::				; CODE XREF: ___read+Fj
 		mov	ax, [bp+len]
 		inc	ax
-		cmp	ax, 2
+		cmp	ax, word ptr 2
 		jb	loc_5BDE
 		mov	bx, [bp+handle]
 		shl	bx, 1
@@ -11161,7 +11210,7 @@ loc_5BE3::				; CODE XREF: ___read+2Fj ___read+A2j
 		add	sp, 8
 		mov	[bp+var_2], ax
 		inc	ax
-		cmp	ax, 2
+		cmp	ax, word ptr 2
 		jb	loc_5C0D
 		mov	bx, [bp+handle]
 		shl	bx, 1
@@ -11872,7 +11921,7 @@ len		= word ptr  0Ch
 loc_5F8A::				; CODE XREF: ___write+10j
 		mov	ax, [bp+len]
 		inc	ax
-		cmp	ax, 2
+		cmp	ax, word ptr 2
 		jnb	short loc_5F98
 		xor	ax, ax
 		jmp	loc_60B9

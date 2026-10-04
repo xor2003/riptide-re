@@ -26,11 +26,10 @@ int main(int argc, char *argv[], char *envp[])
 
 void init_game(void)
 {
-    FILE *stream;
-    unsigned long need, free_mem;
+    long t1, t2;
     loop_res far *loopdat;
-    long t2, t1;
-    unsigned long i;
+    unsigned long free_mem, need;
+    FILE *stream;
 
     gr_start_kbd_grab();
     clrscr();
@@ -88,20 +87,19 @@ void init_game(void)
     display->blank_palette();
 
     t1 = clock();
-    for (i = 40; i--;)
-        display->put_bits(i, i, i + 0x32, i + 0x1e, (uchar *)_tmp, 0, 0);
-    for (i = 5; i--;)
+    for (free_mem = 40; free_mem--;)
+        display->put_bits(free_mem, free_mem, free_mem + 0x32, free_mem + 0x1e, (uchar *)_tmp, 0, 0);
+    for (free_mem = 5; free_mem--;)
         display->copy_page(1, 0);
     t2 = clock();
     system_bench = (byte)(t2 - t1);
 
-    if (system_bench <= 4)
-        the_game->game_speed = 2;
-    else
+    if (system_bench > 4)
         the_game->game_speed = 1;
+    else
+        the_game->game_speed = 2;
 
-    stream = fopen("config.rip", "rb");
-    if (stream) {
+    if (stream = fopen("config.rip", "rb")) {
         the_game->field_1C = fgetc(stream);
         the_game->game_speed = fgetc(stream);
         if (fgetc(stream) != 0) {
@@ -269,8 +267,7 @@ restart_map:                                        /* loc_6596 */
 reset_game:                                         /* loc_659C */
     game_in_progress = 1;
     done = 0;
-    score_count = 0;
-    score = 0;
+    score = score_count = 0;
     gun_count = 0;
     men = 2;
     auto_fire_count = 0;
@@ -281,13 +278,12 @@ reset_game:                                         /* loc_659C */
     maximum_jason_power = 0x64;
     the_game->clear_flags();
 
-    do {                                            /* loc_6C4A -> loc_65F3 */
-        the_game->field_09 = 0;
-        the_game->field_08 = 0;
+    while (!done) {                                 /* loc_6C4A -> loc_65F3 */
+        the_game->field_09 = the_game->field_08 = 0;
         show_prelude();
 replay:                                             /* loc_660A */
         the_game->play_song(all_maps[cur_map].song);
-        switch (cur_map - 4) {                      /* jumptable off_6CBA */
+        switch (cur_map - 4u) {                     /* jumptable off_6CBA */
         case 2:                                     /* cur_map=6 bs1.m */
             if (jason_present == 1)
                 jason_present = 0;
@@ -331,19 +327,16 @@ replay:                                             /* loc_660A */
             the_game->load_loop((uchar far *)"sharkl.l");
             the_game->load_loop((uchar far *)"sharkdie.l");
             break;
-        default:
-            break;
         }
 
         start_room(all_maps[cur_map].map);          /* loc_6898 */
         if (all_maps[cur_map].start_up)
             all_maps[cur_map].start_up();
 
-        do {
-            de_doit();                              /* loc_68D6/68DB */
-        } while (stop_room == 0);
+        while (!stop_room)                          /* loc_68D6/68DB */
+            de_doit();
 
-        switch (cur_map - 4) {                      /* jumptable off_6C92 */
+        switch (cur_map - 4u) {                     /* jumptable off_6C92 */
         case 2:                                     /* bs1 */
             the_game->remove_loop((uchar far *)"bs1_bdl.l");
             the_game->remove_loop((uchar far *)"bs1_bdr.l");
@@ -381,8 +374,6 @@ replay:                                             /* loc_660A */
             the_game->remove_loop((uchar far *)"sharkl.l");
             the_game->remove_loop((uchar far *)"sharkdie.l");
             break;
-        default:
-            break;
         }
 
         display->copy_page(non_displayed_page, displayed_page);  /* loc_6B2F */
@@ -390,15 +381,19 @@ replay:                                             /* loc_660A */
         display->copy_page(1, 0);
 
         switch (stop_room - 1) {                    /* jumptable off_6C86 */
+        case 4:                                     /* game over */
+            end_game();
+            done++;
+            break;
         case 0:                                     /* level completed */
             end_room();
             if (cur_map < 0x15)
-                ++cur_map;
+                cur_map++;
             else if (cur_map >= 0x16)
                 exit_secret_level();
             else {
                 end_game();
-                ++done;
+                done++;
             }
             switch (cur_map - 1) {                  /* jumptable off_6C58 */
             case 0:  case 1:  case 2:  case 3:  case 4:
@@ -413,27 +408,21 @@ replay:                                             /* loc_660A */
                 break;
             }
             break;
+        case 5:                                     /* secret level entrance */
+            end_room();
+            setup_secret_level();
+            break;
+        case 3:                                     /* died: restart level */
+            display->fade_down();
+            goto restart_map;
         case 1:                                     /* jump to zoom_to_map */
             cur_map = zoom_to_map;
             display->fade_down();
             goto reset_game;
         case 2:                                     /* replay map, keep state */
             goto replay;
-        case 3:                                     /* died: restart level */
-            display->fade_down();
-            goto restart_map;
-        case 4:                                     /* game over */
-            end_game();
-            ++done;
-            break;
-        case 5:                                     /* secret level entrance */
-            end_room();
-            setup_secret_level();
-            break;
-        default:
-            break;
         }
-    } while (!done);
+    }
 }
 
 /* --------------------------------------------------------------------------
@@ -444,7 +433,7 @@ void setup_secret_level(void)
     uchar i;
 
     the_game->field_0D = 1;                         /* in-secret-level flag */
-    for (i = 0; i < 2; ++i)
+    for (i = 0; i < 2; i++)
         if (all_secrets[i * 2 + 1] == cur_map)
             break;
     if (i == 2)
@@ -459,7 +448,7 @@ void exit_secret_level(void)
 {
     uchar i;
 
-    for (i = 0; i < 2; ++i)
+    for (i = 0; i < 2; i++)
         if (all_secrets[i * 2] == cur_map)
             break;
     if (i == 2)
@@ -488,12 +477,8 @@ void start_room(uchar far *path)
     zapper_count = 0;
     got_key = 0;
     smart_missiles = 0;
-    the_game->field_0B = 0;
-    the_game->field_0A = 0;
-    goodies_found = 0;
-    enemies_killed = 0;
-    goody_count = 0;
-    enemy_count = 0;
+    the_game->field_0A = the_game->field_0B = 0;
+    enemy_count = goody_count = enemies_killed = goodies_found = 0;
     air_count = 0;
     air_speed = 0x28;
     air_supply = 0x96;
@@ -508,8 +493,7 @@ void start_room(uchar far *path)
     update_men();
     update_gun();
     update_key_guage();
-    top_shot_count = 0;
-    shot_count = 0;
+    top_shot_count = shot_count = 0;
     jason_count = 0;
     boss = NULL;
 
@@ -526,7 +510,7 @@ void start_room(uchar far *path)
     start_y = (the_map->map_hdr[0] / the_map->map_width) << 3;
     the_map->center_on(start_x, start_y);
 
-    for (pos = 0; pos < (uint)the_map->map_size; ++pos) {
+    for (pos = 0; pos < the_map->map_size; ++pos) {
         attr = the_map->tile_attr[pos].type;     /* 4-byte recs, word at +2 */
         bits = attr & 0xC0;
         if (bits) add_switch(pos, bits);
@@ -535,7 +519,7 @@ void start_room(uchar far *path)
         bits = attr & 0x3F;
         if (bits) add_barrel(pos, bits);
     }
-    for (pos = 0; pos < (uint)the_map->map_size; ++pos) {
+    for (pos = 0; pos < the_map->map_size; ++pos) {
         attr = the_map->tile_attr[pos].type;
         bits = attr & 0xFC00;
         if (bits) add_map_item(pos, bits);
@@ -569,7 +553,7 @@ void start_room(uchar far *path)
         if (the_map->map_hdr[pos] != 0) {
             all_teleports[teleport_count][0] = the_map->map_hdr[pos];
             all_teleports[teleport_count][1] = the_map->map_hdr[pos + 1];
-            ++teleport_count;
+            teleport_count++;
         }
     }
 
@@ -850,11 +834,13 @@ void kill_ego(int arg0, int arg2)
             kill_jason();
         control = 0;
     }
-    if (death_type == 0 && ego->cur_cel == 4)
-        the_game->play_sound((uchar far *)"exp2", 0x0F);
-    if (ego->cur_cel > 4 && !ego->door_open)
-        add_bubble(ego->x + random(ego->width),
-                   ego->y + random(ego->height), 0);
+    if (death_type == 0) {
+        if (ego->cur_cel == 4)
+            the_game->play_sound((uchar far *)"exp2", 0x0F);
+        if (ego->cur_cel > 4 && !ego->door_open)
+            add_bubble(ego->x + random(ego->width),
+                       ego->y + random(ego->height), 0);
+    }
     if (ego->cycler)
         return;
     if (death_type == 0)
@@ -880,7 +866,7 @@ void kill_ego(int arg0, int arg2)
     jason_on = jason_present = 0;
     shld_supply = 0x3C;
     heavy_timer = 0;
-    --men;
+    men--;
     update_men();
 }
 
@@ -915,20 +901,20 @@ void score_at(int x, int y, int val)
  * ------------------------------------------------------------------------ */
 void post_message(uchar msg)
 {
-    uchar far *s2;
     int var_2;
+    uchar far *s2;
 
     if (msg == cur_message)
         return;
 
     if (msg >= 10)
     {
-        switch (msg - 10)
+        switch (msg)
         {
-        case 0: s2 = (uchar far *)"msg_bar.l";  break;
-        case 2: s2 = (uchar far *)"msg_gun.l";  break;
-        case 3: s2 = (uchar far *)"msg_cave.l"; break;
-        case 4: s2 = (uchar far *)"msg_jasn.l"; break;
+        case 10: s2 = (uchar far *)"msg_bar.l";  break;
+        case 12: s2 = (uchar far *)"msg_gun.l";  break;
+        case 13: s2 = (uchar far *)"msg_cave.l"; break;
+        case 14: s2 = (uchar far *)"msg_jasn.l"; break;
         }
         show_loop(s2, 0x69, 0x37, 0, page_offsets[displayed_page]);
         while (gr_keys[0x1C] || the_game->field_2C)
@@ -966,9 +952,9 @@ void clear_message(void)
  * ------------------------------------------------------------------------ */
 void add_map_item(uint arg_0, uint arg_2)
 {
-    uchar far *s2;
-    byte var_5;
     int var_2, var_4;
+    byte var_5;
+    uchar far *s2;
 
     if (arg_2 & 0xF)
     {
@@ -999,7 +985,7 @@ void add_map_item(uint arg_0, uint arg_2)
         act->set_cycle(random(2) + 1, 1);
         if (arg_2 == 0x2800) act->s_aux2 = 1;
         var_2 += act->width >> 1;
-        if (arg_2 != 0x10) ++goody_count;
+        if (arg_2 != 0x10) goody_count++;
         break;
 
     case 0x20:                  /* pod */
@@ -1013,7 +999,7 @@ void add_map_item(uint arg_0, uint arg_2)
         }
         act->set_cycle(2, 1);
         act->type = 1;
-        if (arg_2 == 0x1000) ++enemy_count;
+        if (arg_2 == 0x1000) enemy_count++;
         else var_4 += act->height;
         break;
 
@@ -1026,7 +1012,7 @@ void add_map_item(uint arg_0, uint arg_2)
         break;
 
     case 0xC00:                 /* zapper */
-        ++zapper_count;
+        zapper_count++;
         act = the_cast->add((uchar far *)"zap_ud.l", 0, do_zapper);
         var_2 = var_2 - 3;
         var_4 = var_4 + 8;
@@ -1124,7 +1110,7 @@ void add_map_item(uint arg_0, uint arg_2)
         var_2 -= act->width / 2;
         var_4 -= act->height / 2;
         act->set_cycle(5, 1);
-        ++enemy_count;
+        enemy_count++;
         break;
 
     case 0x3400:                /* block */
@@ -1150,7 +1136,7 @@ void add_map_item(uint arg_0, uint arg_2)
         act->set_cycle(0, 0);
         act->type = 1;
         var_4 -= 2;
-        ++enemy_count;
+        enemy_count++;
         break;
 
     case 0x3C00:                /* serpent */
@@ -1170,7 +1156,7 @@ void add_map_item(uint arg_0, uint arg_2)
         var_4 -= act->height;
         act->type = 1;
         act->set_cycle(1, 1);
-        ++enemy_count;
+        enemy_count++;
         break;
 
     case 0x4000:                /* crab */
@@ -1180,7 +1166,7 @@ void add_map_item(uint arg_0, uint arg_2)
         act->set_cycle(1, 1);
         act->type = 1;
         var_4 -= act->height;
-        ++enemy_count;
+        enemy_count++;
         break;
 
     case 0x4400:                /* gun piece */
@@ -1199,7 +1185,7 @@ void add_map_item(uint arg_0, uint arg_2)
         act = the_cast->add(s2, 0, do_gun_piece);
         act->set_cycle(6, 1);
         var_4 -= act->height;
-        ++goody_count;
+        goody_count++;
         break;
 
     case 0x4800:                /* jelly */
@@ -1207,7 +1193,7 @@ void add_map_item(uint arg_0, uint arg_2)
         act->type = 1;
         act->set_cycle(random(2) + 4, 1);
         var_2 -= act->width / 2;
-        ++enemy_count;
+        enemy_count++;
         break;
 
     case 0x4C00:                /* shark */
@@ -1224,7 +1210,7 @@ void add_map_item(uint arg_0, uint arg_2)
         act->type = 1;
         act->set_cycle(0, 0);
         var_2 -= act->width / 2;
-        ++enemy_count;
+        enemy_count++;
         break;
 
     case 0x5400:                /* tentacle */
@@ -1332,9 +1318,9 @@ void add_barrel(uint arg_0, uint arg_2)
     act->y_step = 1;
     get_map_coords(arg_0, (int *)act, (int *)act + 1);
     act->set_xy(act->x - act->width / 2, act->y - act->height);
-    if (arg_2 & 0xF)  ++goody_count;
-    if (arg_2 & 0x10) ++goody_count;
-    if (arg_2 & 0x20) ++enemy_count;
+    if (arg_2 & 0xF)  goody_count++;
+    if (arg_2 & 0x10) goody_count++;
+    if (arg_2 & 0x20) enemy_count++;
 }
 
 /* --------------------------------------------------------------------------
@@ -1404,7 +1390,7 @@ void add_map_pup(uint arg_0, uint arg_2)
     return;
 skip:
     add_map_item(arg_0, 0x400);
-    --goody_count;
+    goody_count--;
 }
 
 /* --------------------------------------------------------------------------
@@ -1489,6 +1475,8 @@ void add_bubble(int arg_0, int arg_2, int arg_4)
     act->set_cycle(var_1, 1);
 }
 
+#pragma option -O
+
 /* --------------------------------------------------------------------------
  * seg03f9:32AF — spawn an explosion actor + sound at (arg_0, arg_2)
  * ------------------------------------------------------------------------ */
@@ -1530,6 +1518,7 @@ void add_missile(m_actor far *arg_0, uchar arg_4, int arg_6)
     {
         if (ego->on_tile(0x100) != 0)
             return;
+        goto top_missile;
     }
     else
     {
@@ -1570,6 +1559,7 @@ void add_missile(m_actor far *arg_0, uchar arg_4, int arg_6)
             the_game->play_sound(_all_projectiles[arg_4].snd, 3);
         return;
     }
+top_missile:
     act = the_cast->add((uchar far *)"msl_top.l", 0, do_missle);
     act->aux_act1 = arg_0;
     act->facing = 0x63;
@@ -1600,6 +1590,8 @@ void add_jason(void)
     jason_present = 1;
 }
 
+#pragma option -Od
+
 /* --------------------------------------------------------------------------
  * seg03f9:3744 — destroy the Jason probe actor
  * ------------------------------------------------------------------------ */
@@ -1619,23 +1611,22 @@ void kill_jason(void)
  * ------------------------------------------------------------------------ */
 void toggle_sub_control(void)
 {
-    if (jason_present != 0)
+    if (jason_present == 0)
+        return;
+    the_game->play_sound_file((uchar far *)"squeek");
+    cur_sub->x_step = cur_sub->y_step = 0;
+    if (jason_on == 1)
     {
-        the_game->play_sound_file((uchar far *)"squeek");
-        cur_sub->x_step = cur_sub->y_step = 0;
-        if (jason_on == 1)
-        {
-            scroll_to(ego);
-            jason_on = 0;
-            cur_sub = ego;
-        }
-        else
-        {
-            ego->y_step = 0;
-            scroll_to(jason);
-            jason_on = 1;
-            cur_sub = jason;
-        }
+        scroll_to(ego);
+        jason_on = 0;
+        cur_sub = ego;
+    }
+    else
+    {
+        ego->y_step = 0;
+        scroll_to(jason);
+        jason_on = 1;
+        cur_sub = jason;
     }
 }
 
@@ -1709,7 +1700,7 @@ void ego_fire(void)
             add_missile(jason, 1, 4);
         return;
     }
-    if (ego->status == 1)
+    else if (ego->status == 1)
         return;
     shot_count++;
     add_missile(ego, shot_size, 0);
@@ -1734,8 +1725,12 @@ void ego_fire(void)
 void turn_ego(void)
 {
     if (jason_on != 0)
-        jason->new_loop(jason->facing == 1 ? (uchar far *)"prober.l"
-                                            : (uchar far *)"probel.l");
+    {
+        if (jason->facing == 1)
+            jason->new_loop((uchar far *)"prober.l");
+        else
+            jason->new_loop((uchar far *)"probel.l");
+    }
     else
     {
         ego->status = 1;
@@ -1779,7 +1774,7 @@ void check_user(void)
     }
     else
     {
-        if (space_bar_been_up == 0)
+        if (!space_bar_been_up)
             space_bar_been_up++;
     }
 
@@ -2017,8 +2012,6 @@ void update_boss_guage(void)
                 var_4 = 0x5A;
             }
             break;
-        default:
-            break;
     }
     if (var_6 == 0)
         return;
@@ -2046,7 +2039,10 @@ void update_air_guage(int arg_0, int arg_2, int arg_4)
         air_supply = 0;
     else
         air_supply += arg_0;
-    var_1 = air_supply < 0x32 ? 0x20 : 0x60;
+    if (air_supply < 0x32)
+        var_1 = 0x20;
+    else
+        var_1 = 0x60;
     if (air_supply >= 2)
     {
         var_2 = var_1 + 8;
@@ -2076,7 +2072,10 @@ void update_shld_guage(int arg_0, int arg_2, int arg_4)
         shld_supply = 0;
     else
         shld_supply += arg_0;
-    var_1 = shld_supply < 0x32 ? 0x20 : 0x91;
+    if (shld_supply < 0x32)
+        var_1 = 0x20;
+    else
+        var_1 = 0x91;
     if (shld_supply >= 2)
     {
         var_2 = var_1 + 8;
@@ -2156,7 +2155,7 @@ void update_gun(void)
             case 1: s2 = (uchar far *)"gun_2.l"; break;
             case 2: s2 = (uchar far *)"gun_3.l"; break;
             case 3: s2 = (uchar far *)"gun_4.l"; break;
-            default: terminate((uchar far *)"Error updating gun.", 0); break;
+            default: terminate((uchar far *)"Error updating gun.", 0);
         }
         var_E = (loop_res far *)the_game->get_loop(s2);
         display->put_bits_masked(var_2, var_4,
@@ -2192,8 +2191,7 @@ void activate_menu_bar(void)
     the_menu_bar->draw();
     if (debug_mode == 1)
     {
-        ltoa((long)farcoreleft(), _tmp2, 0x0A);
-        strcpy(_tmp, _tmp2);
+        strcpy(_tmp, ltoa((long)farcoreleft(), _tmp2, 0x0A));
         display->print_at_xy(0x104, 1, (uchar far *)_tmp, 0);
     }
     mouse->show();
@@ -2222,26 +2220,20 @@ void check_guages(void)
     {
         update_air_guage(-3, 0x68, 0xA7);
         air_count = 0;
-        if (air_supply < 40)
+        if (air_supply < 40 && !the_game->field_0A)
         {
-            if (!the_game->field_0A)
-            {
-                the_game->field_0A++;
-                the_game->play_sound((uchar far *)"ping", 0xF);
-                post_message(5);
-            }
+            the_game->field_0A++;
+            the_game->play_sound((uchar far *)"ping", 0xF);
+            post_message(5);
         }
         else if (the_game->field_0A != 0 && air_supply > 40)
             the_game->field_0A = 0;
 
-        if (shld_supply < 40)
+        if (shld_supply < 40 && !the_game->field_0B)
         {
-            if (!the_game->field_0B)
-            {
-                the_game->field_0B++;
-                the_game->play_sound((uchar far *)"ping", 0xF);
-                post_message(9);
-            }
+            the_game->field_0B++;
+            the_game->play_sound((uchar far *)"ping", 0xF);
+            post_message(9);
         }
         else if (the_game->field_0B != 0 && shld_supply > 40)
             the_game->field_0B = 0;
@@ -2264,30 +2256,26 @@ void check_guages(void)
         update_jason_guage();
         var_2 = abs(ego->xw2 - jason->xw2);
         var_4 = abs(ego->yh2 - jason->yh2);
-        if (var_2 > 0x1E) goto drain;
-        if (var_4 <= 0x0A) goto recharge;
-drain:
-        if (jason_power < 40)
+        if (var_2 > 0x1E || var_4 > 0x0A)
         {
-            if (!the_game->field_0C)
+            if (jason_power < 40)
             {
-                the_game->field_0C++;
-                the_game->play_sound((uchar far *)"ping", 0xF);
-                post_message(8);
+                if (!the_game->field_0C)
+                {
+                    the_game->field_0C++;
+                    the_game->play_sound((uchar far *)"ping", 0xF);
+                    post_message(8);
+                }
             }
+            else if (the_game->field_0C != 0)
+                the_game->field_0C = 0;
+            if (jason_power != 0)
+                jason_power -= 2;
+            else
+                kill_jason();
         }
-        else if (the_game->field_0C != 0)
-            the_game->field_0C = 0;
-        if (jason_power != 0)
-            jason_power -= 2;
-        else
-            kill_jason();
-        goto end;
-recharge:
-        if (var_2 <= 0x1E && var_4 <= 0x0A)
+        else if (var_2 <= 0x1E && var_4 <= 0x0A)
             jason_power = maximum_jason_power;
-end:
-        ;
     }
 }
 
@@ -2470,9 +2458,9 @@ void load_resources(void)
  * ------------------------------------------------------------------------ */
 void show_high_scores(uchar arg_0)
 {
+    int  var_2, var_4, var_6;
     button far *block, far *var_C;
     uchar var_7;
-    int  var_2, var_4, var_6;
 
 restart:
     display->save_palette();
@@ -2481,25 +2469,20 @@ restart:
     i_set_text(0x40, 2, 0x1C, 0x9E);
     var_4 = 0x46;
     var_6 = 0x1E;
-    var_2 = 0;
-    goto row_check;
-row_body:
-    i_set_text(0x80, 2, 0x87, 0x9F);
-    if (var_2 == 0)
-        i_set_text(0x40, 2, 0x1C, 0x9E);
-    else if (arg_0 != 0 && arg_0 == var_2 + 1)
-        i_set_text(0x30, 2, 0x18, 0x1D);
-    itoa(var_2 + 1, _tmp, 0x0A);
-    strcat(_tmp, _src);
-    display->print_at_xy(var_4, var_6 + var_2 * 0x0A, (uchar far *)_tmp, 0);
-    strcpy(_tmp, return_element(var_2, 2));
-    display->print_at_xy(var_4 + 0x28, var_6 + var_2 * 0x0A, (uchar far *)_tmp, 0);
-    strcpy(_tmp, return_element(var_2, 1));
-    display->print_at_xy(var_4 + 0x8C, var_6 + var_2 * 0x0A, (uchar far *)_tmp, 0);
-    var_2++;
-row_check:
-    if (var_2 < 0x0A)
-        goto row_body;
+    for (var_2 = 0; var_2 < 0x0A; var_2++) {
+        i_set_text(0x80, 2, 0x87, 0x9F);
+        if (var_2 == 0)
+            i_set_text(0x40, 2, 0x1C, 0x9E);
+        else if (arg_0 != 0 && arg_0 == var_2 + 1)
+            i_set_text(0x30, 2, 0x18, 0x1D);
+        itoa(var_2 + 1, _tmp, 0x0A);
+        strcat(_tmp, _src);
+        display->print_at_xy(var_4, var_6 + var_2 * 0x0A, (uchar far *)_tmp, 0);
+        strcpy(_tmp, return_element(var_2, 2));
+        display->print_at_xy(var_4 + 0x28, var_6 + var_2 * 0x0A, (uchar far *)_tmp, 0);
+        strcpy(_tmp, return_element(var_2, 1));
+        display->print_at_xy(var_4 + 0x8C, var_6 + var_2 * 0x0A, (uchar far *)_tmp, 0);
+    }
     i_set_text(0x30, 2, 0x18, 0x1D);
     strcpy(_tmp, "Your score: ");
     strcat(_tmp, ltoa(score, _tmp2, 0x0A));
@@ -2532,8 +2515,8 @@ row_check:
         }
         if (block->poll())
         {
-            if ((int)i_yes_cancel((uchar far *)"Are you sure you want to\n"
-                             "reset the high scores?", 0) == 0)
+            if (!i_yes_cancel((uchar far *)"Are you sure you want to\n"
+                             "reset the high scores?", 0))
             {
                 init_scores_file();
                 delete block;
@@ -2571,13 +2554,13 @@ void start_title_loop(void)
         the_game->play_sound_file((uchar far *)"title");
     else
         the_game->play_sound_file((uchar far *)"pup2");
-    if (saw_title_screen == 0)
+    if (!saw_title_screen)
     {
         saw_title_screen++;
         while (the_game->field_2B != 0)
             the_game->doit();
         var_2 = 0x12C;
-        while (the_game->field_2B == 0 && var_2-- != 0)
+        while (!the_game->field_2B && var_2-- != 0)
         {
             if (!god_mode && gr_keys[0x22] && gr_keys[0x38])
             {
@@ -2749,7 +2732,7 @@ void show_prelude(void)
     display->show_offset(0x3D40);
     display->pause(2);
     display->show_offset(page_offsets[1]);
-    while (de_button() == 0)
+    while (!de_button())
         ;
     the_game->play_sound((uchar far *)"fire2", 0x0F);
     var_4 = 0x3E80;
@@ -2806,13 +2789,10 @@ static long auto_t;
 
 uchar de_button(void)
 {
-    uchar r;
-
     the_game->doit();
-    r = gr_keys[0x39] | gr_keys[0x1C] | the_game->field_2B;
     if (auto_pulse && (++auto_t % 40) == 0)
         return 1;
-    return r;
+    return gr_keys[0x39] | gr_keys[0x1C] | the_game->field_2B;
 }
 
 /* --------------------------------------------------------------------------
@@ -2849,7 +2829,7 @@ void parse_options(int argc, uchar *argv[])
         if (strcmp((char *)argv[i], "-autofire") == 0)   /* TEMP headless test */
             auto_pulse = 1;
         if (strcmp((char *)argv[i], "-start") == 0)
-            zoom_to_map = atoi(argv[i + 1]) - 1;
+            zoom_to_map = atoi(*(argv + i + 1)) - 1;
     }
 }
 
@@ -2869,7 +2849,11 @@ int random(int range)
  * ------------------------------------------------------------------------ */
 int abs(int a)
 {
-    return a < 0 ? -a : a;
+    asm mov ax, [bp + 6];
+    asm cwd;
+    asm xor ax, dx;
+    asm sub ax, dx;
+    return _AX;
 }
 
 /* --------------------------------------------------------------------------

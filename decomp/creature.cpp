@@ -52,6 +52,7 @@ void far check_flying_death(m_actor far *a)
         a->y_step++;
         if (!a->in_window)
             a->deleting = 1;
+        return;
     }
 }
 
@@ -61,14 +62,21 @@ void far check_flying_death(m_actor far *a)
  * ------------------------------------------------------------------------ */
 byte far check_for_hit(m_actor far *a, uchar arg4)
 {
-    if (!a->hit)
-        return 0;
-    a->hit   = 0;
-    a->flash_color = 0x0F;
-    if (arg4 > a->field_28)
-        return 1;
-    a->deleting = 1;
-    return 2;
+    if (a->hit)
+    {
+        a->hit   = 0;
+        a->flash_color = 0x0F;
+        if (arg4 <= a->field_28)
+        {
+            a->deleting = 1;
+            return 2;
+        }
+        else
+        {
+            return 1;
+        }
+    }
+    return 0;
 }
 
 /* --------------------------------------------------------------------------
@@ -77,7 +85,8 @@ byte far check_for_hit(m_actor far *a, uchar arg4)
  * ------------------------------------------------------------------------ */
 byte far check_vertical_ray(m_actor far *a, uint arg4)
 {
-    int var_2, var_4, var_6;
+    word var_2;
+    int var_4, var_6;
     var_2 = a->my_map_pos;
     if (a->yh2 < cur_sub->yh2) {
         var_2 += tbl_mul_tw[a->field_1C - 1];   /* row just below the actor (orig: word_2BA84[field_1C]) */
@@ -139,7 +148,7 @@ uint far check_new_pos(m_actor far *a, int arg4, int arg6,
     var_A = a->y_step;
     a->x = arg4;
     a->y = arg6;
-    a->my_map_pos = tbl_mul_tw[a->y >> 3] + (a->x >> 3);
+    a->my_map_pos = (a->x >> 3) + tbl_mul_tw[a->y >> 3];
     var_E = a->tile_collision(arg10, arg12, arg14);
     if (var_E != 0)
         var_E |= 0x8000;
@@ -822,24 +831,33 @@ byte far do_follow(m_actor far *a, int arg_4, int arg_6)
     var_2 = check_vertical_ray(a, diff_y >> 3);
     if (var_2 != 0) {
         a->x_step = 0;
-        if (diff_y <= 0x0A)
+        if (diff_y > 0x0A) {
+            if (cur_sub->yh2 < a->yh2)
+                a->y_step = -arg_4;
+            else
+                a->y_step = arg_4;
+        } else
             goto chase_x;
-        a->y_step = (cur_sub->yh2 < a->yh2) ? -arg_4 : arg_4;
         return 0;
     }
     if (var_1 != 0)
         goto chase_x;
-    if (var_2 != 0 || var_1 == 0) {
-        a->y_step = 0;
-        a->x_step = 0;
+    if (!!var_2 || var_1 == 0) {
+        a->x_step = a->y_step = 0;
         return 0;
     }
     a->y_step = 0;
-    a->x_step = (cur_sub->xw2 < a->xw2) ? -arg_6 : arg_6;
+    if (cur_sub->xw2 < a->xw2)
+        a->x_step = -arg_6;
+    else
+        a->x_step = arg_6;
     return 0;
 chase_x:
     a->y_step = 0;
-    a->x_step = (cur_sub->xw2 < a->xw2) ? -(arg_6 - 1) : (arg_6 - 1);
+    if (cur_sub->xw2 < a->xw2)
+        a->x_step = -(arg_6 - 1);
+    else
+        a->x_step = arg_6 - 1;
     return 1;
 }
 
@@ -1171,9 +1189,12 @@ void far do_shark(m_actor far *a)
     if (!a->door_open) {                    /* first sight — wake & swim */
         a->door_open = 1;
         a->set_cycle(8, 1);
-        a->x_step = (a->facing == 1) ? -1 : 1;
+        if (a->facing == 1)
+            a->x_step = -1;
+        else
+            a->x_step = 1;
     }
-    if (a->s_aux2 == 1) {                    /* in a lunge */
+    if (a->s_aux2 != 1) {                    /* not turning — lunge/cruise */
         if (a->aux1 != 0) {
             if (a->aux2 != 0) {
                 a->aux2--;

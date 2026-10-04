@@ -14,6 +14,247 @@
  * are used as button flags (the int33 fns used never set es/flags).
  * ======================================================================== */
 
+void i_init_interface(void far *l, void far *r, void far *u,
+                      void far *d, void far *b)
+{
+    mouse        = new ms_mouse;
+    the_menu_bar = new menu_bar;
+    pd_redraws         = 0;
+    show_box_on        = 0;
+    menu_bar_height    = 9;
+    maximum_text_length = 8;
+    i_external_left   = (uchar (far *)(void))l;
+    i_external_right  = (uchar (far *)(void))r;
+    i_external_up     = (uchar (far *)(void))u;
+    i_external_down   = (uchar (far *)(void))d;
+    i_external_button = (uchar (far *)(void))b;
+}
+
+void i_poll_interface()
+{
+    the_menu_bar->poll();
+}
+
+void i_set_text(uchar fg, uchar bg, uchar a4, uchar a6)
+{
+    display->field_01 = bg;
+    display->field_04 = fg;
+    display->field_02 = a6;
+    display->field_03 = a4;
+    menu_bar_height = (bg != 0) + 9;
+}
+
+void i_no_imp()
+{
+    i_inform((uchar far *)"This feature has not\nbeen implemented yet.", 0, 0);
+}
+
+int i_get_int(uchar far *title, uchar far *arg_4)
+{
+    prompt_box far *pb;
+    int v;
+
+    pb = new prompt_box(title);
+    pb->field_14 = arg_4;
+    pb->draw();
+    pb->poll();
+    if (pb->field_1D != 0) {
+        delete pb;
+        return -1;
+    }
+    v = pb->field_24;
+    delete pb;
+    return v;
+}
+
+uchar far *i_get_string(uchar far *title, uchar far *arg_4)
+{
+    prompt_box far *pb;
+    uchar far *s;
+
+    pb = new prompt_box(title);
+    pb->field_14 = arg_4;
+    pb->draw();
+    pb->poll();
+    if (pb->field_1D != 0) {
+        delete pb;
+        return 0;
+    }
+    s = (uchar far *)strdup((char far *)pb->field_1E);
+    delete pb;
+    return s;
+}
+
+uchar far *i_load_file(uchar far *src, uchar far *dest)
+{
+    text_box far *tb;
+    uchar far *path;
+
+  restart:
+    tb = new text_box((uchar far *)"Open File");
+    tb->add_file_box(src);
+    tb->add_button((uchar far *)"Cancel", 0);
+    tb->add_button((uchar far *)"Ok", 0);
+    tb->add_button((uchar far *)"Cd", 0);
+    tb->draw();
+    while (!tb->poll())
+        ;
+    if (tb->buttons[2]->field_20 != 0) {
+      getpath:
+        path = i_get_string((uchar far *)"Change Directory",
+                            (uchar far *)"Enter new path:");
+        if (path != 0 && chdir((char far *)path) == -1) {
+            i_inform((uchar far *)"Not a valid path.", 0, 0);
+            goto getpath;
+        }
+        delete tb;
+        goto restart;
+    }
+    if (tb->field_18->flash_color != 0 && tb->buttons[0]->field_20 == 0)
+        strcpy((char far *)dest, (char far *)tb->field_18->flash_color);
+    else
+        dest = 0;
+    delete tb;
+    mouse->get_event();
+    return dest;
+}
+
+uchar i_yes_cancel(uchar far *s, uchar arg_4)
+{
+    text_box far *tb;
+    uchar res;
+
+    tb = new text_box(0);
+    parse_box_string(tb, s);
+    if (arg_4 != 0) {
+        tb->add_button((uchar far *)"No", 0);
+        tb->add_button((uchar far *)"Yes", 0);
+    } else {
+        tb->add_button((uchar far *)"Cancel", 0);
+        tb->add_button((uchar far *)"Ok", 0);
+    }
+    tb->draw();
+    while (!tb->poll())
+        ;
+    if (((button far *)tb->buttons[0])->field_20 != 0)
+        res = 1;
+    else
+        res = 0;
+    release_box_strings(tb);
+    delete tb;
+    return res;
+}
+
+int i_inform(uchar far *s, uchar arg_4, uchar far *arg_6)
+{
+    text_box far *tb;
+    uchar hadcursor;
+
+    tb = new text_box(arg_6);
+    parse_box_string(tb, s);
+    tb->add_button((uchar far *)"Ok", 0);
+    tb->field_6C = arg_4;
+    if (mouse->field_02 != 0)
+        hadcursor = 1;
+    else {
+        hadcursor = 0;
+        mouse->show();
+    }
+    tb->draw();
+    while (!tb->poll())
+        ;
+    release_box_strings(tb);
+    delete tb;
+    if (hadcursor == 0)
+        mouse->hide();
+}
+
+void i_show_box(uchar far *s, int arg_4, int arg_6,
+                uchar far *arg_8, uchar far *arg_C)
+{
+    if (!show_box_on) {
+        show_box = new text_box(arg_C);
+        parse_box_string(show_box, s);
+        if (arg_8 != 0)
+            show_box->add_bitmap(arg_4, arg_6, arg_8);
+        show_box->field_06 -= 0x14;
+        show_box->draw();
+        show_box_on = 1;
+    }
+}
+
+void i_hide_box(uchar arg_0)
+{
+    if (show_box_on != 0) {
+        show_box_on = 0;
+        if (arg_0 != 0)
+            show_box->field_77 = 1;
+        release_box_strings(show_box);
+        delete show_box;
+    }
+}
+
+/* ==========================================================================
+ * parse_box_string — split a '\n'-separated string into add_string calls.
+ * ======================================================================== */
+void parse_box_string(text_box far *tb, uchar far *s)
+{
+    uchar *start, *end, *line;
+    uint i;
+
+    end = start = s;
+    i = 0;
+    while (i <= strlen((char far *)s)) {
+        if (s[i] == '\n' || s[i] == 0) {
+            end = s + i;
+            line = new char[(int)(end - start) + 1];
+            strncpy((char far *)line, (char far *)start, (int)(end - start));
+            ((char far *)line)[(int)(end - start)] = 0;
+            tb->add_string(line);
+            start = end + 1;
+        }
+        i++;
+    }
+}
+
+/* ==========================================================================
+ * release_box_strings — delete every string in the text_box's list.
+ * ======================================================================== */
+void release_box_strings(text_box far *tb)
+{
+    uint i;
+
+    for (i = 0; i < tb->field_0A; i++)
+        delete tb->field_1C[i];
+}
+
+/* ==========================================================================
+ * draw_shadow_box — raised-panel shadow via three fill_rect calls.
+ * ======================================================================== */
+void draw_shadow_box(int x1, int y1, int x2, int y2)
+{
+    display->fill_rect(x1, y1, x2, y2, display->field_02, display->field_03, 0);
+    display->fill_rect(x1 + 2, y2, x2 + 1, y2 + 1, 0, 0xFFFF, 0);
+    display->fill_rect(x2, y1 + 2, x2 + 1, y2, 0, 0xFFFF, 0);
+}
+
+/* ==========================================================================
+ * high_light — invert a rect then print centred text over it.
+ * ======================================================================== */
+void high_light(int x1, int y1, int x2, int y2, uchar far *s,
+                int arg_C, int arg_E, uchar inv)
+{
+    if (inv)
+        display->fill_rect(x1, y1, x2, y2, display->field_02, 0xFFFF, 0);
+    else
+        display->fill_rect(x1, y1, x2, y2, display->field_03, 0xFFFF, 0);
+    display->print_at_xy(x1 + arg_C, y1 + arg_E, s, 0);
+}
+
+/* ==========================================================================
+ * pull_down — a drop-down menu attached to a menu_bar slot.
+ * ======================================================================== */
+
 ms_mouse::ms_mouse()
 {
     REGPACK preg;
@@ -143,29 +384,6 @@ uchar ms_mouse::doit()
     return 1;
 }
 
-void ms_mouse::get_status()
-{
-    int btns;
-
-    if (display->field_00 == 0)                 /* software mode: ISR maintains */
-        return;                                 /*   the fields already */
-    regs.x.ax = 3;                                   /* fn 3 — get pos + buttons */
-    int86(0x33, &regs, &regs);
-    field_0C = regs.x.cx >> 1;
-    field_0E = regs.x.dx;
-    btns = regs.x.bx & 7;
-    if (btns != 0) field_00 = 1; else field_00 = 0;
-    if (btns == 1) field_2C = 1; else field_2C = 0;
-    if (btns == 2) field_2D = 1; else field_2D = 0;
-    if (field_01 == 0 && field_00 == 0)
-        field_01 = 1;
-}
-
-/* ==========================================================================
- * Global mouse helpers.  mouse_handler is installed via int33 fn 0x0C as the
- * event subroutine (called with bx=buttons, cx=x-mickeys, dx=y).
- * ======================================================================== */
-
 void mouse_handler()
 {
     int b, x, y;
@@ -220,6 +438,29 @@ void erase_mouse()
  * (non-virtual) stub returning 0 that subclasses shadow with a real virtual.
  * ======================================================================== */
 
+void ms_mouse::get_status()
+{
+    int btns;
+
+    if (display->field_00 == 0)                 /* software mode: ISR maintains */
+        return;                                 /*   the fields already */
+    regs.x.ax = 3;                                   /* fn 3 — get pos + buttons */
+    int86(0x33, &regs, &regs);
+    field_0C = regs.x.cx >> 1;
+    field_0E = regs.x.dx;
+    btns = regs.x.bx & 7;
+    if (btns != 0) field_00 = 1; else field_00 = 0;
+    if (btns == 1) field_2C = 1; else field_2C = 0;
+    if (btns == 2) field_2D = 1; else field_2D = 0;
+    if (field_01 == 0 && field_00 == 0)
+        field_01 = 1;
+}
+
+/* ==========================================================================
+ * Global mouse helpers.  mouse_handler is installed via int33 fn 0x0C as the
+ * event subroutine (called with bx=buttons, cx=x-mickeys, dx=y).
+ * ======================================================================== */
+
 gui_item::gui_item()
 {
     field_0C = 0;
@@ -233,248 +474,6 @@ gui_item::gui_item()
 
 /* ==========================================================================
  * i_* — interface wrappers used by the game code.
- * ======================================================================== */
-
-void i_init_interface(void far *l, void far *r, void far *u,
-                      void far *d, void far *b)
-{
-    mouse        = new ms_mouse;
-    the_menu_bar = new menu_bar;
-    pd_redraws         = 0;
-    show_box_on        = 0;
-    menu_bar_height    = 9;
-    maximum_text_length = 8;
-    i_external_left   = (uchar (far *)(void))l;
-    i_external_right  = (uchar (far *)(void))r;
-    i_external_up     = (uchar (far *)(void))u;
-    i_external_down   = (uchar (far *)(void))d;
-    i_external_button = (uchar (far *)(void))b;
-}
-
-void i_poll_interface()
-{
-    the_menu_bar->poll();
-}
-
-void i_set_text(uchar fg, uchar bg, uchar a4, uchar a6)
-{
-    display->field_01 = bg;
-    display->field_04 = fg;
-    display->field_02 = a6;
-    display->field_03 = a4;
-    menu_bar_height = (bg ? 1 : 0) + 9;
-}
-
-void i_no_imp()
-{
-    i_inform((uchar far *)"This feature has not\nbeen implemented yet.", 0, 0);
-}
-
-int i_get_int(uchar far *title, uchar far *arg_4)
-{
-    prompt_box far *pb;
-    int v;
-
-    pb = new prompt_box(title);
-    pb->field_14 = arg_4;
-    pb->draw();
-    pb->poll();
-    if (pb->field_1D != 0) {
-        delete pb;
-        return -1;
-    }
-    v = pb->field_24;
-    delete pb;
-    return v;
-}
-
-uchar far *i_get_string(uchar far *title, uchar far *arg_4)
-{
-    prompt_box far *pb;
-    uchar far *s;
-
-    pb = new prompt_box(title);
-    pb->field_14 = arg_4;
-    pb->draw();
-    pb->poll();
-    if (pb->field_1D != 0) {
-        delete pb;
-        return 0;
-    }
-    s = (uchar far *)strdup((char far *)pb->field_1E);
-    delete pb;
-    return s;
-}
-
-uchar far *i_load_file(uchar far *src, uchar far *dest)
-{
-    text_box far *tb;
-    uchar far *path;
-
-  restart:
-    tb = new text_box((uchar far *)"Open File");
-    tb->add_file_box(src);
-    tb->add_button((uchar far *)"Cancel", 0);
-    tb->add_button((uchar far *)"Ok", 0);
-    tb->add_button((uchar far *)"Cd", 0);
-    tb->draw();
-    while (tb->poll() == 0)
-        ;
-    if (tb->buttons[2]->field_20 != 0) {
-      getpath:
-        path = i_get_string((uchar far *)"Change Directory",
-                            (uchar far *)"Enter new path:");
-        if (path != 0 && chdir((char far *)path) == -1) {
-            i_inform((uchar far *)"Not a valid path.", 0, 0);
-            goto getpath;
-        }
-        delete tb;
-        goto restart;
-    }
-    if (tb->field_18->flash_color != 0 && tb->buttons[0]->field_20 == 0)
-        strcpy((char far *)dest, (char far *)tb->field_18->flash_color);
-    else
-        dest = 0;
-    delete tb;
-    mouse->get_event();
-    return dest;
-}
-
-uchar i_yes_cancel(uchar far *s, uchar arg_4)
-{
-    text_box far *tb;
-    uchar res;
-
-    tb = new text_box(0);
-    parse_box_string(tb, s);
-    if (arg_4 != 0) {
-        tb->add_button((uchar far *)"No", 0);
-        tb->add_button((uchar far *)"Yes", 0);
-    } else {
-        tb->add_button((uchar far *)"Cancel", 0);
-        tb->add_button((uchar far *)"Ok", 0);
-    }
-    tb->draw();
-    while (tb->poll() == 0)
-        ;
-    if (((button far *)tb->buttons[0])->field_20 != 0)
-        res = 1;
-    else
-        res = 0;
-    release_box_strings(tb);
-    delete tb;
-    return res;
-}
-
-int i_inform(uchar far *s, uchar arg_4, uchar far *arg_6)
-{
-    text_box far *tb;
-    uchar hadcursor;
-
-    tb = new text_box(arg_6);
-    parse_box_string(tb, s);
-    tb->add_button((uchar far *)"Ok", 0);
-    tb->field_6C = arg_4;
-    if (mouse->field_02 != 0)
-        hadcursor = 1;
-    else {
-        hadcursor = 0;
-        mouse->show();
-    }
-    tb->draw();
-    while (tb->poll() == 0)
-        ;
-    release_box_strings(tb);
-    delete tb;
-    if (hadcursor == 0)
-        mouse->hide();
-    return 0;
-}
-
-void i_show_box(uchar far *s, int arg_4, int arg_6,
-                uchar far *arg_8, uchar far *arg_C)
-{
-    if (show_box_on == 0) {
-        show_box = new text_box(arg_C);
-        parse_box_string(show_box, s);
-        if (arg_8 != 0)
-            show_box->add_bitmap(arg_4, arg_6, arg_8);
-        show_box->field_06 -= 0x14;
-        show_box->draw();
-        show_box_on = 1;
-    }
-}
-
-void i_hide_box(uchar arg_0)
-{
-    if (show_box_on != 0) {
-        show_box_on = 0;
-        if (arg_0 != 0)
-            show_box->field_77 = 1;
-        release_box_strings(show_box);
-        delete show_box;
-    }
-}
-
-/* ==========================================================================
- * parse_box_string — split a '\n'-separated string into add_string calls.
- * ======================================================================== */
-void parse_box_string(text_box far *tb, uchar far *s)
-{
-    uchar far *start, *end, *line;
-    uint i;
-
-    start = s;
-    end   = s;
-    i = 0;
-    while (i <= strlen((char far *)s)) {
-        if (s[i] == '\n' || s[i] == 0) {
-            end = s + i;
-            line = (uchar far *)new char[(int)(end - start) + 1];
-            strncpy((char far *)line, (char far *)start, (int)(end - start));
-            ((char far *)line)[(int)(end - start)] = 0;
-            tb->add_string(line);
-            start = end + 1;
-        }
-        i++;
-    }
-}
-
-/* ==========================================================================
- * release_box_strings — delete every string in the text_box's list.
- * ======================================================================== */
-void release_box_strings(text_box far *tb)
-{
-    uint i;
-
-    for (i = 0; i < tb->field_0A; i++)
-        delete tb->field_1C[i];
-}
-
-/* ==========================================================================
- * draw_shadow_box — raised-panel shadow via three fill_rect calls.
- * ======================================================================== */
-void draw_shadow_box(int x1, int y1, int x2, int y2)
-{
-    display->fill_rect(x1, y1, x2, y2, display->field_02, display->field_03, 0);
-    display->fill_rect(x1 + 2, y2, x2 + 1, y2 + 1, 0, 0xFFFF, 0);
-    display->fill_rect(x2, y1 + 2, x2 + 1, y2, 0, 0xFFFF, 0);
-}
-
-/* ==========================================================================
- * high_light — invert a rect then print centred text over it.
- * ======================================================================== */
-void high_light(int x1, int y1, int x2, int y2, uchar far *s,
-                int arg_C, int arg_E, uchar inv)
-{
-    display->fill_rect(x1, y1, x2, y2,
-                       inv ? display->field_02 : display->field_03,
-                       0xFFFF, 0);
-    display->print_at_xy(x1 + arg_C, y1 + arg_E, s, 0);
-}
-
-/* ==========================================================================
- * pull_down — a drop-down menu attached to a menu_bar slot.
  * ======================================================================== */
 
 pull_down::pull_down(uchar far *title)

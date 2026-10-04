@@ -725,7 +725,7 @@ arg_14		= word ptr  1Ah
 		push	si
 		mov	ax, [bp+arg_6]
 		sub	ax, cx
-		cmp	ax, 0
+		cmp	ax, word ptr 0
 		jle	putm2_done
 		mov	[bp+var_8], ax
 		mov	di, [bp+arg_8]
@@ -1045,7 +1045,7 @@ arg_12		= word ptr  18h
 		nop
 		nop
 		dec	cx
-		and	ax, 0FFFCh
+		and	ax, word ptr 0FFFCh
 		sub	cx, ax
 		shr	cx, 2
 		jnz	vv_masksset

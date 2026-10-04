@@ -286,7 +286,7 @@ public:
     byte  field_8B;        /* 8B */
     byte  cycling;         /* 8C — orig 'palette_cycling' */
     byte  field_8D;        /* 8D */
-    int   map_width;       /* 8E — orig 't_width'  (tiles) */
+    uint  map_width;       /* 8E — orig 't_width'  (tiles); orig uses unsigned div */
     int   map_height;      /* 90 — orig 't_height' (tiles) */
     int   field_92;        /* 92 — orig 't_org' — cached window origin (map cells) */
     ulong map_size;        /* 94 — orig 't_size' = t_width*t_height */
@@ -706,7 +706,7 @@ extern m_actor far *shootable_list[30];
 extern byte barrier_count;                  /* 351C — db */
 extern m_actor far *barrier_list[35];
 extern byte ed_list_size;                 /* count of actors currently in-window */
-extern word tbl_mul_tw[];
+extern int  tbl_mul_tw[];
 extern word word_2BA84[];
 extern word word_2BA88[];                 /* seg2608:3828 — 2-entry facing probe table */                 /* seg2608:3824 — row-offset table base (one elem before tbl_mul_tw) */                 /* tile-row -> linear map offset multiply table */
 extern word tbl_mul80[];                  /* seg2608:39B6 — i*80 row table */

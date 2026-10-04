@@ -212,10 +212,10 @@ byte touching(m_actor far *a, m_actor far *b)
     var_6 = a->width;  var_8 = a->height;
     var_A = b->x;      var_C = b->y;
     var_E = b->width;  var_10 = b->height;
-    if (var_2 + var_6 <= var_A) return 0;
-    if (var_A + var_E <= var_2) return 0;
-    if (var_4 + var_8 <= var_C) return 0;
-    if (var_C + var_10 <= var_4) return 0;
+    if (var_2 + var_6 <= var_A) goto no_hit;
+    if (var_A + var_E <= var_2) goto no_hit;
+    if (var_4 + var_8 <= var_C) goto no_hit;
+    if (var_C + var_10 <= var_4) goto no_hit;
     var_24 = var_C - var_4;
     if (var_2 < var_A) {
         var_22 = var_A - var_2;
@@ -251,6 +251,7 @@ byte touching(m_actor far *a, m_actor far *b)
             var_2A = 0;
         }
     }
+no_hit:
     return 0;
 }
 

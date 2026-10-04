@@ -132,6 +132,9 @@ uchar far *far return_element(uchar arg_0, uchar arg_2)
     case 3:
         if (_game_highs[arg_0].field_0E != 0)
             return (uchar far *)"1";
+        break;
+    default:
+        break;
     }
     return 0;
 }

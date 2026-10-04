@@ -42,18 +42,19 @@ void interrupt far pc_sound_doit(...)
         ticks18_2 = 0;
         theirhandler();
     }
-    if (the_game->field_1C != 0 && cur_sound != 0 &&
-        ((cur_sound_t far *)cur_sound)->seq != 0) {
-        if (((cur_sound_t far *)cur_sound)->index ==
-            ((cur_sound_t far *)cur_sound)->seq->count) {
-            cur_sound = 0;
-            nosound();
-        } else {
-            sound(((cur_sound_t far *)cur_sound)->seq->freqs
-                  [((cur_sound_t far *)cur_sound)->index]);
-            ((cur_sound_t far *)cur_sound)->index++;
-        }
+    if (the_game->field_1C == 0) goto done;
+    if (cur_sound == 0) goto done;
+    if (((cur_sound_t far *)cur_sound)->seq == 0) goto done;
+    if (((cur_sound_t far *)cur_sound)->index !=
+        ((cur_sound_t far *)cur_sound)->seq->count) {
+        sound(((cur_sound_t far *)cur_sound)->seq->freqs
+              [((cur_sound_t far *)cur_sound)->index]);
+        ((cur_sound_t far *)cur_sound)->index++;
+    } else {
+        cur_sound = 0;
+        nosound();
     }
+done:
     outportb(0x20, 0x20);
 }
 

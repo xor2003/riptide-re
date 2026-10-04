@@ -46,8 +46,8 @@ void terminate(uchar far *a, uchar far *b)
 void pause(uint n)
 {
     while (n--) {
-        while (inportb(0x3DA) & 8)  ;             /* wait for vsync to clear */
-        while (!(inportb(0x3DA) & 8));            /* wait for vsync to start */
+        while ((inportb(0x3DA) & 8) != 0)  ;       /* wait for vsync to clear */
+        while (!((inportb(0x3DA) & 8) != 0));      /* wait for vsync to start */
     }
 }
 
@@ -86,14 +86,17 @@ long g_open_element(uchar far *path)
 
     if (external_open)
         return external_open(path);
-    if (g_handle != -1)
-        terminate((uchar far *)"Request to open more than one element.", 0);
-    g_handle = open(path, 0x8001);
-    if (g_handle == -1)
-        res = -1;
     else
-        res = filelength(g_handle);
-    return res;
+    {
+        if (g_handle != -1)
+            terminate((uchar far *)"Request to open more than one element.", 0);
+        g_handle = open(path, 0x8001);
+        if (g_handle == -1)
+            res = -1;
+        else
+            res = filelength(g_handle);
+        return res;
+    }
 }
 
 
@@ -104,18 +107,23 @@ long g_element_read(void far *buf, uint len)
 
     if (external_read)
         return external_read(buf, len);
-    if (g_handle == -1)
-        terminate((uchar far *)"Element not open.", 0);
-    n = read(g_handle, buf, len);
-    return n;
+    else
+    {
+        if (g_handle == -1)
+            terminate((uchar far *)"Element not open.", 0);
+        n = read(g_handle, buf, len);
+        return n;
+    }
 }
 
 
 /* seg1a1e:01F6 — close the open element (direct-file mode only). */
 void g_close_element(void)
 {
-    if (external_open == 0 && g_handle != -1) {
-        close(g_handle);
-        g_handle = -1;
-    }
+    if (external_open != 0)
+        return;
+    if (g_handle == -1)
+        return;
+    close(g_handle);
+    g_handle = -1;
 }

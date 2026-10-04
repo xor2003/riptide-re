@@ -585,9 +585,9 @@ loc_27FA3::				; CODE XREF: e087_entry+Aj
 		sub	al, 34h	; '4'
 		cmp	al, 8
 		jnb	loc_28007
-		cmp	ax, 0E303h
+		cmp	ax, word ptr 0E303h
 		jz	loc_27FDC
-		cmp	ax, 0E007h
+		cmp	ax, word ptr 0E007h
 		jnz	loc_27FCD
 		cmp	byte ptr ss:6, 2
 		jge	loc_27FCD
@@ -628,12 +628,12 @@ loc_28007::				; CODE XREF: e087_entry+1Aj
 		mov	byte ptr [si], 9Bh ; ''
 		inc	si
 		mov	al, ah
-		and	ax, 7C0h
+		and	ax, word ptr 7C0h
 		shr	al, 1
 		shr	al, 1
 		shr	al, 1
 		xor	al, 18h
-		add	ax, 0D826h
+		add	ax, word ptr 0D826h
 		mov	[si], ax
 
 loc_2802A::				; CODE XREF: e087_entry+35j
@@ -985,7 +985,7 @@ loc_281FC::				; CODE XREF: sub_281DB+17j
 		xor	ah, dh
 		wait
 		add	ax, word ptr aCopyright1991B+1Ch ; ""
-		sub	ax, 403Eh
+		sub	ax, word ptr 403Eh
 		xor	ah, dh
 		mov	word ptr aCopyright1991B+1Ch, ax ; ""
 		wait

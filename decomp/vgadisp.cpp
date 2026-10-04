@@ -633,18 +633,43 @@ void vga_display::import_palette(uchar far *src, uint arg_E)
  *   0/1 = flat colour, 2 = brighten per row, 3 = darken per row.
  * The 8 column bit-tests are written out unrolled to match the original.
  * ------------------------------------------------------------------------ */
-#define GLYPH_BIT()  (*(uchar far *)MK_FP(FP_SEG(system_font_ptr), \
-                        FP_OFF(system_font_ptr) + (((word)var_A << 3) + var_2)))
+#define GLYPH_BIT()  (*(system_font_ptr + (((word)var_A << 3) + var_2)))
 
 void vga_text(int x, int y, uchar far *s, uchar color, uchar mode)
 {
+    int   var_2, var_4, var_6, var_8;
+    uchar var_9, var_A;
     uchar far *p;
-    int   var_8, var_4, var_6, var_2;
-    uchar var_9, var_A, var_F;
 
     p = s;
     var_8 = x;
-    if (mode != 0) {
+    if (mode == 0) {
+        for (var_4 = 0; var_4 < strlen((char far *)s); ++var_4) {
+            var_A = *p++;
+            var_6 = y;
+            for (var_2 = 0; var_2 < 8; ++var_2) {
+                var_9 = 0x80;
+                if (GLYPH_BIT() & var_9) display->set_pix(var_8,     var_6, color);
+                var_9 >>= 1;
+                if (GLYPH_BIT() & var_9) display->set_pix(var_8 + 1, var_6, color);
+                var_9 >>= 1;
+                if (GLYPH_BIT() & var_9) display->set_pix(var_8 + 2, var_6, color);
+                var_9 >>= 1;
+                if (GLYPH_BIT() & var_9) display->set_pix(var_8 + 3, var_6, color);
+                var_9 >>= 1;
+                if (GLYPH_BIT() & var_9) display->set_pix(var_8 + 4, var_6, color);
+                var_9 >>= 1;
+                if (GLYPH_BIT() & var_9) display->set_pix(var_8 + 5, var_6, color);
+                var_9 >>= 1;
+                if (GLYPH_BIT() & var_9) display->set_pix(var_8 + 6, var_6, color);
+                var_9 >>= 1;
+                if (GLYPH_BIT() & var_9) display->set_pix(var_8 + 7, var_6, color);
+                ++var_6;
+            }
+            var_8 += 8;
+        }
+    } else {
+        uchar var_F;
         for (var_4 = 0; var_4 < strlen((char far *)s); ++var_4) {
             var_A = *p++;
             var_6 = y;
@@ -673,31 +698,6 @@ void vga_text(int x, int y, uchar far *s, uchar color, uchar mode)
                 case 2: ++var_F; break;
                 case 3: --var_F; break;
                 }
-            }
-            var_8 += 8;
-        }
-    } else {
-        for (var_4 = 0; var_4 < strlen((char far *)s); ++var_4) {
-            var_A = *p++;
-            var_6 = y;
-            for (var_2 = 0; var_2 < 8; ++var_2) {
-                var_9 = 0x80;
-                if (GLYPH_BIT() & var_9) display->set_pix(var_8,     var_6, color);
-                var_9 >>= 1;
-                if (GLYPH_BIT() & var_9) display->set_pix(var_8 + 1, var_6, color);
-                var_9 >>= 1;
-                if (GLYPH_BIT() & var_9) display->set_pix(var_8 + 2, var_6, color);
-                var_9 >>= 1;
-                if (GLYPH_BIT() & var_9) display->set_pix(var_8 + 3, var_6, color);
-                var_9 >>= 1;
-                if (GLYPH_BIT() & var_9) display->set_pix(var_8 + 4, var_6, color);
-                var_9 >>= 1;
-                if (GLYPH_BIT() & var_9) display->set_pix(var_8 + 5, var_6, color);
-                var_9 >>= 1;
-                if (GLYPH_BIT() & var_9) display->set_pix(var_8 + 6, var_6, color);
-                var_9 >>= 1;
-                if (GLYPH_BIT() & var_9) display->set_pix(var_8 + 7, var_6, color);
-                ++var_6;
             }
             var_8 += 8;
         }

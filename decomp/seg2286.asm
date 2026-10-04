@@ -292,7 +292,7 @@ arg_2		= word ptr  8
 		add	sp, 0Ah
 		mov	dx, _worx_dx
 		xor	ax, ax
-		add	ax, _worx_ax
+		add	ax, word ptr _worx_ax
 		adc	dx, 0
 		jmp	$+2
 ; ---------------------------------------------------------------------------
@@ -1591,7 +1591,7 @@ _programchange:
 		xor	ax, ax
 		push	ax
 		mov	ax, [bp+8]
-		and	ax, 0FFh
+		and	ax, word ptr 0FFh
 		push	ax
 		mov	al, [bp+6]
 		push	ax
@@ -1620,7 +1620,7 @@ arg_2		= word ptr  8
 		xor	ax, ax
 		push	ax
 		mov	ax, [bp+arg_2]
-		and	ax, 0FFh
+		and	ax, word ptr 0FFh
 		mov	dx, 700h
 		or	dx, ax
 		push	dx
@@ -1778,7 +1778,7 @@ _stopnote:
 		push	ax
 		mov	al, [bp+8]
 		mov	ah, 0
-		and	ax, 0FFh
+		and	ax, word ptr 0FFh
 		mov	cl, 8
 		shl	ax, cl
 		push	ax

@@ -569,12 +569,12 @@ sub_20B42	proc near		; DATA XREF: seg1c75:20B0o
 		mov	word ptr cs:dword_20AF2+2, es
 		mov	ah, 0
 		call	cs:dword_20AF2
-		cmp	ax, 200h
+		cmp	ax, word ptr 200h
 		jb	loc_20B78
 		pop	dx
 		mov	ah, 9
 		call	cs:dword_20AF2
-		cmp	ax, 1
+		cmp	ax, word ptr 1
 		jnz	loc_20B74
 		mov	cs:word_20AF0, dx
 		mov	ax, 0
@@ -887,7 +887,7 @@ loc_20C8C::				; CODE XREF: sub_20C7D+9j
 loc_20CDB::				; CODE XREF: sub_20C7D+9Cj
 		mov	bx, 100h
 		call	sub_21A3B
-		cmp	ax, 0
+		cmp	ax, word ptr 0
 		jz	loc_20D1B
 		mov	cs:word_20AF6, ax
 		mov	si, 21C6h
@@ -3593,7 +3593,7 @@ _core_startworx	proc far		; CODE XREF: _startworx+3P
 		mov	ax, cs
 		stosw
 		mov	ax, 4092h
-		sub	ax, 4
+		sub	ax, word ptr 4
 		mov	cs:word_227BE, ax
 		mov	ax, cs
 		mov	cs:word_227C0, ax
@@ -4037,7 +4037,7 @@ sub_21A3B	proc near		; CODE XREF: sub_20C7D+61p
 		assume ds:nothing
 		add	si, cs:word_21732
 		mov	ax, cs:word_2172A
-		sub	ax, cs:word_21732
+		sub	ax, word ptr cs:word_21732
 		cmp	ax, bx
 		jnb	loc_21A68
 		mov	bx, ax
@@ -4175,7 +4175,7 @@ loc_21B27::				; CODE XREF: sub_21AD7+4Bj
 		cmp	cs:byte_21743, 0
 		jnz	loc_21B9F
 		mov	ax, cs:word_21726
-		cmp	ax, 0FFFFh
+		cmp	ax, word ptr 0FFFFh
 		jz	loc_21B50
 		mov	cs:word_21726, 0FFFFh
 		mov	bx, ax
@@ -4419,7 +4419,7 @@ loc_21C8D::				; CODE XREF: sub_21C85+1Dj
 		jcxz	loc_21CA4
 		mov	bx, 1
 		call	sub_21A3B
-		cmp	ax, 0
+		cmp	ax, word ptr 0
 		jz	loc_21CA5
 		cmp	byte ptr es:[di], 0Ah
 		jz	loc_21CA4
@@ -4453,7 +4453,7 @@ sub_21C85	endp
 sub_21CB9	proc near		; DATA XREF: seg1c75:2058o
 		mov	al, cs:byte_216FD
 		xor	ah, ah
-		and	ax, 1
+		and	ax, word ptr 1
 		retn
 sub_21CB9	endp
 
@@ -4972,7 +4972,7 @@ word_21F7B	dw 5555h		; DATA XREF: sub_21DCB+9Aw
 					; sub_21E96+81w
 ; ---------------------------------------------------------------------------
 		xor	ah, ah
-		add	ax, offset unk_21CC3
+		add	ax, word ptr offset unk_21CC3
 		mov	cs:word_21F88, ax
 ; ---------------------------------------------------------------------------
 		db  2Eh	; .
@@ -5198,7 +5198,7 @@ sub_2207F	proc near		; DATA XREF: seg1c75:203Eo
 		push	ds
 		push	es
 		mov	ax, es:[di]
-		cmp	ax, 'BS'
+		cmp	ax, word ptr 'BS'
 		jz	loc_22091
 		stc
 		jmp	loc_220AA
@@ -5524,7 +5524,7 @@ loc_2223E::				; CODE XREF: sub_2222E+8j
 
 loc_2225F::				; CODE XREF: sub_2222E+64j
 		mov	ax, [si]
-		cmp	ax, 0FFFFh
+		cmp	ax, word ptr 0FFFFh
 		jz	loc_22294
 		add	si, 2
 		mov	ah, 3Fh	; '?'
@@ -5592,7 +5592,7 @@ loc_222D0::				; CODE XREF: sub_2222E+76j
 loc_222F4::				; CODE XREF: sub_2222E+D1j
 		lodsw
 		xchg	ah, al
-		cmp	ax, 0FFFFh
+		cmp	ax, word ptr 0FFFFh
 		jz	loc_22301
 		call	sub_22194
 		jmp	loc_222F4
@@ -6940,7 +6940,7 @@ loc_22A4C::				; CODE XREF: seg1c75:4105j
 		inc	cs:word_216E7
 		push	ax
 		mov	ax, cs:word_216E7
-		cmp	ax, cs:word_216E9
+		cmp	ax, word ptr cs:word_216E9
 		pop	ax
 		jb	loc_22A6C
 		mov	cs:word_216E7, 0
@@ -7127,10 +7127,10 @@ loc_22B6D::				; CODE XREF: sub_22B42+22j
 		mov	ds, ax
 		assume ds:nothing
 		lodsw
-		cmp	ax, 'TM'
+		cmp	ax, word ptr 'TM'
 		jnz	loc_22BDC
 		lodsw
-		cmp	ax, 'dh'
+		cmp	ax, word ptr 'dh'
 		jnz	loc_22BDC
 		mov	ax, cs
 		mov	ds, ax
@@ -7198,11 +7198,11 @@ loc_22C02::				; CODE XREF: sub_22B42+97j
 		jcxz	loc_22BE3
 		mov	ax, es:[di]
 		add	di, 2
-		cmp	ax, 'TM'
+		cmp	ax, word ptr 'TM'
 		jnz	loc_22BDC
 		mov	ax, es:[di]
 		add	di, 2
-		cmp	ax, 'kr'
+		cmp	ax, word ptr 'kr'
 		jnz	loc_22BDC
 		mov	ax, es:[di]
 		add	di, 2
@@ -7273,10 +7273,10 @@ sub_22C66	proc near		; CODE XREF: sub_22D90:loc_22EABp
 		mov	ds, ax
 		assume ds:nothing
 		lodsw
-		cmp	ax, 'TC'
+		cmp	ax, word ptr 'TC'
 		jnz	loc_22C5F
 		lodsw
-		cmp	ax, 'FM'
+		cmp	ax, word ptr 'FM'
 		jnz	loc_22C5F
 		mov	ax, cs
 		mov	ds, ax
@@ -7401,7 +7401,7 @@ sub_22D53	proc near		; CODE XREF: seg1c75:4110p
 loc_22D5E::				; CODE XREF: sub_22D53+8j
 		inc	cs:word_21587
 		mov	ax, cs:word_21587
-		cmp	ax, cs:word_2158D
+		cmp	ax, word ptr cs:word_2158D
 		jb	loc_22D7A
 		assume es:seg2608
 		mov	cs:word_21587, 0
@@ -7585,7 +7585,7 @@ sub_22D90	endp
 
 sub_22EBA	proc near		; DATA XREF: seg1c75:203Co
 		mov	al, cs:byte_21695
-		and	ax, 1
+		and	ax, word ptr 1
 		retn
 sub_22EBA	endp
 
@@ -7596,7 +7596,7 @@ sub_22EBA	endp
 
 sub_22EC2	proc near		; DATA XREF: seg1c75:2030o
 		mov	al, cs:byte_2171D
-		and	ax, 1
+		and	ax, word ptr 1
 		retn
 sub_22EC2	endp
 
@@ -7670,7 +7670,7 @@ sub_22F0D	proc near		; CODE XREF: sub_21AD7+7p sub_21C0F+7p ...
 		push	ax
 		push	dx
 		mov	ax, es
-		cmp	ax, 0
+		cmp	ax, word ptr 0
 		jz	loc_22F44
 		xor	dx, dx
 		shl	ax, 1
@@ -7979,7 +7979,7 @@ sub_23069	proc near		; DATA XREF: seg1c75:2022o
 		mov	bx, ax
 		add	bx, 1000h
 		jnb	loc_2308D
-		add	ax, 1000h
+		add	ax, word ptr 1000h
 		adc	dx, 0
 
 loc_2308D::				; CODE XREF: sub_23069+1Cj
@@ -11255,11 +11255,11 @@ loc_23EC4::				; CODE XREF: sub_23E32+50j
 					; sub_23E32+5Cj ...
 		push	ds
 		mov	ax, cs:word_23454[bx]
-		cmp	ax, 0
+		cmp	ax, word ptr 0
 		jnz	loc_23EF8
 		mov	ax, cs:word_234A4[bx]
 		sub	ax, cs:word_23DC2[bx]
-		cmp	ax, 100h
+		cmp	ax, word ptr 100h
 		jb	loc_23EE1
 		call	sub_24157
 
@@ -11267,7 +11267,7 @@ loc_23EE1::				; CODE XREF: sub_23E32+AAj
 		mov	ax, bx
 		shr	ax, 1
 		xchg	ah, al
-		add	ax, offset unk_235C2
+		add	ax, word ptr offset unk_235C2
 		mov	si, ax
 		add	si, cs:word_234A4[bx]
 		sub	si, cs:word_23DC2[bx]
@@ -11280,7 +11280,7 @@ loc_23EF8::				; CODE XREF: sub_23E32+9Bj
 		shr	ax, 1
 		pop	ds
 		assume ds:seg2608
-		sub	ax, 40h	; '@'
+		sub	ax, word ptr 40h; '@'
 		mov	dx, cs:word_23494[bx]
 		shl	dx, 1
 		shl	dx, 1
@@ -11564,7 +11564,7 @@ loc_240FA::				; CODE XREF: sub_24087+16j
 		mov	cs:word_23514[bx], ax
 		mov	ax, es:[di+20h]
 		mov	cs:word_23484[bx], 0
-		cmp	ax, 1
+		cmp	ax, word ptr 1
 		jnz	short loc_2414F
 		mov	cs:word_23484[bx], 1
 		mov	ax, es:[di+22h]
@@ -11593,7 +11593,7 @@ sub_24157	proc near		; CODE XREF: sub_23E32+ACp
 		mov	ax, bx
 		shr	ax, 1
 		xchg	ah, al
-		add	ax, offset unk_235C2
+		add	ax, word ptr offset unk_235C2
 		mov	cs:word_20B02, ax
 		mov	cs:word_20B04, cs
 		mov	cs:word_20AF6, 100h
@@ -11613,7 +11613,7 @@ sub_24157	proc near		; CODE XREF: sub_23E32+ACp
 		mov	ah, 0Bh
 		mov	si, offset word_20AF6
 		call	cs:dword_20AF2
-		cmp	ax, 1
+		cmp	ax, word ptr 1
 		jz	loc_241C3
 		mov	ax, 0
 
@@ -12525,7 +12525,7 @@ loc_247E6::				; CODE XREF: sub_247C1+21j
 
 loc_247E8::				; CODE XREF: sub_247C1+Dj
 		mov	ax, cs:word_231B4
-		or	ax, cs:word_231B6
+		or	ax, word ptr cs:word_231B6
 		jnz	loc_2482B
 		cmp	cs:word_231C3, 0
 		jnz	loc_2482B
@@ -12547,7 +12547,7 @@ loc_24812::				; CODE XREF: sub_247C1+40j
 		assume es:seg1c75
 		mov	di, offset byte_231B8
 		call	sub_21A3B
-		cmp	ax, 1
+		cmp	ax, word ptr 1
 		jnz	loc_24864
 		mov	bx, 3
 		mov	di, offset word_231B4

@@ -304,7 +304,7 @@ loc_25605::				; CODE XREF: sub_255FF+2j
 		mov	[bp+var_6], al
 		mov	ax, [si+8]
 		mov	bx, [di+8]
-		cmp	ax, 4001h
+		cmp	ax, word ptr 4001h
 		jge	loc_255BE
 		cmp	bx, 4001h
 		jge	loc_255DC
@@ -326,7 +326,7 @@ loc_2563E::				; CODE XREF: sub_25603+36j
 		cmp	bx, 0C001h
 		jle	loc_255F1
 		sub	ax, bx
-		cmp	ax, 41h	; 'A'
+		cmp	ax, word ptr 41h	; 'A'
 		jg	loc_255F1
 		mov	bx, [di+2]
 		mov	cx, [di+4]
@@ -596,10 +596,10 @@ arg_1A		= word ptr  1Eh
 		jle	loc_257C8
 		add	ax, bx
 		dec	ax
-		cmp	ax, 4001h
+		cmp	ax, word ptr 4001h
 		jge	loc_257BC
 		inc	ax
-		cmp	ax, 0C001h
+		cmp	ax, word ptr 0C001h
 
 loc_25808::
 		jle	loc_257C3
@@ -627,7 +627,7 @@ loc_25808::
 
 loc_2583B::				; CODE XREF: sub_257CD+61j
 		shl	si, 1
-		adc	ax, 0
+		adc	ax, word ptr 0
 		jnb	loc_2584D
 		adc	bx, ax
 		adc	cx, ax
@@ -879,16 +879,16 @@ arg_4		= word ptr  8
 		mov	ax, [bx+8]
 		cmp	si, 4001h
 		jge	loc_25944
-		cmp	ax, 4001h
+		cmp	ax, word ptr 4001h
 		jge	loc_2595B
 		cmp	si, 0C001h
 		jle	loc_2596B
-		cmp	ax, 0C001h
+		cmp	ax, word ptr 0C001h
 		jle	loc_25986
 		sub	ax, si
-		cmp	ax, 4001h
+		cmp	ax, word ptr 4001h
 		jge	loc_2598B
-		cmp	ax, 0C001h
+		cmp	ax, word ptr 0C001h
 		jle	loc_25981
 		mov	dx, [di+6]
 		push	dx
@@ -1239,7 +1239,7 @@ loc_25CB2::				; CODE XREF: sub_2599A+309j
 		shr	cx, 1
 		sub	ch, dh
 		mov	cx, [bp+var_6]
-		adc	ax, 0
+		adc	ax, word ptr 0
 		jnb	loc_25CC9
 		adc	si, ax
 		adc	bx, ax
@@ -1311,9 +1311,9 @@ loc_25D15::				; DATA XREF: seg2333:2554o
 		push	si
 		push	di
 		mov	ax, [si+8]
-		cmp	ax, 0C001h
+		cmp	ax, word ptr 0C001h
 		jle	loc_25D4B
-		cmp	ax, 4001h
+		cmp	ax, word ptr 4001h
 		jge	loc_25D4F
 		cmp	byte ptr [si+0Ah], 0
 		jnz	loc_25D59
@@ -1638,7 +1638,7 @@ arg_2		= word ptr  6
 		mov	di, [bp+arg_0]
 		mov	ax, [si+8]
 		mov	bx, [di+8]
-		cmp	ax, 4001h
+		cmp	ax, word ptr 4001h
 		jge	loc_25EBC
 
 loc_25EFF::				; CODE XREF: sub_25EE9-1Fj
@@ -1808,7 +1808,7 @@ loc_25FF9::				; CODE XREF: sub_25FE5+33j
 					; sub_25FE5+38j
 		cmp	byte ptr [si+0Ah], 1
 		jnz	loc_26002
-		or	ax, 200h
+		or	ax, word ptr 200h
 
 loc_26002::				; CODE XREF: sub_25FE5+8j
 					; sub_25FE5+18j
@@ -1995,7 +1995,7 @@ sub_260F6	proc near		; CODE XREF: seg2333:21A4j
 		jz	loc_26123
 
 loc_26112::				; CODE XREF: sub_260F6+16j
-		add	ax, 4
+		add	ax, word ptr 4
 		adc	di, 0
 		adc	cx, 0
 		adc	dl, 0
@@ -2172,7 +2172,7 @@ loc_2623F::				; CODE XREF: sub_2619D+ACj
 		jns	loc_2623F
 		push	ax
 		mov	ah, 0
-		sub	ax, 4FEh
+		sub	ax, word ptr 4FEh
 		mov	[di+8],	ax
 		pop	ax
 		mov	al, 0
@@ -2195,9 +2195,9 @@ sub_2625B	proc near		; CODE XREF: sub_2786C+10p
 		movsw
 		lodsw
 		mov	cl, [si]
-		cmp	ax, 4001h
+		cmp	ax, word ptr 4001h
 		jge	loc_2627B
-		add	ax, 3FFEh
+		add	ax, word ptr 3FFEh
 		jl	loc_26280
 
 loc_2626D::				; CODE XREF: sub_2625B+23j
@@ -2418,7 +2418,7 @@ sub_2634D	proc near		; CODE XREF: sub_257CD-4Bp
 		cld
 		push	di
 		push	ax
-		cmp	ax, 0C001h
+		cmp	ax, word ptr 0C001h
 		mov	ax, 0
 		stosw
 		stosw
@@ -2680,7 +2680,7 @@ loc_26475::				; CODE XREF: sub_2644B+20j
 		cmp	cl, 9
 		jz	loc_264B3
 		neg	bx
-		adc	ax, 0
+		adc	ax, word ptr 0
 		jb	loc_264C3
 		jmp	loc_264B3
 ; ---------------------------------------------------------------------------
@@ -2690,7 +2690,7 @@ loc_264A4::				; CODE XREF: sub_2644B+41j
 		and	dl, al
 		or	bl, dl
 		add	bx, 7FFFh
-		adc	ax, 0
+		adc	ax, word ptr 0
 		jb	loc_264C3
 
 loc_264B3::				; CODE XREF: sub_2644B+3Cj
@@ -2811,9 +2811,9 @@ loc_26554::				; CODE XREF: seg2333:1026j
 		cmp	cx, 4001h
 		jge	loc_26572
 		add	ax, cx
-		cmp	ax, 0C001h
+		cmp	ax, word ptr 0C001h
 		jle	loc_26580
-		cmp	ax, 4001h
+		cmp	ax, word ptr 4001h
 		jge	loc_26576
 		mov	[di+8],	ax
 
@@ -3024,7 +3024,7 @@ loc_2669F::				; CODE XREF: sub_265F2+98j
 		add	bx, 7FFFh
 
 loc_266A9::				; CODE XREF: sub_265F2+A9j
-		adc	ax, 0
+		adc	ax, word ptr 0
 		adc	dx, 0
 		jns	loc_266C4
 		cmp	byte ptr [si+0Ah], 1
@@ -3248,7 +3248,7 @@ loc_26807::				; CODE XREF: sub_26751+9Fj
 		mov	cl, 1
 		and	cx, di
 		or	al, cl
-		add	ax, 7FFFh
+		add	ax, word ptr 7FFFh
 
 loc_26810::				; CODE XREF: sub_26751+B0j
 		mov	cx, 0
@@ -3626,7 +3626,7 @@ arg_12		= byte ptr  16h
 		push	es
 		mov	al, 0Ch
 		mul	byte ptr [bp+arg_2]
-		sub	ax, 0Ch
+		sub	ax, word ptr 0Ch
 		xchg	ax, si
 		add	si, [bp+arg_0]
 		call	sub_26397
@@ -4097,7 +4097,7 @@ loc_26D4C::				; CODE XREF: sub_26D36+3Bj
 		push	word_2826C
 		call	sub_25EE9
 		add	word_2826C, 0Ch
-		cmp	ax, 0
+		cmp	ax, word ptr 0
 		jnz	loc_26D73
 		inc	[bp+var_2]
 		add	di, 0Ch
@@ -4245,7 +4245,7 @@ loc_26EEF::				; CODE XREF: sub_26EBE+3Aj
 		rcr	ax, 1
 		inc	di
 		jl	loc_26EEF
-		adc	ax, 0
+		adc	ax, word ptr 0
 		adc	bx, 0
 		adc	cx, 0
 		adc	dx, 0
@@ -4629,9 +4629,9 @@ loc_271E6::				; DATA XREF: seg2333:26D2o
 		mov	word_2826C, di
 		call	sub_262D1
 		mov	ax, [si+8]
-		cmp	ax, 4001h
+		cmp	ax, word ptr 4001h
 		jge	loc_27236
-		cmp	ax, 0C001h
+		cmp	ax, word ptr 0C001h
 		jle	loc_27231
 		mov	cl, 0
 		mov	bx, si
@@ -4708,9 +4708,9 @@ loc_2727B::				; CODE XREF: seg2333:1D47j
 		cmp	byte ptr [di+0Ah], 0
 		jnz	loc_2729D
 		mov	ax, [di+8]
-		cmp	ax, 0C001h
+		cmp	ax, word ptr 0C001h
 		jle	loc_27299
-		cmp	ax, 4001h
+		cmp	ax, word ptr 4001h
 		jge	loc_2729D
 		call	sub_26FB6
 
@@ -4773,9 +4773,9 @@ loc_272E4::				; CODE XREF: seg2333:1DB6j
 		mov	ax, 0
 		push	ax
 		mov	ax, [si+8]
-		cmp	ax, 0Ch
+		cmp	ax, word ptr 0Ch
 		jg	loc_27340
-		cmp	ax, 0FFC0h
+		cmp	ax, word ptr 0FFC0h
 		jle	loc_2736C
 		call	sub_263CA
 		inc	word ptr [di+8]
@@ -4805,7 +4805,7 @@ loc_272E4::				; CODE XREF: seg2333:1DB6j
 ; ---------------------------------------------------------------------------
 
 loc_27340::				; CODE XREF: seg2333:1DE0j
-		cmp	ax, 4001h
+		cmp	ax, word ptr 4001h
 		jnz	loc_27355
 		mov	ax, 7FFFh
 		and	ax, [si+6]
@@ -4924,7 +4924,7 @@ var_2		= word ptr -2
 		push	si
 		push	di
 		mov	al, es:[si+9]
-		and	ax, 80h
+		and	ax, word ptr 80h
 		rol	al, 1
 		mov	[di+0Ah], al
 		mov	cl, 4
@@ -4990,7 +4990,7 @@ var_2		= word ptr -2
 loc_27488::				; CODE XREF: sub_273F7+A0j
 		or	dx, dx
 		jnz	loc_27499
-		sub	ax, 10h
+		sub	ax, word ptr 10h
 		jz	loc_274BD
 		xchg	dx, di
 		xchg	di, cx
@@ -5075,9 +5075,9 @@ var_2		= word ptr -2
 		mov	cx, [si+2]
 		mov	dx, [si+6]
 		mov	si, [si+4]
-		cmp	ax, 0
+		cmp	ax, word ptr 0
 		jl	loc_27531
-		sub	ax, 3Ch	; '<'
+		sub	ax, word ptr 3Ch	; '<'
 		jl	loc_2751D
 		jg	loc_27533
 		cmp	dx, 0DE0Bh
@@ -5689,7 +5689,7 @@ sub_27843	proc near		; CODE XREF: seg2333:21A4j
 		call	sub_278C2
 		call	sub_278C7
 		mov	ax, off_28270
-		sub	ax, word_2826C
+		sub	ax, word ptr word_2826C
 		mov	cx, 60h	; '`'
 		cmp	ax, cx
 		jb	loc_27858
@@ -5787,7 +5787,7 @@ sub_278C2	endp
 sub_278C7	proc near		; CODE XREF: seg2333:21A4j
 					; seg2333:2222j ...
 		mov	ax, off_28270
-		sub	ax, word_2826C
+		sub	ax, word ptr word_2826C
 		mov	cx, 60h	; '`'
 		cmp	ax, cx
 		jb	loc_278D6
@@ -5938,7 +5938,7 @@ loc_27997::				; CODE XREF: seg2333:246Fj
 
 loc_2799A::				; CODE XREF: seg2333:2485j
 		mov	ax, off_28270
-		sub	ax, 0Ch
+		sub	ax, word ptr 0Ch
 		cmp	si, ax
 		jz	loc_279B4
 		xchg	di, si
@@ -6253,7 +6253,7 @@ loc_27B7E::				; CODE XREF: seg2333:21A4j
 		test	ch, 1Fh
 		jnz	loc_27B75
 		mov	ax, word_2826C
-		sub	ax, off_28270
+		sub	ax, word ptr off_28270
 		mov	cl, 0Ch
 		idiv	cl
 		and	al, 7
