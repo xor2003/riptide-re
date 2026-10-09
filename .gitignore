@@ -12,6 +12,10 @@ decomp/obj/
 decomp/link/
 decomp/lst/
 decomp/mzre/
+# generated compiler output (rebuild locally via decomp/build.sh)
+*.gen.asm
+# stale generated dump of game.cpp
+/decomp/game.asm
 
 # --- original game binaries & data (copyrighted, not redistributable) ---
 RIPTIDE.EXE

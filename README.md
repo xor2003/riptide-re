@@ -17,9 +17,9 @@ tests under kvikdos, Z3 SSA equivalence proofs).
   - `*.cpp`, `riptide.h` — reconstructed C++ sources (Borland C++ 3.1 dialect)
   - `seg*.asm`, `fpconst.asm` — segments extracted from the original binary,
     assembled with uasm (RTL/FP-emulator code and the whole DGROUP image)
-  - `*.gen.asm` — compiler `-S` output of the `.cpp` files, kept for codegen
-    comparison against the original
   - build scripts (see below)
+  - `*.gen.asm` — compiler `-S` output of the `.cpp` files for codegen
+    comparison; generated locally via `build.sh`, not committed
 - `tools/` — verification harness: `difftest.py` (kvikdos differential function
   tests), `verify.py` + `golden.txt` (codegen regression baseline),
   `mkproven.py`, asm/lst diff utilities
