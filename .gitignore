@@ -2,13 +2,16 @@
 *.obj
 *.OBJ
 *.o
-decomp/*.lst
-decomp/obj/
-decomp/link/
+*.lst
+*.map
 *.exe
 *.EXE
 *.com
 *.COM
+decomp/obj/
+decomp/link/
+decomp/lst/
+decomp/mzre/
 
 # --- original game binaries & data (copyrighted, not redistributable) ---
 RIPTIDE.EXE
@@ -19,6 +22,37 @@ CONFIG.RIP
 HIGH.SCR
 *Registered*.zip
 
+# --- RE workbench artifacts at repo root (IDA / reko / ghidra / TD dumps) ---
+# all root-level RIPTIDE.* dumps: .asm/.c/.h/.idb/.idc/.lst/.map/.patch/.reko/...
+/RIPTIDE*
+# Riptide.gpr, Riptide.rep/ (Ghidra project)
+/Riptide*
+# riptide.c / riptide.ddb / riptide.sym scratch files
+/riptide.*
+# IDA export scripts and their shell runners
+/*.idc
+/_*.sh
+/_temp.sed
+# TD.OUT
+/*.OUT
+/*.nfo
+# original game's readme
+/README.TXT
+/DIE.cfg
+/build_masm.bat
+# machine-local symlinks into compiler/tool dirs
+/bcc
+/tlink
+# host syntax-check shims (local dev scaffold)
+/stubs.h
+/stubs/
+# session-state notes
+/HANDOFF.md
+# external assembler source tree
+/jwasm-src/
+# leftover SVN working-copy metadata
+/.svn/
+
 # --- analysis noise / logs ---
 LOGCPU*.TXT
 *.log
@@ -26,6 +60,8 @@ LOGCPU*.TXT
 *.dis
 *.err
 ML.ERR
+*.orig
+*.rej
 
 # --- nested/external project dirs ---
 dissected/
